@@ -9,6 +9,9 @@ const sacada = document.getElementById("sacada");
 const boia = document.getElementById("boia");
 const voltarQuarto = document.getElementById("voltarQuarto");
 const cama = document.getElementById("cama");
+const btnTeamBuilder = document.getElementById("btnTeamBuilder");
+const teamBuilder = document.getElementById("teamBuilder");
+const fecharTeamBuilder = document.getElementById("fecharTeamBuilder");
 
 const combate = document.getElementById("combate");
 const btnMorder = document.getElementById("btnMorder");
@@ -64,6 +67,9 @@ function voltarParaCasa() {
     boia.style.display = "none";
     voltarQuarto.style.display = "none";
     cama.style.display = "block";
+    btnTeamBuilder.style.display = "block";
+    fecharTeam();
+    atualizarTeamBuilder();
 }
 
 // IR PARA A PESCA
@@ -78,6 +84,8 @@ sacada.addEventListener("click", function () {
     boia.style.display = "block";
     voltarQuarto.style.display = "block";
     cama.style.display = "none";
+    btnTeamBuilder.style.display = "block";
+    atualizarTeamBuilder();
 });
 
 // VOLTAR DA SACADA PARA O QUARTO
@@ -101,6 +109,12 @@ boia.addEventListener("click", function (evento) {
 
     if (combateEmAndamento) return;
 
+    if (meuMonstro.hp <= 0) {
+        alert("Seu monstro está exausto! Volte para o quarto e durma na cama antes de pescar novamente.");
+        voltarParaCasa();
+        return;
+    }
+
     console.log("BOIA CLICADA!");
 
     iniciarCombate();
@@ -113,7 +127,8 @@ function iniciarCombate() {
 
     combateEmAndamento = true;
 
-    meuMonstro.hp = meuMonstro.hpMax;
+    // O HP do jogador é mantido entre os combates.
+    // Apenas o inimigo recupera a vida ao iniciar uma nova luta.
     botorosa.hp = botorosa.hpMax;
 
     atualizarStatus();
@@ -125,6 +140,8 @@ function iniciarCombate() {
     boia.style.display = "none";
     voltarQuarto.style.display = "none";
     cama.style.display = "none";
+    btnTeamBuilder.style.display = "none";
+    fecharTeam();
 
     const imagemJogador =
         document.querySelector("#jogadorMonstro img");
@@ -250,21 +267,71 @@ function atualizarStatus() {
 function finalizarCombate(mensagem) {
     if (!combateEmAndamento) return;
 
+    const jogadorDerrotado = meuMonstro.hp <= 0;
+
     mensagemCombate.textContent = mensagem;
     btnMorder.disabled = true;
 
     temporizadorCombate = setTimeout(function () {
         combate.style.display = "none";
+        combateEmAndamento = false;
 
+        if (jogadorDerrotado) {
+            // Derrota: retorna ao quarto, mas não cura automaticamente.
+            // O jogador precisa clicar na cama para recuperar o HP.
+            voltarParaCasa();
+            mensagemCombate.textContent =
+                "Seu monstro precisa descansar. Vá até a cama para recuperar o HP.";
+            return;
+        }
+
+        // Vitória: retorna à sacada e mantém o HP restante.
         cenario.style.display = "block";
         cenario.src = "assets/pescando.png";
+        btnTeamBuilder.style.display = "block";
+        atualizarTeamBuilder();
 
         porta.style.display = "none";
         sacada.style.display = "none";
         boia.style.display = "block";
         voltarQuarto.style.display = "block";
         cama.style.display = "none";
-
-        combateEmAndamento = false;
     }, 2000);
+}
+
+/* TEAM BUILDER: acessível nos mapas, nunca durante o combate */
+btnTeamBuilder.addEventListener("click", function () {
+    if (combateEmAndamento || combate.style.display === "block") return;
+    atualizarTeamBuilder();
+    teamBuilder.classList.add("aberto");
+});
+
+fecharTeamBuilder.addEventListener("click", fecharTeam);
+
+teamBuilder.addEventListener("click", function (evento) {
+    if (evento.target === teamBuilder) fecharTeam();
+});
+
+document.addEventListener("keydown", function (evento) {
+    if (evento.key === "Escape") fecharTeam();
+});
+
+function fecharTeam() {
+    teamBuilder.classList.remove("aberto");
+}
+
+function atualizarTeamBuilder() {
+    const hpAtual = Math.max(0, meuMonstro.hp);
+    const hpMaximo = meuMonstro.hpMax;
+    const porcentagem = hpMaximo > 0 ? (hpAtual / hpMaximo) * 100 : 0;
+
+    document.getElementById("teamHpText").textContent =
+        hpAtual + " / " + hpMaximo;
+    document.getElementById("teamHpBar").style.width = porcentagem + "%";
+    document.getElementById("teamHpBar").style.background =
+        porcentagem > 50 ? "#52d77a" : porcentagem > 20 ? "#f0c64e" : "#ed5b62";
+
+    document.getElementById("teamAtaque").textContent = meuMonstro.ataque;
+    document.getElementById("teamDefesa").textContent = meuMonstro.defesa;
+    document.getElementById("teamVelocidade").textContent = meuMonstro.velocidade;
 }

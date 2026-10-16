@@ -21,7 +21,66 @@
         <button id="sacada" class="interacao"></button>
         <button id="boia" class="interacao"></button>
         <button id="voltarQuarto" class="interacao"></button>
-        <button id="cama" class="interacao"></button>
+        <button id="cama" class="interacao" aria-label="Dormir na cama"></button>
+
+        <button id="btnTeamBuilder" aria-label="Abrir Team Builder">
+            <span class="team-icon">✦</span> EQUIPE
+        </button>
+
+        <section id="teamBuilder" role="dialog" aria-modal="true" aria-labelledby="teamTitulo">
+            <div class="team-panel">
+                <header class="team-header">
+                    <div>
+                        <p class="team-kicker">MONSTROBOLSO</p>
+                        <h2 id="teamTitulo">Minha equipe</h2>
+                    </div>
+                    <button id="fecharTeamBuilder" aria-label="Fechar Team Builder">✕</button>
+                </header>
+
+                <div class="team-content">
+                    <div class="team-party">
+                        <div class="party-slot selected">
+                            <img src="assets/inicial.png" alt="Seu monstro">
+                            <div><strong>Seu Monstro</strong><span>MONSTRO #001</span></div>
+                            <span class="slot-arrow">›</span>
+                        </div>
+                        <div class="party-slot empty">
+                            <span class="empty-plus">＋</span>
+                            <div><strong>Espaço vazio</strong><span>Nenhum monstro</span></div>
+                        </div>
+                        <div class="party-slot empty">
+                            <span class="empty-plus">＋</span>
+                            <div><strong>Espaço vazio</strong><span>Nenhum monstro</span></div>
+                        </div>
+                    </div>
+
+                    <div class="team-details">
+                        <div class="monster-profile">
+                            <div class="monster-art"><img src="assets/inicial.png" alt="Arte do seu monstro"></div>
+                            <div class="monster-title">
+                                <span class="type-label">MONSTRO AQUÁTICO</span>
+                                <h3>Seu Monstro</h3>
+                                <span class="level-label">NÍVEL <b id="teamLevel">5</b></span>
+                            </div>
+                        </div>
+
+                        <div class="team-hp">
+                            <div class="stat-line"><span>HP</span><strong id="teamHpText">100 / 100</strong></div>
+                            <div class="team-hp-track"><div id="teamHpBar"></div></div>
+                        </div>
+
+                        <div class="stats-grid">
+                            <div class="stat-card"><span>ATAQUE</span><strong id="teamAtaque">25</strong><i>⚔</i></div>
+                            <div class="stat-card"><span>DEFESA</span><strong id="teamDefesa">10</strong><i>⬟</i></div>
+                            <div class="stat-card"><span>VELOCIDADE</span><strong id="teamVelocidade">15</strong><i>➤</i></div>
+                        </div>
+
+                        <p class="team-tip">Seus atributos e o HP atual são exibidos aqui. Descanse na cama para recuperar a vida.</p>
+                    </div>
+                </div>
+                <footer class="team-footer"><span>PARTY</span><span>01 / 06 MONSTROS</span></footer>
+            </div>
+        </section>
 
         <div id="combate">
 
