@@ -1,0 +1,79 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MONSTROBOLSO</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <div id="menu">
+        <h1>MONSTROBOLSO</h1>
+        <button id="btnInicio">Início</button>
+    </div>
+
+    <div id="jogo">
+        <img id="cenario" src="assets/casa_inicial.png" alt="Cenário">
+
+        <button id="porta" class="interacao"></button>
+        <button id="sacada" class="interacao"></button>
+        <button id="boia" class="interacao"></button>
+        <button id="voltarQuarto" class="interacao"></button>
+        <button id="cama" class="interacao"></button>
+
+        <div id="combate">
+
+            <img id="fundoCombate"
+                 src="assets/tela_combate.png"
+                 alt="Fundo do combate">
+
+            <div id="inimigo" class="monstro">
+                <img src="assets/botorosa.png" alt="Botorosa">
+            </div>
+
+            <div id="jogadorMonstro" class="monstro">
+                <img src="assets/inicial.png" alt="Seu monstro">
+            </div>
+
+            <div id="statusInimigo" class="status">
+                <div class="nome-status">
+                    <span>BOTOROSA</span>
+                    <span>Lv. 5</span>
+                </div>
+
+                <div class="barra">
+                    <div id="hpInimigo" class="hp"></div>
+                </div>
+
+                <div id="textoHpInimigo">100 / 100</div>
+            </div>
+
+            <div id="statusJogador" class="status">
+                <div class="nome-status">
+                    <span>SEU MONSTRO</span>
+                    <span>Lv. 5</span>
+                </div>
+
+                <div class="barra">
+                    <div id="hpJogador" class="hp"></div>
+                </div>
+
+                <div id="textoHpJogador">100 / 100</div>
+            </div>
+
+            <div id="menuCombate">
+                <div id="mensagemCombate">
+                    O que seu monstro fará?
+                </div>
+
+                <button id="btnMorder">MORDER</button>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="js/game.js"></script>
+</body>
+</html>
