@@ -1,77 +1,98 @@
-
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MONSTROBOLSO</title>
+
+    <title>Maremon</title>
+
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/fundos.css">
+    <link rel="stylesheet" href="css/buttons.css">
+    <link rel="stylesheet" href="css/combate.css">
 </head>
 <body>
 
-    <div id="menu">
-        <h1>MONSTROBOLSO</h1>
-        <button id="btnInicio">Início</button>
-    </div>
+    <div id="tela_jogo" class="casa_inicial"></div>
 
-    <div id="jogo">
-        <img id="cenario" src="assets/casa_inicial.png" alt="Cenário">
 
-        <button id="porta" class="interacao"></button>
-        <button id="sacada" class="interacao"></button>
-        <button id="boia" class="interacao"></button>
+<section id="cena_casa">
+    <button id=botao_varanda onclick="trocarfundo('varanda'); goTo('cena_varanda')"></button>
+    <button id=botao_porta onclick="goTo('escolher_destino')"></button>
+</section>
 
-        <div id="combate">
+<section id="cena_varanda">
+    <button class="botao_voltar" onclick="trocarfundo('casa_inicial'); goTo('cena_casa')">voltar</button>
+    <button id="botao_boia" onclick="abrirCombate()"></button>
+</section>
 
-            <img id="fundoCombate"
-                 src="assets/tela_combate.png"
-                 alt="Fundo do combate">
 
-            <div id="inimigo" class="monstro">
-                <img src="assets/botorosa.png" alt="Botorosa">
+
+
+
+
+<section id="cena_combate">
+    <div id="interface_combate">
+
+        <div id="painel_inimigo" class="painel_pescado">
+            <h3 id="nome_inimigo"></h3>
+            <p id="hp_inimigo"></p>
+            <div class="barra_hp">
+                <div id="barra_inimigo" class="vida"></div>
             </div>
-
-            <div id="jogadorMonstro" class="monstro">
-                <img src="assets/inicial.png" alt="Seu monstro">
-            </div>
-
-            <div id="statusInimigo" class="status">
-                <div class="nome-status">
-                    <span>BOTOROSA</span>
-                    <span>Lv. 5</span>
-                </div>
-
-                <div class="barra">
-                    <div id="hpInimigo" class="hp"></div>
-                </div>
-
-                <div id="textoHpInimigo">100 / 100</div>
-            </div>
-
-            <div id="statusJogador" class="status">
-                <div class="nome-status">
-                    <span>SEU MONSTRO</span>
-                    <span>Lv. 5</span>
-                </div>
-
-                <div class="barra">
-                    <div id="hpJogador" class="hp"></div>
-                </div>
-
-                <div id="textoHpJogador">100 / 100</div>
-            </div>
-
-            <div id="menuCombate">
-                <div id="mensagemCombate">
-                    O que seu monstro fará?
-                </div>
-
-                <button id="btnMorder">MORDER</button>
-            </div>
-
         </div>
+
+        <div id="painel_jogador" class="painel_pescado">
+            <h3 id="nome_jogador"></h3>
+            <p id="hp_jogador"></p>
+            <div class="barra_hp">
+                <div id="barra_jogador" class="vida"></div>
+            </div>
+        </div>
+
+        <div id="menu_combate">
+            <p id="mensagem_combate">
+                Preparando combate...
+            </p>
+
+            <div id="ataques_combate"></div>
+
+            <button id="botao_fugir"
+                    onclick="fugirCombate()">
+                Fugir
+            </button>
+        </div>
+
     </div>
+</section>
+
+
+
+
+
+
+<section id="escolher_destino">
+    <button class="botao_voltar" onclick="trocarfundo('casa_inicial'); goTo('cena_casa')">voltar</button>
+
+
+    <div id="locais_viagem">
+
+        <button class="local_viagem">????????</button>
+
+        <button class="local_viagem">????????</button>
+
+        <button class="local_viagem">????????</button>
+
+        <button class="local_viagem">????????</button>
+
+    </div>
+
+</section>
+
+
 
     <script src="js/game.js"></script>
+    <script src="js/combate.js"></script>
+
 </body>
 </html>

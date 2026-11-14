@@ -1,0 +1,20 @@
+.casa_inicial {
+    background-image: url("../assets/casa_inicial.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.varanda {
+    background-image: url("../assets/varanda.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.fundo_combate {
+    background-image: url("../assets/fundo_combate.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
