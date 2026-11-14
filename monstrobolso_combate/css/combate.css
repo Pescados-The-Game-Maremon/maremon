@@ -107,3 +107,69 @@
         padding: 10px;
     }
 }
+
+#botao_capturar {
+    padding: 12px;
+    margin-top: 10px;
+    background: #247a4b;
+    color: white;
+    border: 2px solid white;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+#botao_capturar:hover {
+    background: #32a566;
+}
+
+#botao_capturar:disabled {
+    opacity: 0.5;
+    cursor: default;
+}
+
+
+.sprite_pescado {
+    position: absolute;
+    width: clamp(100px, 18vw, 240px);
+    height: auto;
+
+    object-fit: contain;
+    image-rendering: pixelated;
+
+    pointer-events: none;
+    z-index: 2;
+}
+
+#sprite_inimigo {
+    top: 15%;
+    right: 17%;
+}
+
+#sprite_jogador {
+    bottom: 32%;
+    left: 15%;
+}
+
+.painel_pescado {
+    z-index: 3;
+}
+
+#menu_combate {
+    z-index: 4;
+}
+
+@media (max-width: 600px) {
+    .sprite_pescado {
+        width: 110px;
+    }
+
+    #sprite_inimigo {
+        top: 18%;
+        right: 8%;
+    }
+
+    #sprite_jogador {
+        bottom: 43%;
+        left: 8%;
+    }
+}

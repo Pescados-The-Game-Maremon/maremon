@@ -18,3 +18,17 @@
     background-position: center;
     background-repeat: no-repeat;
 }
+
+.aqua_dentro {
+    background-image: url("../assets/Aqua_dentro.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.aqua_fora {
+    background-image: url("../assets/Aqua_fora.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}

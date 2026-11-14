@@ -3,6 +3,8 @@ const API_COMBATE = "/Maremon/monstrobolso_combate/php/";
 
 let combateOcupado = false;
 let combateIniciado = false;
+let tokenCaptura = null;
+let capturaTentada = false;
 
 async function requisitarCombate(arquivo, opcoes = {}) {
     const resposta = await fetch(API_COMBATE + arquivo, {
@@ -50,10 +52,15 @@ async function abrirCombate() {
             "iniciar_combate.php"
         );
 
+    tokenCaptura = dados.csrf_captura;
+    capturaTentada = dados.captura_tentada;
+    atualizarBotaoCaptura();
+
         atualizarInterfaceCombate(dados);
         await carregarAtaques();
 
         combateIniciado = true;
+        atualizarBotaoCaptura();
 
         mensagemCombate(
             `Um ${dados.inimigo.nome} selvagem apareceu!`
@@ -63,12 +70,16 @@ async function abrirCombate() {
         mensagemCombate(erro.message);
     } finally {
         combateOcupado = false;
+        atualizarBotaoCaptura();
     }
 }
 
 function atualizarInterfaceCombate(dados) {
     atualizarPescado("jogador", dados.jogador);
     atualizarPescado("inimigo", dados.inimigo);
+
+    atualizarSprite("jogador", dados.jogador);
+    atualizarSprite("inimigo", dados.inimigo);
 }
 
 function atualizarPescado(lado, pescado) {
@@ -155,16 +166,37 @@ async function executarAtaque(ataqueId) {
             return `${evento.atacante} usou ${evento.ataque} e causou ${evento.dano} de dano!`;
         });
 
-        if (dados.resultado === "vitoria") {
-            mensagens.push("Você venceu o combate!");
-        } else if (dados.resultado === "derrota") {
-            mensagens.push("Seu Pescado foi derrotado!");
-        }
+       
+if (dados.resultado === "vitoria") {
+    mensagens.push("Você venceu o combate!");
+
+    // Mostrar a experiência recebida
+    mensagens.push(
+        `${dados.jogador.nome} ganhou ${dados.exp_ganha} EXP!`
+    );
+
+} else if (dados.resultado === "derrota") {
+    mensagens.push("Seu Pescado foi derrotado!");
+}
+
+// Verificar se o Pescado subiu de nível
+if (dados.niveis_ganhos > 0) {
+    mensagens.push(
+        `${dados.jogador.nome} subiu do nível ` +
+        `${dados.nivel_anterior} para o nível ` +
+        `${dados.nivel_novo}!`
+    );
+
+    mensagens.push(
+        "HP máximo +2, Ataque +1, Defesa +1 e Velocidade +1 por nível!"
+    );
+}
 
         mensagemCombate(mensagens.join(" "));
 
         if (dados.resultado !== "continuar") {
             combateIniciado = false;
+             voltarParaPescando();
         }
 
     } catch (erro) {
@@ -174,15 +206,117 @@ async function executarAtaque(ataqueId) {
 
         if (combateIniciado) {
             bloquearAtaques(false);
+            atualizarBotaoCaptura();
         }
     }
 }
 
-function fugirCombate() {
-    if (combateOcupado) return;
 
-    combateIniciado = false;
+async function fugirCombate() {
+    if (combateOcupado || !combateIniciado) return;
 
+    combateOcupado = true;
+    bloquearAtaques(true);
+    atualizarBotaoCaptura();
+
+    try {
+        await requisitarCombate(
+            "fugir_combate.php",
+            {
+                method: "POST"
+            }
+        );
+
+        // Encerrar o combate no navegador
+        combateIniciado = false;
+        tokenCaptura = null;
+        capturaTentada = false;
+
+        // Voltar para a varanda
+        trocarfundo("varanda");
+        goTo("cena_varanda");
+
+    } catch (erro) {
+        mensagemCombate(erro.message);
+
+    } finally {
+        combateOcupado = false;
+        atualizarBotaoCaptura();
+
+        if (combateIniciado) {
+            bloquearAtaques(false);
+        }
+    }
+}
+
+function voltarParaPescando() {
     trocarfundo("varanda");
     goTo("cena_varanda");
+}
+
+function atualizarBotaoCaptura() {
+    const botao = document.getElementById("botao_capturar");
+
+    if (!botao) return;
+
+    botao.disabled =
+        !combateIniciado ||
+        combateOcupado ||
+        capturaTentada;
+}
+
+
+async function capturarPescado() {
+    if (
+        combateOcupado ||
+        !combateIniciado ||
+        capturaTentada
+    ) {
+        return;
+    }
+
+    combateOcupado = true;
+
+    bloquearAtaques(true);
+    atualizarBotaoCaptura();
+
+    mensagemCombate("Tentando capturar o Pescado...");
+
+    try {
+        const dados = await requisitarCombate(
+            "capturar_pescado.php",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    csrf_captura: tokenCaptura
+                })
+            }
+        );
+
+        capturaTentada = dados.captura_tentada;
+
+        mensagemCombate(dados.mensagem);
+
+        if (dados.capturou) {
+            combateIniciado = false;
+            tokenCaptura = null;
+            voltarParaPescando();
+            bloquearAtaques(true);
+        }
+
+    } catch (erro) {
+        mensagemCombate(erro.message);
+
+   } finally {
+    combateOcupado = false;
+
+    if (combateIniciado) {
+        bloquearAtaques(false);
+    }
+
+    atualizarBotaoCaptura();
+}
 }

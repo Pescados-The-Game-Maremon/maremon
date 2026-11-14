@@ -1,12 +1,28 @@
-
 <?php
 
 header("Content-Type: application/json; charset=utf-8");
 
-session_start();
-require_once __DIR__ . "/conexao.php";
+require_once __DIR__ . "/proteger.php";
 
 try {
+
+    if (
+        !isset($_SESSION["combate"]) ||
+     (int) ($_SESSION["combate"]["pescador_id"] ?? 0)
+         !== $pescadorId ||
+     !($_SESSION["combate"]["ativo"] ?? false)
+    ) {
+     http_response_code(403);
+
+        echo json_encode([
+          "sucesso" => false,
+          "erro" => "Combate inválido para este jogador."
+     ]);
+
+        exit;
+    }   
+
+
     if (!isset($_SESSION["combate"]["jogador"]["id"])) {
         throw new Exception("Nenhum combate iniciado.");
     }

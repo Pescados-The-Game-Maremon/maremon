@@ -1,10 +1,9 @@
-
 <?php
 
 header("Content-Type: application/json; charset=utf-8");
 
-session_start();
-require_once __DIR__ . "/conexao.php";
+require_once __DIR__ . "/proteger.php";
+require_once __DIR__ . "/experiencia.php";
 
 function responder($dados, $codigo = 200) {
     http_response_code($codigo);
@@ -36,12 +35,14 @@ if ($_SERVER["REQUEST_METHOD"] !== "POST") {
 
 if (
     !isset($_SESSION["combate"]) ||
+    (int) ($_SESSION["combate"]["pescador_id"] ?? 0)
+        !== $pescadorId ||
     !($_SESSION["combate"]["ativo"] ?? false)
 ) {
     responder([
         "sucesso" => false,
-        "erro" => "Nenhum combate ativo."
-    ], 400);
+        "erro" => "Você não possui um combate ativo."
+    ], 403);
 }
 
 $entrada = json_decode(file_get_contents("php://input"), true);
@@ -178,23 +179,80 @@ try {
     }
 
     
-if ($inimigo["hp"] <= 0) {
+
+// Verificar o resultado da batalha.
+if ((int) $inimigo["hp"] <= 0) {
     $resultado = "vitoria";
-} elseif ($jogador["hp"] <= 0) {
+} elseif ((int) $jogador["hp"] <= 0) {
     $resultado = "derrota";
 } else {
     $resultado = "continuar";
 }
 
-// Experiência temporária por vitória
+// Experiência ganha neste turno.
 $expGanha = $resultado === "vitoria" ? 10 : 0;
 
-// Salvar HP e experiência no PostgreSQL
+$pdo->beginTransaction();
+
+// Bloquear o registro do Pescado enquanto salvamos.
+$stmt = $pdo->prepare("
+    SELECT nivel, COALESCE(exp, 0) AS exp
+    FROM public.pescador_pescado
+    WHERE pescador_id = :pescador_id
+      AND pescado_id = :pescado_id
+    FOR UPDATE
+");
+
+$stmt->execute([
+    "pescador_id" => $pescadorId,
+    "pescado_id" => (int) $jogador["id"]
+]);
+
+$progresso = $stmt->fetch();
+
+if (!$progresso) {
+    throw new Exception("Pescado não encontrado.");
+}
+
+// Calcular a experiência e o novo nível.
+$nivelAnterior = (int) $progresso["nivel"];
+
+$expTotal = (int) $progresso["exp"] + $expGanha;
+
+$nivelNovo = calcularNivel(
+    $nivelAnterior,
+    $expTotal
+);
+
+$niveisGanhos = $nivelNovo - $nivelAnterior;
+
+// Atualizar os atributos do Pescado na batalha.
+if ($niveisGanhos > 0) {
+
+    $jogador["nivel"] = $nivelNovo;
+
+    $jogador["hp_max"] += $niveisGanhos * 2;
+
+    $jogador["atk"] += $niveisGanhos;
+
+    $jogador["def"] += $niveisGanhos;
+
+    $jogador["spe"] += $niveisGanhos;
+
+    // Recuperar apenas o HP adicional do nível.
+    $jogador["hp"] = min(
+        (int) $jogador["hp_max"],
+        (int) $jogador["hp"] + $niveisGanhos * 2
+    );
+}
+
+// Salvar HP, nível e experiência.
 $sqlSalvar = "
     UPDATE public.pescador_pescado
     SET
         hp_atual = :hp,
-        exp = COALESCE(exp, 0) + :exp
+        nivel = :nivel,
+        exp = :exp
     WHERE pescador_id = :pescador_id
       AND pescado_id = :pescado_id
 ";
@@ -203,38 +261,47 @@ $stmtSalvar = $pdo->prepare($sqlSalvar);
 
 $stmtSalvar->execute([
     "hp" => (int) $jogador["hp"],
-    "exp" => $expGanha,
-    "pescador_id" => (int) $jogador["pescador_id"],
+    "nivel" => $nivelNovo,
+    "exp" => $expTotal,
+    "pescador_id" => $pescadorId,
     "pescado_id" => (int) $jogador["id"]
 ]);
 
 if ($stmtSalvar->rowCount() !== 1) {
-    throw new Exception(
-        "Não foi possível salvar o Pescado do jogador."
-    );
+    throw new Exception("Não foi possível salvar o progresso.");
 }
 
-// Finalizar a batalha depois de salvar
+// Confirmar as alterações no PostgreSQL.
+$pdo->commit();
+
+// Atualizar o estado do combate após salvar.
 if ($resultado !== "continuar") {
     $combate["ativo"] = false;
 }
 
 $combate["turno"]++;
 
+$_SESSION["combate"] = $combate;
 
-    responder([
-        "sucesso" => true,
-        "eventos" => $eventos,
-        "jogador" => $jogador,
-        "inimigo" => $inimigo,
-        "resultado" => $resultado,
-        "exp_ganha" => $expGanha,
-        "turno" => $combate["turno"]
-    ]);
+   responder([
+    "sucesso" => true,
+    "eventos" => $eventos,
+    "jogador" => $jogador,
+    "inimigo" => $inimigo,
+    "resultado" => $resultado,
+    "exp_ganha" => $expGanha,
+    "exp_total" => $expTotal,
+    "nivel_anterior" => $nivelAnterior,
+    "nivel_novo" => $nivelNovo,
+    "niveis_ganhos" => $niveisGanhos,
+    "turno" => $combate["turno"]
+]);
 
 } catch (Throwable $e) {
     error_log($e->getMessage());
-
+    if ($pdo->inTransaction()) {
+    $pdo->rollBack();
+    }
     responder([
         "sucesso" => false,
         "erro" => "Não foi possível executar o turno."

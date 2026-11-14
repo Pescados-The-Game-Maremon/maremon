@@ -1,38 +1,49 @@
-
 <?php
 
 header("Content-Type: application/json; charset=utf-8");
 
-session_start();
-
-require_once __DIR__ . "/conexao.php";
+require_once __DIR__ . "/proteger.php";
 
 try {
     // Buscar um Pescado do jogador para o combate
     // Temporário: utiliza o primeiro disponível
-    $sqlJogador = "
-        SELECT
-            pp.pescador_id,
-            p.id,
-            p.nome,
-            p.tipo,
-            pp.nivel,
-            COALESCE(pp.hp_atual, s.hp) AS hp,
-            s.hp AS hp_max,
-            s.atk,
-            s.def,
-            s.spe
-        FROM public.pescador_pescado pp
-        JOIN public.pescado p
-            ON p.id = pp.pescado_id
-        JOIN public.stats s
-            ON s.pescado_id = p.id
-        WHERE COALESCE(pp.hp_atual, s.hp) > 0
-        ORDER BY pp.pescador_id, p.id
-        LIMIT 1
-    ";
+   
+$sqlJogador = "
+    SELECT
+        pp.pescador_id,
+        p.id,
+        p.nome,
+        p.tipo,
+        pp.nivel,       
+    COALESCE(
+        pp.hp_atual,
+        s.hp + 2 * GREATEST(pp.nivel - 5, 0)
+    ) AS hp,
+    s.hp + 2 * GREATEST(pp.nivel - 5, 0) AS hp_max,
+    s.atk + GREATEST(pp.nivel - 5, 0) AS atk,
+    s.def + GREATEST(pp.nivel - 5, 0) AS def,
+    s.spe + GREATEST(pp.nivel - 5, 0) AS spe
 
-    $jogador = $pdo->query($sqlJogador)->fetch();
+    FROM public.pescador_pescado pp
+    JOIN public.pescado p
+        ON p.id = pp.pescado_id
+    JOIN public.stats s
+        ON s.pescado_id = p.id
+    WHERE pp.pescador_id = :pescador_id
+    AND pp.selecionado = TRUE
+     AND COALESCE(pp.hp_atual, s.hp) > 0
+    ORDER BY p.id
+    LIMIT 1
+";
+
+$stmtJogador = $pdo->prepare($sqlJogador);
+
+$stmtJogador->execute([
+    "pescador_id" => $pescadorId
+]);
+
+$jogador = $stmtJogador->fetch();
+
 
     if (!$jogador) {
         throw new Exception(
@@ -71,19 +82,29 @@ try {
 
     // Guardar o combate na sessão PHP
     $_SESSION["combate"] = [
-        "jogador" => $jogador,
-        "inimigo" => $inimigo,
-        "turno" => 1,
-        "ativo" => true
+    "pescador_id" => $pescadorId,
+    "jogador" => $jogador,
+    "inimigo" => $inimigo,
+    "turno" => 1,
+    "ativo" => true,
+    "captura_tentada" => false,
+    "csrf_captura" => bin2hex(random_bytes(32))
     ];
 
-    echo json_encode([
-        "sucesso" => true,
-        "jogador" => $jogador,
-        "inimigo" => $inimigo,
-        "turno" => 1,
-        "mensagem" => "Um Pescado selvagem apareceu!"
-    ], JSON_UNESCAPED_UNICODE);
+   
+echo json_encode([
+    "sucesso" => true,
+    "jogador" => $jogador,
+    "inimigo" => $inimigo,
+    "turno" => 1,
+    "mensagem" => "Um Pescado selvagem apareceu!",
+
+    // Informações necessárias para a captura
+    "csrf_captura" => $_SESSION["combate"]["csrf_captura"],
+    "captura_tentada" => false
+
+], JSON_UNESCAPED_UNICODE);
+
 
 } catch (Throwable $e) {
 
