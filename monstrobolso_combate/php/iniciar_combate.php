@@ -80,6 +80,52 @@ $jogador = $stmtJogador->fetch();
         );
     }
 
+
+
+// Encerrar um registro anterior caso o jogador
+// tenha iniciado outro encontro sem finalizar o primeiro.
+$pdo->beginTransaction();
+
+$stmt = $pdo->prepare("
+    UPDATE public.combates_log
+    SET resultado = 'interrompido',
+        finalizado_em = CURRENT_TIMESTAMP
+    WHERE pescador_id = :pescador_id
+      AND resultado = 'ativo'
+");
+
+$stmt->execute([
+    "pescador_id" => $pescadorId
+]);
+
+// Registrar o novo combate.
+$stmt = $pdo->prepare("
+    INSERT INTO public.combates_log (
+        pescador_id,
+        jogador_pescado_id,
+        inimigo_pescado_id
+    )
+    VALUES (
+        :pescador_id,
+        :jogador_id,
+        :inimigo_id
+    )
+    RETURNING id
+");
+
+
+$stmt->execute([
+    "pescador_id" => $pescadorId,
+    "jogador_id" => (int) $jogador["id"],
+    "inimigo_id" => (int) $inimigo["id"]
+]);
+
+$combateLogId = (int) $stmt->fetchColumn();
+
+$pdo->commit();
+
+
+
     // Guardar o combate na sessão PHP
     $_SESSION["combate"] = [
     "pescador_id" => $pescadorId,
@@ -88,6 +134,7 @@ $jogador = $stmtJogador->fetch();
     "turno" => 1,
     "ativo" => true,
     "captura_tentada" => false,
+    "log_id" => $combateLogId,
     "csrf_captura" => bin2hex(random_bytes(32))
     ];
 
@@ -106,6 +153,9 @@ echo json_encode([
 ], JSON_UNESCAPED_UNICODE);
 
 
+if ($pdo->inTransaction()) {
+    $pdo->rollBack();
+}
 } catch (Throwable $e) {
 
     error_log($e->getMessage());

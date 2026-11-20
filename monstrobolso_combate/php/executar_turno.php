@@ -4,6 +4,7 @@ header("Content-Type: application/json; charset=utf-8");
 
 require_once __DIR__ . "/proteger.php";
 require_once __DIR__ . "/experiencia.php";
+require_once __DIR__ . "/log_combate.php";
 
 function responder($dados, $codigo = 200) {
     http_response_code($codigo);
@@ -190,7 +191,8 @@ if ((int) $inimigo["hp"] <= 0) {
 }
 
 // Experiência ganha neste turno.
-$expGanha = $resultado === "vitoria" ? 10 : 0;
+$expGanha = $resultado === "vitoria" ? 35 : 0;
+$moedasGanhas = $resultado === "vitoria" ? 25 : 0;
 
 $pdo->beginTransaction();
 
@@ -271,6 +273,42 @@ if ($stmtSalvar->rowCount() !== 1) {
     throw new Exception("Não foi possível salvar o progresso.");
 }
 
+
+// Registrar o turno e o resultado do combate.
+$statusLog = $resultado === "continuar"
+    ? "ativo"
+    : $resultado;
+
+atualizarLogCombate(
+    $pdo,
+    (int) $combate["log_id"],
+    $pescadorId,
+    $statusLog,
+    (int) $combate["turno"],
+    $moedasGanhas
+);
+
+// Recompensar o jogador somente na vitória.
+if ($moedasGanhas > 0) {
+
+    $stmtDinheiro = $pdo->prepare("
+        UPDATE public.pescador
+        SET dinheiro = COALESCE(dinheiro, 0) + :moedas
+        WHERE id = :pescador_id
+    ");
+
+    $stmtDinheiro->execute([
+        "moedas" => $moedasGanhas,
+        "pescador_id" => $pescadorId
+    ]);
+
+    if ($stmtDinheiro->rowCount() !== 1) {
+        throw new Exception(
+            "Não foi possível salvar a recompensa."
+        );
+    }
+}
+
 // Confirmar as alterações no PostgreSQL.
 $pdo->commit();
 
@@ -289,12 +327,14 @@ $_SESSION["combate"] = $combate;
     "jogador" => $jogador,
     "inimigo" => $inimigo,
     "resultado" => $resultado,
+    "dinheiro_ganho" => $moedasGanhas,
     "exp_ganha" => $expGanha,
     "exp_total" => $expTotal,
     "nivel_anterior" => $nivelAnterior,
     "nivel_novo" => $nivelNovo,
     "niveis_ganhos" => $niveisGanhos,
     "turno" => $combate["turno"]
+    
 ]);
 
 } catch (Throwable $e) {

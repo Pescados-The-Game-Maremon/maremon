@@ -4,6 +4,7 @@
 header("Content-Type: application/json; charset=utf-8");
 
 require_once __DIR__ . "/proteger.php";
+require_once __DIR__ . "/log_combate.php";
 
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
     http_response_code(405);
@@ -31,9 +32,53 @@ if (
 }
 
 // Encerrar o combate na sessão PHP
-$_SESSION["combate"]["ativo"] = false;
 
-echo json_encode([
-    "sucesso" => true,
-    "mensagem" => "Você fugiu do combate."
-]);
+if (!($combate["ativo"] ?? false)) {
+    http_response_code(409);
+
+    echo json_encode([
+        "sucesso" => false,
+        "erro" => "Este combate já foi encerrado."
+    ]);
+
+    exit;
+}
+
+try {
+    $pdo->beginTransaction();
+
+    atualizarLogCombate(
+        $pdo,
+        (int) $combate["log_id"],
+        $pescadorId,
+        "fuga",
+        max(0, (int) $combate["turno"] - 1),
+        0
+    );
+
+    $pdo->commit();
+
+    // Encerrar a batalha somente após salvar.
+    $_SESSION["combate"]["ativo"] = false;
+
+    echo json_encode([
+        "sucesso" => true,
+        "mensagem" => "Você fugiu do combate."
+    ], JSON_UNESCAPED_UNICODE);
+
+} catch (Throwable $e) {
+
+    if ($pdo->inTransaction()) {
+        $pdo->rollBack();
+    }
+
+    error_log($e->getMessage());
+
+    http_response_code(500);
+
+    echo json_encode([
+        "sucesso" => false,
+        "erro" => "Não foi possível registrar a fuga."
+    ], JSON_UNESCAPED_UNICODE);
+}
+

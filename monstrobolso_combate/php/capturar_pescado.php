@@ -3,6 +3,7 @@
 header("Content-Type: application/json; charset=utf-8");
 
 require_once __DIR__ . "/proteger.php";
+require_once __DIR__ . "/log_combate.php";
 
 function responder($dados, $codigo = 200) {
     http_response_code($codigo);
@@ -222,6 +223,15 @@ try {
             "Não foi possível atualizar o HP."
         );
     }
+
+    atualizarLogCombate(
+    $pdo,
+    (int) $combate["log_id"],
+    $pescadorId,
+    "captura",
+    max(0, (int) $combate["turno"] - 1),
+    0
+);
 
     $pdo->commit();
 

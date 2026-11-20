@@ -170,6 +170,9 @@ async function executarAtaque(ataqueId) {
 if (dados.resultado === "vitoria") {
     mensagens.push("Você venceu o combate!");
 
+    mensagens.push(
+    `Você recebeu ${dados.dinheiro_ganho} moedas!`
+);
     // Mostrar a experiência recebida
     mensagens.push(
         `${dados.jogador.nome} ganhou ${dados.exp_ganha} EXP!`
