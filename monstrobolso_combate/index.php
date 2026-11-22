@@ -44,6 +44,7 @@ if ($possuiPescado === false || $possuiPescado === "f" || $possuiPescado === "0"
     <link rel="stylesheet" href="css/fundos.css">
     <link rel="stylesheet" href="css/buttons.css?v=2">
     <link rel="stylesheet" href="css/combate.css">
+    <link rel="stylesheet" href="css/loja.css">
 </head>
 <body>
 
@@ -53,6 +54,7 @@ if ($possuiPescado === false || $possuiPescado === "f" || $possuiPescado === "0"
 <section id="cena_casa">
     <button onclick="sairDaConta()">Sair da conta</button>
     <button onclick="window.location.href='equipe.php'">Minha equipe</button>
+    <button onclick="window.location.href='inventario.php'">Minha mochila</button>
     <button id=botao_varanda onclick="trocarfundo('varanda'); goTo('cena_varanda')"></button>
     <button id=botao_porta onclick="goTo('escolher_destino')"></button>
 </section>
@@ -149,15 +151,41 @@ if ($possuiPescado === false || $possuiPescado === "f" || $possuiPescado === "0"
 
 
 
+<section id="cena_loja">
+    <div class="loja_container">
+
+        <header class="loja_cabecalho">
+            <h1>Loja Maremon</h1>
+
+            <div class="loja_saldo">
+                <span>Suas moedas</span>
+                <strong id="saldo_loja">0</strong>
+            </div>
+        </header>
+
+        <p id="mensagem_loja"></p>
+
+        <div id="produtos_loja"></div>
+
+        <button
+            class="loja_voltar"
+            onclick="voltarDaLoja()">
+            Voltar
+        </button>
+
+    </div>
+</section>
+
+
+
 <section id="escolher_destino">
     <button class="botao_voltar" onclick="trocarfundo('casa_inicial'); goTo('cena_casa')">voltar</button>
-
 
     <div id="locais_viagem">
 
         <button class="local_viagem" onclick="trocarfundo('aqua_fora'); goTo('cena_aqua_fora')">Centro Maremon</button>
 
-        <button class="local_viagem">????????</button>
+       <button class="local_viagem" onclick="abrirLoja()">Loja Maremon</button>
 
         <button class="local_viagem">????????</button>
 
@@ -173,6 +201,7 @@ if ($possuiPescado === false || $possuiPescado === "f" || $possuiPescado === "0"
 <script src="js/monstros.js"></script>
 <script src="js/combate.js"></script>
 <script src="js/cura.js"></script>
+<script src="js/loja.js"></script>
 
 </body>
 </html>

@@ -1,0 +1,152 @@
+
+/* Fundo da loja */
+.fundo_loja {
+    background: linear-gradient(
+        145deg,
+        #102536,
+        #286070
+    );
+    background-size: cover;
+}
+
+/* Área principal */
+.loja_container {
+    position: relative;
+    width: min(90%, 850px);
+    max-height: 85%;
+    overflow-y: auto;
+
+    margin: 3% auto;
+    padding: 25px;
+
+    background: #18374b;
+    border: 3px solid #70c5c0;
+    border-radius: 16px;
+
+    color: white;
+    font-family: Arial, sans-serif;
+    box-sizing: border-box;
+}
+
+/* Cabeçalho */
+.loja_cabecalho {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.loja_cabecalho h1 {
+    margin: 0;
+}
+
+.loja_saldo {
+    background: #2b5364;
+    border-radius: 10px;
+    padding: 12px;
+    text-align: center;
+}
+
+.loja_saldo span {
+    display: block;
+    font-size: 12px;
+}
+
+#saldo_loja {
+    color: #ffd65c;
+    font-size: 24px;
+}
+
+/* Lista de itens */
+#produtos_loja {
+    display: grid;
+    grid-template-columns: repeat(
+        2,
+        minmax(0, 1fr)
+    );
+    gap: 15px;
+}
+
+.produto_loja {
+    background: #285066;
+    border: 2px solid #477d91;
+    border-radius: 12px;
+    padding: 15px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.produto_loja h3 {
+    margin: 0;
+}
+
+.produto_loja p {
+    margin: 0;
+    font-size: 14px;
+    color: #d0e0e6;
+}
+
+.preco_loja {
+    color: #ffd65c;
+    font-weight: bold;
+}
+
+/* Controles de compra */
+.controles_loja {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: auto;
+}
+
+.quantidade_loja {
+    width: 65px;
+    padding: 8px;
+    border-radius: 6px;
+    border: none;
+}
+
+.comprar_loja,
+.loja_voltar {
+    padding: 10px 15px;
+    background: #39977d;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.comprar_loja:hover,
+.loja_voltar:hover {
+    background: #4aae91;
+}
+
+.comprar_loja:disabled {
+    opacity: 0.5;
+    cursor: default;
+}
+
+.loja_voltar {
+    margin-top: 20px;
+}
+
+#mensagem_loja {
+    min-height: 20px;
+    color: #ffd65c;
+    font-weight: bold;
+}
+
+@media (max-width: 600px) {
+    #produtos_loja {
+        grid-template-columns: 1fr;
+    }
+
+    .loja_cabecalho {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}

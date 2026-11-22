@@ -27,7 +27,7 @@ if (!isset($_SESSION["pescador_id"])) {
     <div id="lista_equipe"></div>
 
     <p id="mensagem_equipe"></p>
-
+    <a href="inventario.php">Abrir mochila</a>
     <a href="index.php">Voltar ao jogo</a>
 
     <script src="js/equipe.js"></script>
