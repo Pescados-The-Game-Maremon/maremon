@@ -1,9 +1,11 @@
 <?php
 
 header("Content-Type: application/json; charset=utf-8");
+header("Cache-Control: no-store, private");
 
 require_once __DIR__ . "/proteger.php";
 require_once __DIR__ . "/log_combate.php";
+require_once __DIR__ . "/token_combate.php";
 
 function responder($dados, $codigo = 200) {
     http_response_code($codigo);
@@ -48,17 +50,12 @@ if (
     ], 403);
 }
 
-$tokenRecebido = $entrada["csrf_captura"] ?? null;
-$tokenEsperado = $combate["csrf_captura"] ?? null;
+exigirTokenCombate($combate, $entrada, "csrf_captura");
 
-if (
-    !is_string($tokenRecebido) ||
-    !is_string($tokenEsperado) ||
-    !hash_equals($tokenEsperado, $tokenRecebido)
-) {
+if (!empty($combate["boss_ordem"])) {
     responder([
         "sucesso" => false,
-        "erro" => "Solicitação não autorizada."
+        "erro" => "Chefes não podem ser capturados: derrote-o para liberar a próxima isca e o DNA."
     ], 403);
 }
 
@@ -176,6 +173,8 @@ try {
                 nivel,
                 exp,
                 hp_atual,
+                status,
+                status_turnos,
                 selecionado
             )
         VALUES
@@ -185,6 +184,8 @@ try {
                 :nivel,
                 0,
                 :hp_atual,
+                :status,
+                :status_turnos,
                 FALSE
             )
         ON CONFLICT (pescador_id, pescado_id)
@@ -195,7 +196,9 @@ try {
         "pescador_id" => $pescadorId,
         "pescado_id" => (int) $inimigo["id"],
         "nivel" => (int) $inimigo["nivel"],
-        "hp_atual" => $hpAtual
+        "hp_atual" => $hpAtual,
+        "status" => $inimigo["status"] ?? "normal",
+        "status_turnos" => (int)($inimigo["status_turnos"] ?? 0)
     ]);
 
     if ($stmt->rowCount() !== 1) {
@@ -207,13 +210,15 @@ try {
     // Confirmar o HP do Pescado que participou.
     $stmt = $pdo->prepare("
         UPDATE public.pescador_pescado
-        SET hp_atual = :hp
+        SET hp_atual = :hp, status = :status, status_turnos = :status_turnos
         WHERE pescador_id = :pescador_id
           AND pescado_id = :pescado_id
     ");
 
     $stmt->execute([
         "hp" => (int) $jogador["hp"],
+        "status" => $jogador["status"] ?? "normal",
+        "status_turnos" => (int)($jogador["status_turnos"] ?? 0),
         "pescador_id" => $pescadorId,
         "pescado_id" => (int) $jogador["id"]
     ]);

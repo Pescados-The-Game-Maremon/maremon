@@ -13,10 +13,10 @@
 }
 
 .fundo_combate {
-    background-image: url("../assets/fundo_combate.png");
-    background-size: cover;
+    background-image: url("../assets/fundo_combate.png?v=2");
     background-position: center;
     background-repeat: no-repeat;
+    background-size: cover;
 }
 
 .aqua_dentro {

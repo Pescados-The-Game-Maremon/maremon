@@ -131,7 +131,8 @@ try {
         nivel,
         exp,
         hp_atual,
-        selecionado
+        selecionado,
+        equipe_slot
     )
         VALUES
     (
@@ -140,7 +141,8 @@ try {
         :nivel,
         :exp,
         :hp_atual,
-        TRUE
+        TRUE,
+        1
     )
     ");
 

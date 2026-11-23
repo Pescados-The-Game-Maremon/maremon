@@ -112,7 +112,7 @@ try {
 
     // Buscar o preço verdadeiro no PostgreSQL.
     $stmt = $pdo->prepare("
-        SELECT id, nome, preco
+        SELECT id, nome, preco, efeito
         FROM public.loja_itens
         WHERE id = :item_id
     ");
@@ -130,6 +130,29 @@ try {
             "sucesso" => false,
             "erro" => "Item não encontrado."
         ], 404);
+    }
+
+    // A interface não basta: validar desbloqueio também ao comprar por POST.
+    if ($item["efeito"] === "dna_boss") {
+        $stmt = $pdo->prepare("
+            SELECT 1
+            FROM public.bosses b
+            JOIN public.boss_vitorias v
+              ON v.boss_ordem = b.ordem
+            WHERE b.dna_nome = :nome
+              AND v.pescador_id = :pescador
+        ");
+        $stmt->execute([
+            "nome" => $item["nome"],
+            "pescador" => $pescadorId
+        ]);
+        if (!$stmt->fetchColumn()) {
+            $pdo->rollBack();
+            responderCompra([
+                "sucesso" => false,
+                "erro" => "Derrote o chefe correspondente antes de comprar este DNA."
+            ], 403);
+        }
     }
 
     $preco = (int) $item["preco"];

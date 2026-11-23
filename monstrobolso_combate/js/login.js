@@ -1,18 +1,12 @@
-
 const formulario = document.getElementById("form_login");
 const mensagem = document.getElementById("mensagem");
-
 formulario.addEventListener("submit", async (evento) => {
     evento.preventDefault();
-
     const usuario = document.getElementById("usuario").value;
     const senha = document.getElementById("senha").value;
-
     const botao = formulario.querySelector("button");
-
     botao.disabled = true;
     mensagem.textContent = "Entrando...";
-
     try {
         const resposta = await fetch("php/login.php", {
             method: "POST",
@@ -25,23 +19,18 @@ formulario.addEventListener("submit", async (evento) => {
                 senha
             })
         });
-
         const dados = await resposta.json();
-
         if (!resposta.ok || !dados.sucesso) {
-            throw new Error(
-                dados.erro || "Não foi possível entrar."
-            );
+            throw new Error(dados.erro || "Não foi possível entrar.");
         }
-
         mensagem.textContent = dados.mensagem;
-
         // Entrar no jogo após autenticação
         window.location.href = "index.php";
-        
-    } catch (erro) {
+    }
+    catch (erro) {
         mensagem.textContent = erro.message;
-    } finally {
+    }
+    finally {
         botao.disabled = false;
     }
 });

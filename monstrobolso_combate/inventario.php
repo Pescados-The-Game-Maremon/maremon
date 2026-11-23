@@ -15,34 +15,40 @@ if (!isset($_SESSION["pescador_id"])) {
           content="width=device-width, initial-scale=1.0">
 
     <title>Inventário - Maremon</title>
-    <link rel="stylesheet" href="css/inventario.css">
+    <link rel="stylesheet"
+          href="css/maremon-ui.css?v=<?= filemtime(__DIR__ . '/css/maremon-ui.css') ?>">
+    <link rel="stylesheet"
+          href="css/inventario.css?v=<?= filemtime(__DIR__ . '/css/inventario.css') ?>">
 </head>
-<body>
+<body class="pagina_inventario maremon-page">
 
-<main class="inventario_container">
+<main class="maremon-main">
 
-    <header>
-        <h1>Minha Mochila</h1>
-        <p>Escolha um item e um Pescado para utilizá-lo.</p>
+    <header class="maremon-page-header">
+        <span class="maremon-eyebrow">MAREMON · ITENS E RECUPERAÇÃO</span>
+        <h1>Minha mochila</h1>
+        <p>Escolha um item e um Pescado para recuperar HP, remover condições ou evoluir.</p>
     </header>
 
-    <h2>Meus itens</h2>
+    <h2 class="maremon-section-title">Itens disponíveis</h2>
     <div id="lista_itens"></div>
 
-    <h2>Meus Pescados</h2>
+    <h2 class="maremon-section-title">Escolha um Pescado</h2>
     <div id="lista_pescados"></div>
 
-    <button id="botao_usar" disabled>
-        Usar item
+    <button id="botao_usar" class="maremon-botao-principal" disabled>
+        ✦ Usar item
     </button>
 
-    <p id="mensagem_inventario"></p>
+    <p id="mensagem_inventario" class="maremon-feedback" role="status" aria-live="polite"></p>
 
-    <a href="index.php">Voltar ao jogo</a>
+    <nav class="maremon-acoes-pagina" aria-label="Voltar da mochila">
+        <a href="equipe.php">Minha equipe</a>
+        <a href="index.php">Voltar ao jogo</a>
+    </nav>
 
 </main>
 
-<script src="js/inventario.js"></script>
-
+<script src="js/inventario.js?v=<?= filemtime(__DIR__ . '/js/inventario.js') ?>"></script>
 </body>
 </html>

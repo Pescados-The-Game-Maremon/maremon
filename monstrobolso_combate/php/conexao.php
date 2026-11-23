@@ -19,5 +19,10 @@ try {
 } catch (PDOException $e) {
     error_log($e->getMessage());
     http_response_code(500);
+    if (str_contains($_SERVER['SCRIPT_NAME'] ?? '', '/php/')) {
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode(['sucesso'=>false,'erro'=>'Erro ao conectar ao banco de dados.']);
+        exit;
+    }
     exit("Erro ao conectar ao banco de dados.");
 }

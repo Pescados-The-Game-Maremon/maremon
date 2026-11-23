@@ -1,66 +1,20 @@
 <?php
-
-header("Content-Type: application/json; charset=utf-8");
-
-require_once __DIR__ . "/proteger.php";
-
+header('Content-Type: application/json; charset=utf-8');
+require_once __DIR__.'/proteger.php';
+require_once __DIR__.'/../app/bootstrap.php';
+$combate=$_SESSION['combate']??null;
+if (!is_array($combate) || !($combate['ativo']??false) || (int)($combate['pescador_id']??0)!==$pescadorId) {
+    http_response_code(403); echo json_encode(['sucesso'=>false,'erro'=>'Combate inválido.']); exit;
+}
 try {
-
-    if (
-        !isset($_SESSION["combate"]) ||
-     (int) ($_SESSION["combate"]["pescador_id"] ?? 0)
-         !== $pescadorId ||
-     !($_SESSION["combate"]["ativo"] ?? false)
-    ) {
-     http_response_code(403);
-
-        echo json_encode([
-          "sucesso" => false,
-          "erro" => "Combate inválido para este jogador."
-     ]);
-
-        exit;
-    }   
-
-
-    if (!isset($_SESSION["combate"]["jogador"]["id"])) {
-        throw new Exception("Nenhum combate iniciado.");
+    $repo=new Maremon\Models\CombateRepository($pdo);
+    $ataques=$repo->ataques((int)$combate['jogador']['id'],(int)$combate['jogador']['nivel']);
+    foreach ($ataques as &$a) {
+        $a['pp_atual']=(int)($combate['pp_equipe'][(int)$combate['jogador']['id']][$a['id']]??$a['pp_max']);
     }
-
-    $pescadoId = $_SESSION["combate"]["jogador"]["id"];
-
-    $sql = "
-        SELECT
-            a.id,
-            a.nome,
-            a.tipo,
-            a.poder,
-            a.precisao
-        FROM public.pescado_ataques pa
-        JOIN public.ataques a
-            ON a.id = pa.ataque_id
-        WHERE pa.pescado_id = :pescado_id
-        ORDER BY a.id
-        LIMIT 4
-    ";
-
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute([
-        "pescado_id" => $pescadoId
-    ]);
-
-    echo json_encode([
-        "sucesso" => true,
-        "ataques" => $stmt->fetchAll()
-    ], JSON_UNESCAPED_UNICODE);
-
+    unset($a);
+    echo json_encode(['sucesso'=>true,'ataques'=>$ataques],JSON_UNESCAPED_UNICODE);
 } catch (Throwable $e) {
-    error_log($e->getMessage());
-
-    http_response_code(400);
-
-    echo json_encode([
-        "sucesso" => false,
-        "erro" => "Não foi possível buscar os ataques."
-    ]);
+    error_log((string)$e);http_response_code(500);
+    echo json_encode(['sucesso'=>false,'erro'=>'Erro ao carregar ataques.']);
 }

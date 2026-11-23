@@ -1,91 +1,77 @@
-
-* {
-    box-sizing: border-box;
-}
-
-body {
-    margin: 0;
-    min-height: 100vh;
-    padding: 24px;
-    background: linear-gradient(135deg, #102536, #286070);
-    font-family: Arial, sans-serif;
-    color: white;
-}
-
-.inventario_container {
-    max-width: 850px;
-    margin: 0 auto;
-    padding: 25px;
-    background: #19384c;
-    border: 3px solid #70c5c0;
-    border-radius: 16px;
-}
-
-.inventario_container h1 {
-    margin-top: 0;
-}
-
-#lista_itens,
-#lista_pescados {
+/* Mochila — mesma identidade visual dos comandos e painéis do combate. */
+.pagina_inventario #lista_itens,
+.pagina_inventario #lista_pescados {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 12px;
-    margin-bottom: 24px;
+    margin: 16px 0 28px;
 }
 
-.item_inventario,
-.pescado_inventario {
+.pagina_inventario .item_inventario,
+.pagina_inventario .pescado_inventario {
+    position: relative;
     width: 100%;
-    padding: 16px;
-    background: #295269;
-    color: white;
-    border: 2px solid #4e8192;
-    border-radius: 10px;
+    min-width: 0;
+    min-height: 74px;
+    padding: 18px 20px;
+    border: 3px solid #f2f6ff;
+    color: #f5f8ff;
+    background: linear-gradient(145deg, #122a73, #0b1730 55%, #091021);
+    box-shadow: 5px 5px 0 #06145b;
     text-align: left;
+    font: 900 clamp(12px, 1.12vw, 16px) "Trebuchet MS", Arial, sans-serif;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
     cursor: pointer;
+    transition: background-color .15s ease, translate .15s ease;
 }
 
-.item_inventario:hover,
-.pescado_inventario:hover {
-    background: #366981;
+.pagina_inventario .item_inventario::before,
+.pagina_inventario .pescado_inventario::before {
+    content: "◆";
+    margin-right: 12px;
+    color: #76a7ff;
 }
 
-.item_inventario.selecionado,
-.pescado_inventario.selecionado {
-    background: #246c60;
-    border-color: #8cf0bc;
+.pagina_inventario .item_inventario::after,
+.pagina_inventario .pescado_inventario::after {
+    content: "";
+    position: absolute;
+    right: -18px;
+    top: -22px;
+    width: 64px;
+    height: 37px;
+    background: #1748e5;
+    transform: rotate(-36deg);
+    pointer-events: none;
 }
 
-#botao_usar {
-    padding: 12px 24px;
-    background: #368c73;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-weight: bold;
-    cursor: pointer;
+.pagina_inventario .item_inventario:hover,
+.pagina_inventario .pescado_inventario:hover {
+    background: #142f73;
+    translate: 0 -2px;
 }
 
-#botao_usar:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
+.pagina_inventario .item_inventario.selecionado,
+.pagina_inventario .pescado_inventario.selecionado {
+    background: linear-gradient(145deg, #143e9c, #12356d);
+    border-color: #8cffe0;
+    box-shadow: 5px 5px 0 #0a7868;
 }
 
-#mensagem_inventario {
-    min-height: 24px;
-    color: #ffe08a;
-    font-weight: bold;
+.pagina_inventario .item_inventario.selecionado::before,
+.pagina_inventario .pescado_inventario.selecionado::before {
+    content: "✓";
+    color: #9cffe2;
 }
 
-.inventario_container a {
-    display: inline-block;
-    margin-top: 15px;
-    color: #a6ecdf;
+.pagina_inventario #botao_usar {
+    margin: 4px 0 0;
 }
 
-@media (max-width: 600px) {
-    #lista_itens,
-    #lista_pescados {
+@media (max-width: 700px) {
+    .pagina_inventario #lista_itens,
+    .pagina_inventario #lista_pescados {
         grid-template-columns: 1fr;
     }
 }

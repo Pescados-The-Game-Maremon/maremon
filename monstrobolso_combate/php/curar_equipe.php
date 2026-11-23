@@ -61,9 +61,9 @@ if (
 try {
     $stmt = $pdo->prepare("
         UPDATE public.pescador_pescado pp
-        SET hp_atual = GREATEST(
+        SET status='normal', status_turnos=0, hp_atual = GREATEST(
             1,
-            s.hp + 2 * GREATEST(pp.nivel - 5, 0)
+            s.hp + 2 * GREATEST(pp.nivel - 5, 0) + 10 * pp.estagio_evolucao
         )
         FROM public.stats s
         WHERE s.pescado_id = pp.pescado_id

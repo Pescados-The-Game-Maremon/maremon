@@ -2,6 +2,7 @@
 <?php
 
 header("Content-Type: application/json; charset=utf-8");
+header("Cache-Control: no-store, private");
 
 require_once __DIR__ . "/proteger.php";
 
@@ -36,7 +37,7 @@ try {
     }
 
     // Buscar todos os produtos da loja.
-    $stmt = $pdo->query("
+    $stmt = $pdo->prepare("
         SELECT
             id,
             nome,
@@ -45,11 +46,21 @@ try {
             preco,
             efeito,
             valor_efeito
-        FROM public.loja_itens
-        ORDER BY id
+        FROM public.loja_itens AS i
+        WHERE i.efeito <> 'dna_boss'
+           OR EXISTS (
+                SELECT 1
+                FROM public.bosses AS b
+                JOIN public.boss_vitorias AS v
+                  ON v.boss_ordem = b.ordem
+                WHERE b.dna_nome = i.nome
+                  AND v.pescador_id = :pescador_id
+           )
+        ORDER BY i.id
     ");
 
-    $itens = $stmt->fetchAll();
+    $stmt->execute(["pescador_id" => $pescadorId]);
+    $itens = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     // Criar token para proteger as compras.
     if (empty($_SESSION["csrf_loja"])) {
