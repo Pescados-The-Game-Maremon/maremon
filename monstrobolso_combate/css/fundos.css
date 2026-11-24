@@ -1,0 +1,34 @@
+.casa_inicial {
+    background-image: url("../assets/casa_inicial.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.varanda {
+    background-image: url("../assets/varanda.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.fundo_combate {
+    background-image: url("../assets/fundo_combate.png?v=2");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.aqua_dentro {
+    background-image: url("../assets/Aqua_dentro.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.aqua_fora {
+    background-image: url("../assets/Aqua_fora.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}

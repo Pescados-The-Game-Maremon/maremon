@@ -1,0 +1,134 @@
+/* Centro de Cura: visual do mesmo universo da HUD do combate. */
+#tela_jogo.aqua_dentro {
+    display: grid;
+    place-items: center;
+}
+
+#tela_jogo .centro_cura {
+    --cor-contorno: #f5f7ff;
+    position: absolute;
+    z-index: 2;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: min(590px, 88vw);
+    max-height: 85vh;
+    overflow-y: auto;
+    padding: clamp(24px, 4vw, 46px);
+    border: 5px solid var(--cor-contorno);
+    background: linear-gradient(155deg, #142e8b 0%, #071328 40%, #090f24 100%);
+    box-shadow: 8px 9px 0 #082bd9, 14px 15px 0 #030b31, 0 25px 65px #021124a8;
+    clip-path: polygon(5% 0, 100% 0, 96% 94%, 9% 100%, 0 92%);
+    color: #ffffff;
+    font-family: "Trebuchet MS", Arial, sans-serif;
+    text-align: center;
+}
+
+#tela_jogo .centro_cura_emblema {
+    display: inline-grid;
+    width: 64px;
+    height: 64px;
+    place-items: center;
+    border: 3px solid white;
+    border-radius: 50%;
+    background: #1855e5;
+    color: #e9fdfc;
+    font-size: 43px;
+    box-shadow: 0 0 0 6px #052172;
+}
+
+#tela_jogo .centro_cura_sobretitulo {
+    display: block;
+    margin-top: 20px;
+    color: #88caff;
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: .12em;
+}
+
+#tela_jogo .centro_cura h2 {
+    margin: 8px 0 12px;
+    font-size: clamp(26px, 4vw, 43px);
+    font-style: italic;
+    text-transform: uppercase;
+    text-shadow: 3px 4px 0 #000;
+}
+
+#tela_jogo .centro_cura p {
+    max-width: 430px;
+    margin: 0 auto 22px;
+    line-height: 1.55;
+    color: #d7e7ff;
+    font-size: clamp(13px, 1.5vw, 16px);
+}
+
+#tela_jogo .centro_cura_acoes {
+    display: flex;
+    gap: 12px;
+    align-items: stretch;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+#tela_jogo .centro_cura_acoes button {
+    min-height: 49px;
+    border: 3px solid #f5f7ff;
+    padding: 12px 22px;
+    color: white;
+    font: 900 14px "Trebuchet MS", Arial, sans-serif;
+    text-transform: uppercase;
+    transform: skewX(-9deg);
+    cursor: pointer;
+    box-shadow: 3px 4px 0 #020918;
+    transition: filter .15s ease, translate .15s ease;
+}
+
+#tela_jogo .centro_cura_acoes button:hover:not(:disabled) {
+    filter: brightness(1.22);
+    translate: 0 -2px;
+}
+
+#tela_jogo .centro_cura_acoes button:disabled {
+    opacity: .55;
+    cursor: wait;
+}
+
+#tela_jogo .centro_cura_confirmar {
+    background: #144ade;
+}
+
+#tela_jogo .centro_cura_voltar {
+    background: #132137;
+}
+
+#tela_jogo #mensagem_cura {
+    min-height: 25px;
+    margin: 20px auto 8px;
+    color: #c3fbdf;
+    font-weight: 900;
+}
+
+#tela_jogo .centro_cura_rodape {
+    display: block;
+    color: #6999e5;
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: .1em;
+}
+
+#tela_jogo .centro_cura.cura_concluida .centro_cura_emblema {
+    animation: brilhoCura .6s ease-out;
+}
+
+@keyframes brilhoCura {
+    50% { box-shadow: 0 0 0 12px #65eac87c, 0 0 22px #75fff3; }
+}
+
+@media (max-width: 600px) {
+    #tela_jogo .centro_cura { width: 94%; padding: 24px 16px; }
+    #tela_jogo .centro_cura_acoes { flex-direction: column; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #tela_jogo .centro_cura * { animation: none !important; }
+}
