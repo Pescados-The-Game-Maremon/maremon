@@ -61,3 +61,12 @@
     #lista_iscas .isca_opcao { min-height: 40px; padding: 7px; }
     #interface_combate .faixa_boss { top: 0; font-size: 11px; padding: 5px; }
 }
+#aviso_pesca {
+    position: absolute;
+    left: 3%; bottom: 7%; z-index: 25;
+    max-width: min(62%, 520px); padding: 14px 18px;
+    border: 2px solid #b8d7ff; border-radius: 10px;
+    background: #091c37ed; color: #fff;
+    font: 700 15px/1.5 "Trebuchet MS", Arial, sans-serif;
+    box-shadow: 0 8px 20px #0007;
+}

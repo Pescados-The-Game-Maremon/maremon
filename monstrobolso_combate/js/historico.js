@@ -8,14 +8,14 @@
         aviso.textContent = dados.batalhas.length + ' batalhas registradas.';
         const lista = document.getElementById('lista_equipe');
         for (const b of dados.batalhas) {
-            const card = document.createElement('article');
+            const card = elementoHTML("<article></article>");
             card.className = 'card_equipe';
-            const texto = document.createElement('div');
-            const titulo = document.createElement('h3');
+            const texto = elementoHTML("<div></div>");
+            const titulo = elementoHTML("<h3></h3>");
             titulo.textContent = `#${b.id} · ${b.resultado}`;
-            const desc = document.createElement('p');
+            const desc = elementoHTML("<p></p>");
             desc.textContent = `${b.pescado_jogador} vs ${b.pescado_inimigo} · ${b.turnos} turnos · ${b.dinheiro_ganho} moedas`;
-            const hora = document.createElement('p');
+            const hora = elementoHTML("<p></p>");
             hora.textContent = b.iniciado_em || '';
             texto.append(titulo, desc, hora);
             card.appendChild(texto);

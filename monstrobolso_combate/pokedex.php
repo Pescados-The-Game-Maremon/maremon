@@ -9,4 +9,5 @@ if (empty($_SESSION['pescador_id'])) {header('Location: login.html');exit;}
 <img style="max-width:280px;width:100%;height:auto" src="assets/tabela_tipos.png" alt="Relação de vantagens entre tipos">
 <p id="aviso_pokedex">Carregando catálogo...</p><div id="lista_equipe"></div>
 <p><a href="index.php">Voltar ao jogo</a></p></main>
-<script src="js/monstros.js"></script><script src="js/pokedex.js"></script></body></html>
+<script src="js/elementos.js?v=<?= filemtime(__DIR__ . '/js/elementos.js') ?>"></script>
+<script src="js/monstros.js?v=<?= filemtime(__DIR__ . '/js/monstros.js') ?>"></script><script src="js/pokedex.js?v=<?= filemtime(__DIR__ . '/js/pokedex.js') ?>"></script></body></html>

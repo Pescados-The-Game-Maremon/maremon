@@ -9,7 +9,8 @@ document.addEventListener("DOMContentLoaded", function () {
     goTo("cena_casa");
 });
 function goTo(cena) {
-    document.getElementById("tela_jogo").innerHTML = document.getElementById(cena).innerHTML;
+    const modelo = document.getElementById(cena);
+    if (modelo?.content) document.getElementById("tela_jogo").replaceChildren(modelo.content.cloneNode(true));
 }
 async function sairDaConta() {
     try {

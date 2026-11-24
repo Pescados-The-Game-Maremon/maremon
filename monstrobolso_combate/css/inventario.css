@@ -75,3 +75,7 @@
         grid-template-columns: 1fr;
     }
 }
+
+#painel_evolucao { margin: 1rem 0; padding: 1rem; border: 1px solid #356c91; border-radius: .65rem; }
+#painel_evolucao[hidden] { display: none; }
+#escolher_evolucao { display: block; width: 100%; margin: .5rem 0; padding: .65rem; border-radius: .4rem; background: #102737; color: #fff; border: 1px solid #356c91; }
