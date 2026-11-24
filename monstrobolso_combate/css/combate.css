@@ -40,7 +40,7 @@
     );
 }
 
-/* Sprites. O jogador continua espelhado e o inimigo ampliado. */
+/* Sprites. O jogador continua espelhado; o tamanho depende da espécie. */
 #interface_combate .sprite_pescado {
     position: absolute;
     z-index: 2;
@@ -54,10 +54,9 @@
 }
 
 #sprite_inimigo {
-    --escala-inimigo: 2;
     top: 15%;
     right: 14%;
-    transform: scale(var(--escala-inimigo));
+    transform: none;
     transform-origin: center;
 }
 
@@ -312,7 +311,7 @@
     clip-path: polygon(3% 7%, 100% 0, 96% 94%, 6% 100%, 0 84%);
 }
 
-#interface_combate .dialogo_titulo,
+#interface_combate #botao_capturar,
 #interface_combate #mensagem_combate,
 #interface_combate #painel_equipe_combate,
 #interface_combate .atalhos_combate {
@@ -645,9 +644,9 @@
 }
 
 @keyframes maremon_avanco_inimigo {
-    0%, 100% { transform: translate(0, 0) scale(var(--escala-inimigo)); }
-    38% { transform: translate(-45px, 12px) scale(var(--escala-inimigo)) rotate(-3deg); }
-    65% { transform: translate(-28px, 8px) scale(var(--escala-inimigo)); }
+    0%, 100% { transform: translate(0, 0); }
+    38% { transform: translate(-45px, 12px) rotate(-3deg); }
+    65% { transform: translate(-28px, 8px); }
 }
 
 @keyframes maremon_impacto_jogador {
@@ -657,9 +656,9 @@
 }
 
 @keyframes maremon_impacto_inimigo {
-    0%, 100% { transform: scale(var(--escala-inimigo)); filter: drop-shadow(0 13px 7px rgba(3,12,36,.5)); }
-    33% { transform: translateX(10px) scale(var(--escala-inimigo)); filter: brightness(2.2) drop-shadow(0 0 18px #b6faff); }
-    66% { transform: translateX(-6px) scale(var(--escala-inimigo)); }
+    0%, 100% { transform: none; filter: drop-shadow(0 13px 7px rgba(3,12,36,.5)); }
+    33% { transform: translateX(10px); filter: brightness(2.2) drop-shadow(0 0 18px #b6faff); }
+    66% { transform: translateX(-6px); }
 }
 
 #interface_combate .flash_golpe {
@@ -716,7 +715,7 @@
     #interface_combate .marca_maremon { font-size: 42px; width: 45px; height: 45px; }
     #interface_combate .painel_vida p { bottom: -11px; font-size: 9px; }
     #interface_combate .sprite_pescado { width: 26vw; height: 19vh; }
-    #sprite_inimigo { --escala-inimigo: 1.25; top: 23%; right: 14%; transform: scale(var(--escala-inimigo)); }
+    #sprite_inimigo { top: 23%; right: 14%; }
     #sprite_jogador { left: 10%; bottom: 49%; }
 
     #interface_combate #menu_combate {
@@ -776,4 +775,138 @@
     #interface_combate .sprite_pescado {
         height: 24vh;
     }
+}
+
+/* A escala altera as dimensões, não o transform das animações.
+   Limites responsivos evitam sprites gigantes fora da arena.
+   Âncoras da arena: centros dos dois círculos da água (21%, 52%) e (81%, 47%).
+   PNG quadrado com 5% de margem inferior; compensamos a margem no bottom. */
+#tela_jogo.fundo_combate { background-size: 100% 100%; }
+#interface_combate {
+    --tamanho-jogador: min(30vw, 34vh, 330px);
+    --tamanho-inimigo: min(28vw, 31vh, 300px);
+    --apoio-jogador: 48%;
+    --apoio-inimigo: 53%;
+}
+#interface_combate .sprite_pescado {
+    object-fit: contain;
+    object-position: center bottom;
+    image-rendering: auto;
+    transform-origin: center bottom;
+}
+#interface_combate #sprite_jogador {
+    --tamanho-sprite: min(calc(var(--tamanho-jogador) * var(--escala-combate, 1)), 40vw, 49vh);
+    width: var(--tamanho-sprite); height: var(--tamanho-sprite);
+    left: calc(21% - var(--tamanho-sprite) / 2);
+    bottom: calc(var(--apoio-jogador) - var(--tamanho-sprite) * .05078125);
+    top: auto; right: auto;
+}
+#interface_combate #sprite_inimigo {
+    --tamanho-sprite: min(calc(var(--tamanho-inimigo) * var(--escala-combate, 1)), 36vw, 45vh);
+    width: var(--tamanho-sprite); height: var(--tamanho-sprite);
+    left: calc(81% - var(--tamanho-sprite) / 2);
+    bottom: calc(var(--apoio-inimigo) - var(--tamanho-sprite) * .05078125);
+    top: auto; right: auto;
+}
+#interface_combate .flash_golpe_alvo_jogador { left: 21%; bottom: 53%; }
+#interface_combate .flash_golpe_alvo_inimigo { right: 19%; top: 38%; }
+
+
+/* Ajustes da versão 2026-11-24: log simplificado, botão de captura em ícone e HUD mais limpa. */
+#interface_combate .tag_tipo,
+#interface_combate .dialogo_titulo,
+#interface_combate #painel_equipe_combate,
+#interface_combate .atalhos_combate,
+#interface_combate #botao_tipos {
+    display: none !important;
+}
+
+/* O botão é irmão do quadro recortado, nunca filho dele. */
+#interface_combate #registro_combate {
+    position: relative;
+    min-width: 0;
+    min-height: 0;
+    overflow: visible;
+}
+
+#interface_combate #caixa_dialogo_combate {
+    height: 100%;
+    min-height: 0;
+    padding: 0;
+    display: flex;
+    align-items: stretch;
+}
+
+#interface_combate #botao_capturar {
+    position: absolute;
+    bottom: calc(100% + 10px);
+    left: 1.5%;
+    z-index: 6;
+    width: clamp(44px, 4.3vw, 68px);
+    height: clamp(44px, 4.3vw, 68px);
+    padding: 8px;
+    border: 3px solid #f5f8ff;
+    border-radius: 15px;
+    background: linear-gradient(160deg, #1038e1 0%, #0a1753 80%);
+    box-shadow: 0 4px 0 #020613, inset 0 0 0 2px rgba(255,255,255,.12);
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+}
+
+#interface_combate #botao_capturar:hover:not(:disabled) {
+    filter: brightness(1.15);
+}
+
+#interface_combate #botao_capturar img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    object-fit: contain;
+    filter: brightness(0) invert(1);
+    pointer-events: none;
+}
+
+#interface_combate #mensagem_combate {
+    margin: clamp(15px, 3vh, 30px) 8% 18px;
+    padding: 0;
+    min-height: 0;
+    max-height: none;
+    flex: 1;
+    overflow-y: auto;
+    overflow-wrap: anywhere;
+    font-size: clamp(13px, 1.25vw, 18px);
+    line-height: 1.5;
+    font-weight: 700;
+}
+
+#interface_combate #painel_jogador {
+    bottom: 25.8%;
+}
+
+#interface_combate #sprite_jogador {
+    --tamanho-sprite: min(calc(var(--tamanho-jogador) * var(--escala-combate, 1)), 38vw, 46vh);
+}
+
+#interface_combate #sprite_inimigo {
+    --tamanho-sprite: min(calc(var(--tamanho-inimigo) * var(--escala-combate, 1)), 34vw, 42vh);
+}
+
+@media (max-width: 700px) {
+    #interface_combate #registro_combate { flex: 1 1 42%; }
+    #interface_combate #botao_capturar {
+        bottom: calc(100% + 7px);
+        left: 2%;
+        border-radius: 12px;
+        padding: 6px;
+    }
+    #interface_combate #mensagem_combate {
+        margin: 16px 8% 12px;
+        font-size: 12px;
+    }
+    #interface_combate #painel_jogador { bottom: 46%; }
+}
+@media (max-height: 640px) and (min-width: 701px) {
+    #interface_combate #painel_jogador { bottom: 34%; }
 }

@@ -8,7 +8,6 @@ final class ItemService {
         $hpMax=max(1,(int)$alvo['hp_max']);
         $hp=max(0,min($hpMax,(int)($alvo['hp']??$alvo['hp_atual']??$hpMax)));
         $status=(string)($alvo['status']??'normal');
-        $estagio=(int)($alvo['estagio_evolucao']??0);
         $novo=$alvo;
         $novo['hp']=$hp;
         $novo['hp_max']=$hpMax;
@@ -28,13 +27,8 @@ final class ItemService {
             $mapa=['curar_veneno'=>'envenenado','curar_queimadura'=>'queimado','curar_congelamento'=>'congelado','curar_sono'=>'dormindo','curar_paralisia'=>'paralisado'];
             if ($status==='normal' || ($efeito!=='curar_status' && $status!==$mapa[$efeito])) throw new JogoException('O Pescado não possui essa condição.');
             $novo['status']='normal'; $novo['status_turnos']=0;
-        } elseif ($efeito==='evoluir') {
-            if ($emCombate) throw new JogoException('Evolua os Pescados fora do combate.');
-            if ($estagio>=2) throw new JogoException('Este Pescado já está no estágio máximo.');
-            $novo['estagio_evolucao']=$estagio+1;
-            $novo['hp_max']=$hpMax+10;
-            $novo['hp']=min($novo['hp_max'],$hp+10);
-            foreach (['atk','def','spe'] as $campo) if (isset($novo[$campo])) $novo[$campo]+=3;
+        } elseif (in_array($efeito,['evoluir','dna_boss'],true)) {
+            throw new JogoException('Evolua pela mochila, fora do combate, escolhendo uma espécie compatível.');
         } else {
             throw new JogoException('O efeito deste item ainda não foi implementado.');
         }

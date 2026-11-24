@@ -36,6 +36,13 @@ if (!isset($_SESSION["pescador_id"])) {
     <h2 class="maremon-section-title">Escolha um Pescado</h2>
     <div id="lista_pescados"></div>
 
+    <section id="painel_evolucao" hidden>
+        <h2 class="maremon-section-title">Evolução disponível</h2>
+        <label for="escolher_evolucao">Nova espécie:</label>
+        <select id="escolher_evolucao" aria-label="Escolher evolução"></select>
+        <p id="detalhe_evolucao" aria-live="polite"></p>
+    </section>
+
     <button id="botao_usar" class="maremon-botao-principal" disabled>
         ✦ Usar item
     </button>
@@ -49,6 +56,7 @@ if (!isset($_SESSION["pescador_id"])) {
 
 </main>
 
+<script src="js/elementos.js?v=<?= filemtime(__DIR__ . '/js/elementos.js') ?>"></script>
 <script src="js/inventario.js?v=<?= filemtime(__DIR__ . '/js/inventario.js') ?>"></script>
 </body>
 </html>

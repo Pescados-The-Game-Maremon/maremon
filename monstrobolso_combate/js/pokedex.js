@@ -9,17 +9,18 @@
         aviso.textContent = `${dados.pescados.length} espécies cadastradas.`;
         const lista = document.getElementById('lista_equipe');
         for (const p of dados.pescados) {
-            const card = document.createElement('article');
+            const card = elementoHTML("<article></article>");
             card.className = 'card_equipe';
-            const imagem = document.createElement('img');
+            const imagem = elementoHTML("<img>");
             imagem.alt = p.nome;
-            imagem.src = spritesPescados[p.nome] || 'assets/inicial.png';
-            const texto = document.createElement('div');
-            const titulo = document.createElement('h3');
+            imagem.onerror = () => { imagem.onerror = null; imagem.src = 'assets/pescados/sem_sprite.svg'; };
+            imagem.src = caminhoSprite(p);
+            const texto = elementoHTML("<div></div>");
+            const titulo = elementoHTML("<h3></h3>");
             titulo.textContent = `${p.nome} — ${p.tipo}`;
-            const desc = document.createElement('p');
+            const desc = elementoHTML("<p></p>");
             desc.textContent = p.descricao || 'Pescado do Maremon';
-            const stats = document.createElement('p');
+            const stats = elementoHTML("<p></p>");
             stats.textContent = `HP ${p.hp} · ATK ${p.atk} · DEF ${p.def} · VEL ${p.spe}`;
             texto.append(titulo, desc, stats);
             card.append(imagem, texto);

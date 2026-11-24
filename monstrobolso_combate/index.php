@@ -75,7 +75,7 @@ if (
 
     <div id="tela_jogo" class="casa_inicial"></div>
 
-    <section id="cena_casa">
+    <template id="cena_casa">
         <button type="button" onclick="sairDaConta()">
             Sair da conta
         </button>
@@ -94,9 +94,9 @@ if (
         <button type="button" id="botao_porta"
                 aria-label="Escolher destino"
                 onclick="goTo('escolher_destino')"></button>
-    </section>
+    </template>
 
-    <section id="cena_varanda">
+    <template id="cena_varanda">
         <button type="button" class="botao_voltar"
                 onclick="trocarfundo('casa_inicial'); goTo('cena_casa')">
             Voltar
@@ -105,15 +105,16 @@ if (
                 aria-label="Procurar Pescado selvagem"
                 onclick="abrirCombate()"></button>
 
+        <div id="aviso_pesca" role="status" aria-live="polite" hidden></div>
         <aside id="painel_iscas" aria-label="Escolha da isca">
             <h2>ISCAS DE CHEFE</h2>
             <p>Escolha uma isca antes de pescar. Chance de chefe: 5%.</p>
             <div id="lista_iscas"></div>
             <p id="mensagem_iscas" role="status" aria-live="polite"></p>
         </aside>
-    </section>
+    </template>
 
-    <section id="cena_combate">
+    <template id="cena_combate">
         <div id="interface_combate">
             <div id="aviso_boss" class="faixa_boss" hidden>BOSS · DRK · HP ×5</div>
             <img id="sprite_inimigo"
@@ -133,7 +134,6 @@ if (
                 <div class="painel_conteudo">
                     <div class="painel_identidade">
                         <h3 id="nome_inimigo">Inimigo</h3>
-                        <span id="tipo_inimigo" class="tag_tipo"></span>
                         <span class="nivel_pescado">Nv. <span id="nivel_inimigo">—</span></span>
                     </div>
                     <div class="painel_vida">
@@ -156,7 +156,6 @@ if (
                 <div class="painel_conteudo">
                     <div class="painel_identidade">
                         <h3 id="nome_jogador">Maremon</h3>
-                        <span id="tipo_jogador" class="tag_tipo"></span>
                         <span class="nivel_pescado">Nv. <span id="nivel_jogador">—</span></span>
                     </div>
                     <div class="painel_vida">
@@ -171,25 +170,17 @@ if (
             </div>
 
             <div id="menu_combate">
-                <div id="caixa_dialogo_combate">
-                    <div class="dialogo_titulo">REGISTRO DE BATALHA <span>◆</span></div>
-                    <p id="mensagem_combate" role="status" aria-live="polite">
-                        Preparando combate...
-                    </p>
-
-                    <div id="painel_equipe_combate" aria-label="Equipe na batalha"></div>
-
-                    <div class="atalhos_combate">
-                        <button type="button" id="botao_capturar"
-                                onclick="capturarPescado()">
-                            <span aria-hidden="true">◇</span> Capturar
-                        </button>
-                        <button type="button" id="botao_tipos"
-                                aria-controls="painel_tipos"
-                                aria-expanded="false"
-                                onclick="mostrarTipos()">
-                            <span aria-hidden="true">↗</span> Tipos
-                        </button>
+                <div id="registro_combate">
+                    <button type="button" id="botao_capturar"
+                            aria-label="Capturar Pescado"
+                            title="Capturar Pescado"
+                            onclick="capturarPescado()">
+                        <img src="assets/ui/captura.png" alt="" aria-hidden="true">
+                    </button>
+                    <div id="caixa_dialogo_combate">
+                        <p id="mensagem_combate" role="status" aria-live="polite">
+                            Preparando combate...
+                        </p>
                     </div>
                 </div>
 
@@ -296,9 +287,9 @@ if (
                 </div>
             </div>
         </div>
-    </section>
+    </template>
 
-    <section id="cena_aqua_fora">
+    <template id="cena_aqua_fora">
         <button type="button" class="botao_voltar"
                 onclick="trocarfundo('casa_inicial'); goTo('cena_casa')">
             Voltar
@@ -306,9 +297,9 @@ if (
         <button type="button" id="botao_entrar_centro"
                 aria-label="Entrar no Centro Maremon"
                 onclick="trocarfundo('aqua_dentro'); goTo('cena_aqua_dentro')"></button>
-    </section>
+    </template>
 
-    <section id="cena_aqua_dentro">
+    <template id="cena_aqua_dentro">
         <div class="centro_cura">
             <div class="centro_cura_emblema" aria-hidden="true">✦</div>
             <span class="centro_cura_sobretitulo">MAREMON · CENTRO DE RECUPERAÇÃO</span>
@@ -326,9 +317,9 @@ if (
             <p id="mensagem_cura" role="status" aria-live="polite"></p>
             <span class="centro_cura_rodape">◆ SUA EQUIPE MERECE DESCANSAR ◆</span>
         </div>
-    </section>
+    </template>
 
-    <section id="cena_loja">
+    <template id="cena_loja">
         <div class="loja_container">
             <header class="loja_cabecalho">
                 <h1>Loja Maremon</h1>
@@ -345,9 +336,9 @@ if (
                 Voltar
             </button>
         </div>
-    </section>
+    </template>
 
-    <section id="escolher_destino">
+    <template id="escolher_destino">
         <button type="button" class="botao_voltar"
                 onclick="trocarfundo('casa_inicial'); goTo('cena_casa')">
             Voltar
@@ -367,10 +358,11 @@ if (
             </button>
             <button type="button" class="local_viagem">????????</button>
         </div>
-    </section>
+    </template>
 
-    <script src="js/game.js?v=20261122-3"></script>
-    <script src="js/monstros.js?v=20261122-preload1"></script>
+<script src="js/elementos.js?v=<?= filemtime(__DIR__ . '/js/elementos.js') ?>"></script>
+    <script src="js/game.js?v=<?= filemtime(__DIR__ . '/js/game.js') ?>"></script>
+    <script src="js/monstros.js?v=<?= filemtime(__DIR__ . '/js/monstros.js') ?>"></script>
     <script src="js/combate.js?v=<?= filemtime(__DIR__ . '/js/combate.js') ?>"></script>
     <script src="js/cura.js?v=<?= filemtime(__DIR__ . '/js/cura.js') ?>"></script>
     <script src="js/loja.js?v=<?= filemtime(__DIR__ . '/js/loja.js') ?>"></script>

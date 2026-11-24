@@ -115,7 +115,7 @@ try {
             pp.status_turnos,
             pp.estagio_evolucao,
             s.hp + 2 * GREATEST(pp.nivel - 5, 0)
-                + 10 * pp.estagio_evolucao AS hp_max
+                + 10 * pp.bonus_evolucao_legado AS hp_max
         FROM public.pescador_pescado pp
         JOIN public.stats s ON s.pescado_id = pp.pescado_id
         WHERE pp.pescador_id = :id
@@ -232,7 +232,9 @@ try {
     $resultado = EquipeCombate::resultado($combate);
 
     // Vitória por veneno ou queimadura também concede a recompensa normal.
-    $expGanha = $resultado === "vitoria" ? 35 : 0;
+    $expGanha = $resultado === "vitoria"
+        ? (!empty($combate["boss_ordem"]) ? 2500 : 100)
+        : 0;
     $moedasGanhas = $resultado === "vitoria" ? 25 : 0;
 
     if ($expGanha > 0) {

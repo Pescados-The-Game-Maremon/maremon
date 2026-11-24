@@ -28,7 +28,7 @@ async function carregarIscas() {
 
         tokenIsca = dados.csrf_token;
         for (const isca of dados.iscas) {
-            const botao = document.createElement("button");
+            const botao = elementoHTML("<button></button>");
             botao.type = "button";
             botao.className = "isca_opcao";
             botao.disabled = !isca.liberado;
@@ -36,9 +36,9 @@ async function carregarIscas() {
                 botao.classList.add("isca_selecionada");
             }
 
-            const rotulo = document.createElement("strong");
+            const rotulo = elementoHTML("<strong></strong>");
             rotulo.textContent = `${isca.ordem}. ${isca.isca}`;
-            const detalhe = document.createElement("span");
+            const detalhe = elementoHTML("<span></span>");
             detalhe.textContent = !isca.liberado
                 ? "🔒 Derrote o chefe anterior"
                 : isca.derrotado

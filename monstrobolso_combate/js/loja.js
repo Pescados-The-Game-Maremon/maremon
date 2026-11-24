@@ -48,18 +48,18 @@ function mostrarProdutos(itens, saldoAtual) {
         return;
     lista.innerHTML = "";
     itens.forEach(item => {
-        const card = document.createElement("div");
+        const card = elementoHTML("<div></div>");
         card.className = "produto_loja";
-        const nome = document.createElement("h3");
+        const nome = elementoHTML("<h3></h3>");
         nome.textContent = item.nome;
-        const descricao = document.createElement("p");
+        const descricao = elementoHTML("<p></p>");
         descricao.textContent = item.descricao || "";
-        const preco = document.createElement("span");
+        const preco = elementoHTML("<span></span>");
         preco.className = "preco_loja";
         preco.textContent = `${item.preco} moedas`;
-        const controles = document.createElement("div");
+        const controles = elementoHTML("<div></div>");
         controles.className = "controles_loja";
-        const quantidade = document.createElement("input");
+        const quantidade = elementoHTML("<input>");
         quantidade.type = "number";
         quantidade.min = "1";
         quantidade.max = "99";
@@ -67,7 +67,7 @@ function mostrarProdutos(itens, saldoAtual) {
         quantidade.value = "1";
         quantidade.className = "quantidade_loja";
         quantidade.setAttribute("aria-label", `Quantidade de ${item.nome}`);
-        const botao = document.createElement("button");
+        const botao = elementoHTML("<button></button>");
         botao.className = "comprar_loja";
         botao.textContent = "Comprar";
         // Desabilitar itens que custam mais que o saldo.
