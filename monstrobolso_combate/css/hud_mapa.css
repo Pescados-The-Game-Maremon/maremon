@@ -1,0 +1,97 @@
+/* Hotspots invisíveis: a posição e o tamanho são calculados sobre a arte do mapa. */
+#botao_varanda, #botao_porta, #botao_boia {
+    position: absolute;
+    z-index: 20;
+    display: block;
+    padding: 0;
+    border: 0;
+    border-radius: 12px;
+    background: transparent;
+    color: transparent;
+    cursor: pointer;
+    box-sizing: border-box;
+}
+#botao_varanda:hover, #botao_porta:hover, #botao_boia:hover {
+    background: rgba(153, 221, 255, .10);
+    outline: 2px solid rgba(225, 246, 255, .48);
+}
+
+/* HUD principal inspirada no cartão e nos botões da tela de autenticação. */
+.hud_jogo {
+    position: absolute;
+    z-index: 1002;
+    top: 14px;
+    left: 14px;
+    right: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    pointer-events: none;
+    font-family: 'Nunito', 'Trebuchet MS', Arial, sans-serif;
+}
+.hud_jogo a, .hud_jogo button { pointer-events: auto; }
+.hud_marca {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    padding: 10px 15px;
+    border: 2px solid rgba(255,255,255,.86);
+    border-radius: 14px;
+    background: linear-gradient(105deg, rgba(36,85,138,.97), rgba(18,52,95,.97));
+    box-shadow: 0 4px 0 rgba(5,25,47,.48), 0 8px 20px rgba(0,0,0,.24);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 900;
+    letter-spacing: 2px;
+    text-decoration: none;
+    text-shadow: 0 2px 3px #09213b;
+}
+.hud_marca span { color: #a9d9ff; font-size: 23px; line-height: 1; }
+.hud_acoes { display: flex; align-items: center; justify-content: flex-end; gap: 8px; flex-wrap: wrap; }
+.hud_acao {
+    min-height: 46px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 8px 13px;
+    border: 2px solid rgba(255,255,255,.86);
+    border-bottom: 4px solid #0b254b;
+    border-radius: 13px;
+    background: linear-gradient(105deg, #24558a, #12345f);
+    box-shadow: 0 4px 10px rgba(4,22,39,.34);
+    color: #fff;
+    cursor: pointer;
+    font: 900 12px 'Nunito', 'Trebuchet MS', Arial, sans-serif;
+    text-shadow: 0 1px 2px rgba(0,0,0,.4);
+    transition: transform .15s ease, filter .15s ease;
+}
+.hud_acao:hover { filter: brightness(1.14); transform: translateY(-2px); background: linear-gradient(105deg, #2e6ca8, #194574); }
+.hud_acao:active { transform: translateY(2px); border-bottom-width: 2px; }
+.hud_icone {
+    width: 25px;
+    height: 25px;
+    display: grid;
+    place-items: center;
+    border: 1px solid rgba(255,255,255,.55);
+    border-radius: 8px;
+    background: rgba(7,28,58,.34);
+    color: #c9e8ff;
+    font-size: 17px;
+    line-height: 1;
+}
+.hud_sair { background: linear-gradient(105deg, #315c83, #173b60); }
+
+@media (max-width: 700px) {
+    .hud_jogo { top: 8px; left: 8px; right: 8px; align-items: flex-start; }
+    .hud_marca { padding: 8px 10px; font-size: 10px; }
+    .hud_acoes { gap: 5px; max-width: 76%; }
+    .hud_acao { min-height: 38px; gap: 5px; padding: 5px 7px; border-radius: 10px; font-size: 10px; }
+    .hud_icone { width: 20px; height: 20px; font-size: 14px; }
+}
+@media (max-width: 430px) {
+    .hud_marca { display: none; }
+    .hud_acoes { max-width: 100%; margin-left: auto; }
+    .hud_acao { flex: 1 1 auto; }
+}

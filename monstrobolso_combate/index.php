@@ -59,6 +59,8 @@ if (
           href="css/equipe_melhorada.css?v=<?= filemtime(__DIR__ . '/css/equipe_melhorada.css') ?>">
     <link rel="stylesheet"
           href="css/iscas.css?v=<?= filemtime(__DIR__ . '/css/iscas.css') ?>">
+    <link rel="stylesheet"
+          href="css/hud_mapa.css?v=<?= filemtime(__DIR__ . '/css/hud_mapa.css') ?>">
 
     <!-- Versões automáticas dos fundos: evita imagens antigas no cache. -->
     <style>
@@ -76,18 +78,15 @@ if (
     <div id="tela_jogo" class="casa_inicial"></div>
 
     <template id="cena_casa">
-        <button type="button" onclick="sairDaConta()">
-            Sair da conta
-        </button>
-        <button type="button" onclick="window.location.href='equipe.php'">
-            Minha equipe
-        </button>
-        <button type="button" onclick="window.location.href='inventario.php'">
-            Minha mochila
-        </button>
-        <button type="button" onclick="window.location.href='historico.php'">
-            Histórico
-        </button>
+        <nav class="hud_jogo" aria-label="Menu do jogador">
+            <a class="hud_marca" href="index.php" aria-label="Maremon - início"><span>〰</span> MAREMON</a>
+            <div class="hud_acoes">
+                <button type="button" class="hud_acao" onclick="window.location.href='equipe.php'"><span class="hud_icone">♧</span><span>Equipe</span></button>
+                <button type="button" class="hud_acao" onclick="window.location.href='inventario.php'"><span class="hud_icone">▣</span><span>Minha mochila</span></button>
+                <button type="button" class="hud_acao" onclick="window.location.href='historico.php'"><span class="hud_icone">◷</span><span>Histórico</span></button>
+                <button type="button" class="hud_acao hud_sair" onclick="sairDaConta()"><span class="hud_icone">↪</span><span>Sair da conta</span></button>
+            </div>
+        </nav>
         <button type="button" id="botao_varanda"
                 aria-label="Ir para a varanda"
                 onclick="trocarfundo('varanda'); goTo('cena_varanda'); carregarIscas()"></button>
@@ -97,6 +96,15 @@ if (
     </template>
 
     <template id="cena_varanda">
+        <nav class="hud_jogo" aria-label="Menu do jogador">
+            <a class="hud_marca" href="index.php" aria-label="Maremon - início"><span>〰</span> MAREMON</a>
+            <div class="hud_acoes">
+                <button type="button" class="hud_acao" onclick="window.location.href='equipe.php'"><span class="hud_icone">♧</span><span>Equipe</span></button>
+                <button type="button" class="hud_acao" onclick="window.location.href='inventario.php'"><span class="hud_icone">▣</span><span>Minha mochila</span></button>
+                <button type="button" class="hud_acao" onclick="window.location.href='historico.php'"><span class="hud_icone">◷</span><span>Histórico</span></button>
+                <button type="button" class="hud_acao hud_sair" onclick="sairDaConta()"><span class="hud_icone">↪</span><span>Sair da conta</span></button>
+            </div>
+        </nav>
         <button type="button" class="botao_voltar"
                 onclick="trocarfundo('casa_inicial'); goTo('cena_casa')">
             Voltar
