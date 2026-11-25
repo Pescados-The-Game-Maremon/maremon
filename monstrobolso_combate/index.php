@@ -367,7 +367,7 @@ if (
     <template id="modelo_produto_loja">
         <article class="produto_loja">
             <div class="produto_loja_info">
-                <span class="loja_placeholder" aria-hidden="true"></span>
+                <span class="loja_placeholder" aria-hidden="true"><img class="loja_imagem_item" alt=""></span>
                 <div class="produto_loja_texto">
                     <h3></h3><p></p>
                     <span class="preco_loja"></span>

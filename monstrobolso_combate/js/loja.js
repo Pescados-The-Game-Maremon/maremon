@@ -64,6 +64,13 @@ function mostrarProdutos(itens, saldoAtual) {
         const card = modelo.content.cloneNode(true);
         const preco = Number(item.preco);
         card.querySelector("h3").textContent = window.nomeMaremon ? window.nomeMaremon(item.nome) : String(item.nome).replace(/_/g, " ");
+        const imagemItem = card.querySelector(".loja_imagem_item");
+        const caminhoImagem = window.imagemItemMaremon ? window.imagemItemMaremon(item.nome) : "";
+        if (imagemItem && caminhoImagem) {
+                imagemItem.src = caminhoImagem;
+                imagemItem.alt = window.nomeMaremon ? window.nomeMaremon(item.nome) : item.nome;
+                imagemItem.addEventListener("error", () => { imagemItem.removeAttribute("src"); imagemItem.alt = ""; }, { once: true });
+            }
         card.querySelector("p").textContent = item.descricao || "";
         card.querySelector(".preco_loja").textContent = `${formatar(preco)} moedas / un.`;
         const quantidade = card.querySelector(".quantidade_loja");

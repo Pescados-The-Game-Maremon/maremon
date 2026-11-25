@@ -107,8 +107,15 @@ function mostrarItens(itens) {
             categoria.grade.appendChild(vazio);
         }
         filtrados.forEach(item => {
-            const card = elementoHTML('<button type="button" class="item_inventario" aria-pressed="false"><span class="item_placeholder" aria-hidden="true"></span><span class="item_texto"><span class="item_linha_nome"><strong class="item_nome"></strong><span class="item_quantidade"></span></span><span class="item_descricao"></span></span></button>');
+            const card = elementoHTML('<button type="button" class="item_inventario" aria-pressed="false"><span class="item_placeholder" aria-hidden="true"><img class="item_imagem" alt=""></span><span class="item_texto"><span class="item_linha_nome"><strong class="item_nome"></strong><span class="item_quantidade"></span></span><span class="item_descricao"></span></span></button>');
             card.querySelector(".item_nome").textContent = nomeExibicao(item.nome);
+            const imagemItem = card.querySelector(".item_imagem");
+            const caminhoImagem = window.imagemItemMaremon ? window.imagemItemMaremon(item.nome) : "";
+            if (imagemItem && caminhoImagem) {
+                imagemItem.src = caminhoImagem;
+                imagemItem.alt = nomeExibicao(item.nome);
+                imagemItem.addEventListener("error", () => { imagemItem.removeAttribute("src"); imagemItem.alt = ""; }, { once: true });
+            }
             card.querySelector(".item_quantidade").textContent = `×${item.quantidade}`;
             card.querySelector(".item_descricao").textContent = item.descricao || "Sem descrição cadastrada.";
             card.addEventListener("click", () => {

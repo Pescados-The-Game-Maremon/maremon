@@ -76,3 +76,8 @@
     .produto_loja_info { gap: 10px; }
     .comprar_loja { flex: 1 0 auto; }
 }
+
+.loja_placeholder { overflow: hidden; }
+.loja_placeholder:has(.loja_imagem_item[src])::before { display: none; }
+.loja_imagem_item { display: none; width: 100%; height: 100%; object-fit: contain; padding: 5px; }
+.loja_imagem_item[src] { display: block; }

@@ -150,3 +150,8 @@ body.pagina_inventario {
     transform: none; box-shadow: 0 4px 0 #080d18a6;
 }
 .pagina_inventario .pescado_inventario:disabled { cursor: not-allowed; }
+
+.pagina_inventario .item_placeholder { overflow: hidden; }
+.pagina_inventario .item_placeholder:has(.item_imagem[src])::before { display: none; }
+.pagina_inventario .item_imagem { display: none; width: 100%; height: 100%; object-fit: contain; padding: 5px; }
+.pagina_inventario .item_imagem[src] { display: block; }
