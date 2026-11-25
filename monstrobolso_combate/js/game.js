@@ -46,8 +46,9 @@ function goTo(cena) {
         telaJogo.append(navegacao.content.cloneNode(true));
     }
     posicionarPontosMapa(cena);
-    // Ao restaurar a cena após navegar para telas externas, recarrega a loja no DOM recém-clonado.
+    // Recarrega os dados de painéis após recriar a cena: loja e iscas.
     if (cena === "cena_loja" && typeof carregarLoja === "function") carregarLoja();
+    if (cena === "cena_varanda" && typeof carregarIscas === "function") carregarIscas();
 }
 
 // Coordenadas na arte original de cada cenário, não na janela do navegador.

@@ -24,8 +24,8 @@
             const rotulo = card.querySelector('.batalha_resultado');
             rotulo.textContent = Object.hasOwn(resultados, resultado) ? resultados[resultado] : (b.resultado || '—');
             rotulo.dataset.resultado = resultado;
-            card.querySelector('.batalha_jogador').textContent = b.pescado_jogador ?? '—';
-            card.querySelector('.batalha_inimigo').textContent = b.pescado_inimigo ?? '—';
+            card.querySelector('.batalha_jogador').textContent = window.nomeMaremon ? window.nomeMaremon(b.pescado_jogador ?? '—') : (b.pescado_jogador ?? '—');
+            card.querySelector('.batalha_inimigo').textContent = window.nomeMaremon ? window.nomeMaremon(b.pescado_inimigo ?? '—') : (b.pescado_inimigo ?? '—');
             card.querySelector('.batalha_turnos').textContent = b.turnos ?? '—';
             card.querySelector('.batalha_moedas').textContent = b.dinheiro_ganho ?? '—';
             card.querySelector('.batalha_hora').textContent = b.iniciado_em ? `Início: ${b.iniciado_em}` : '';

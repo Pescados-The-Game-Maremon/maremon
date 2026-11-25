@@ -296,8 +296,8 @@ async function abrirCombate() {
         await carregarAtaques();
         mensagemCombate(
             (dados.boss_ordem
-                ? `⚠ CHEFE ${dados.inimigo.nome} apareceu! Tipo DRK, HP ×5. `
-                : `Um ${dados.inimigo.nome} selvagem apareceu! `) +
+                ? `⚠ CHEFE ${(window.nomeMaremon ? window.nomeMaremon(dados.inimigo.nome) : dados.inimigo.nome)} apareceu! Tipo DRK, HP ×5. `
+                : `Um ${(window.nomeMaremon ? window.nomeMaremon(dados.inimigo.nome) : dados.inimigo.nome)} selvagem apareceu! `) +
             (equipeEmCombate.length < 2
                 ? "A equipe está com apenas um integrante. Para habilitar a troca, " +
                   "organize mais Pescados na tela Minha Equipe e inicie outro combate."
@@ -371,9 +371,9 @@ function atualizarPescado(lado, pescado) {
         rotuloTipo.textContent = tipo;
         rotuloTipo.setAttribute("aria-label", tipo ? `Tipo ${tipo}` : "Tipo não informado");
     }
-    if (nome) nome.title = pescado.nome;
+    if (nome) nome.title = window.nomeMaremon ? window.nomeMaremon(pescado.nome) : pescado.nome;
 
-    nome.textContent = pescado.nome;
+    nome.textContent = window.nomeMaremon ? window.nomeMaremon(pescado.nome) : pescado.nome;
     hp.textContent = `${pescado.hp}/${pescado.hp_max}`;
 
     const nivel = document.getElementById("nivel_" + lado);
@@ -431,7 +431,7 @@ async function carregarAtaques() {
 
         botao.type = "button";
         botao.className = "botao_ataque";
-        nome.textContent = ataque.nome;
+        nome.textContent = window.nomeMaremon ? window.nomeMaremon(ataque.nome) : ataque.nome;
         detalhes.textContent = `${ataque.tipo} · PP ${ataque.pp_atual}/${ataque.pp_max}` +
             (ataque.status_aplicado
                 ? ` · ${ataque.chance_status}% ${ataque.status_aplicado}`
@@ -669,14 +669,14 @@ async function abrirItensCombate() {
         for (const item of dados.itens) {
             const opcao = elementoHTML("<option></option>");
             opcao.value = item.id;
-            opcao.textContent = `${item.nome} ×${item.quantidade}`;
+            opcao.textContent = `${window.nomeMaremon ? window.nomeMaremon(item.nome) : item.nome} ×${item.quantidade}`;
             campoItem.appendChild(opcao);
         }
 
         for (const pescado of dados.pescados) {
             const opcao = elementoHTML("<option></option>");
             opcao.value = pescado.id;
-            opcao.textContent = `${pescado.nome} · HP ${pescado.hp_atual}/${pescado.hp_max} · ${pescado.status}`;
+            opcao.textContent = `${(window.nomeMaremon ? window.nomeMaremon(pescado.nome) : pescado.nome)} · HP ${pescado.hp_atual}/${pescado.hp_max} · ${pescado.status}`;
             campoPescado.appendChild(opcao);
         }
 
@@ -827,7 +827,7 @@ function abrirTrocaCombate() {
     for (const pescado of disponiveis) {
         const botao = elementoHTML("<button></button>");
         botao.type = "button";
-        botao.textContent = `${pescado.nome} · Nv. ${pescado.nivel} · HP ${pescado.hp}/${pescado.hp_max}`;
+        botao.textContent = `${(window.nomeMaremon ? window.nomeMaremon(pescado.nome) : pescado.nome)} · Nv. ${pescado.nivel} · HP ${pescado.hp}/${pescado.hp_max}`;
         botao.addEventListener("click", () => trocarPescadoCombate(pescado.id));
         lista.appendChild(botao);
     }

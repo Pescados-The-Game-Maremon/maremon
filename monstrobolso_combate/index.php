@@ -84,10 +84,10 @@ if (
 
     <template id="navegacao_jogo">
         <nav class="hud_jogo" aria-label="Menu do jogador">
-            <button type="button" class="hud_acao" data-destino="inventario.php">Inventário</button>
-            <button type="button" class="hud_acao" data-destino="historico.php">Histórico</button>
-            <button type="button" class="hud_acao" data-destino="equipe.php">Equipe</button>
-            <button type="button" class="hud_acao hud_sair" data-sair>Sair da conta</button>
+            <button type="button" class="hud_acao maremon-hud" data-destino="inventario.php">Inventário</button>
+            <button type="button" class="hud_acao maremon-hud" data-destino="historico.php">Histórico</button>
+            <button type="button" class="hud_acao maremon-hud" data-destino="equipe.php">Equipe</button>
+            <button type="button" class="hud_acao hud_sair maremon-hud" data-sair>Sair da conta</button>
         </nav>
     </template>
 
@@ -109,7 +109,7 @@ if (
 
     <template id="cena_varanda">
 
-        <button type="button" class="botao_voltar"
+        <button type="button" class="botao_voltar maremon-hud"
                 onclick="trocarfundo('casa_inicial'); goTo('cena_casa')">
             Voltar
         </button>
@@ -307,7 +307,7 @@ if (
     </template>
 
     <template id="cena_aqua_fora">
-        <button type="button" class="botao_voltar"
+        <button type="button" class="botao_voltar maremon-hud"
                 onclick="trocarfundo('casa_inicial'); goTo('cena_casa')">
             Voltar
         </button>

@@ -84,6 +84,7 @@ if (!isset($_SESSION["pescador_id"])) {
     </article>
 </template>
 
+<script src="js/elementos.js?v=<?= filemtime(__DIR__ . '/js/elementos.js') ?>"></script>
 <script src="js/monstros.js?v=<?= filemtime(__DIR__ . '/js/monstros.js') ?>"></script>
 <script src="js/equipe.js?v=<?= filemtime(__DIR__ . '/js/equipe.js') ?>"></script>
 <script>

@@ -21,7 +21,7 @@ function ocupante(slot) { return pescadosEquipe.find(p => slotDo(p) === slot); }
 function preencherImagem(img, p) {
     img.hidden = !p;
     if (!p) return;
-    img.alt = p.nome;
+    img.alt = window.nomeMaremon ? window.nomeMaremon(p.nome) : p.nome;
     img.onerror = () => { img.onerror = null; img.src = 'assets/pescados/sem_sprite.svg'; };
     img.src = caminhoSprite(p);
 }
@@ -67,7 +67,7 @@ function renderizarEquipe() {
     instrucaoEquipe.textContent = equipeEmBatalha ? 'Finalize o combate para editar a formação.' : `Posição ${destinoEquipe} selecionada. Escolha um Pescado abaixo ou use os botões 1, 2 e 3 para movê-lo diretamente.`;
     listaEquipe.replaceChildren();
     const termo = filtroEquipe.value.trim().toLowerCase();
-    const filtrados = pescadosEquipe.filter(p => `${p.nome} ${p.tipo}`.toLowerCase().includes(termo));
+    const filtrados = pescadosEquipe.filter(p => `${window.nomeMaremon ? window.nomeMaremon(p.nome) : p.nome} ${p.tipo}`.toLocaleLowerCase().normalize("NFD").replace(/[\\u0300-\\u036f]/g, "").includes(termo.normalize("NFD").replace(/[\\u0300-\\u036f]/g, "")));
     if (!filtrados.length) {
     listaEquipe.innerHTML = '<p class="equipe_vazio">Nenhum Pescado encontrado.</p>';
 }

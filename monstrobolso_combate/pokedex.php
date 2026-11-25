@@ -53,6 +53,7 @@ if (empty($_SESSION['pescador_id'])) {
     </article>
 </template>
 <template id="modelo_vazio"><p class="registros_vazio"></p></template>
+<script src="js/elementos.js?v=<?= filemtime(__DIR__ . '/js/elementos.js') ?>"></script>
 <script src="js/monstros.js?v=<?= filemtime(__DIR__ . '/js/monstros.js') ?>"></script>
 <script src="js/pokedex.js?v=<?= filemtime(__DIR__ . '/js/pokedex.js') ?>"></script>
 <script>
