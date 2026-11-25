@@ -341,20 +341,43 @@ if (
     <template id="cena_loja">
         <div class="loja_container">
             <header class="loja_cabecalho">
-                <h1>Loja Maremon</h1>
+                <button type="button" class="loja_voltar" onclick="voltarDaLoja()">
+                    <span aria-hidden="true">‹</span> Voltar
+                </button>
+                <div class="loja_titulo">
+                    <h1>Loja Maremon</h1>
+                    <span>Artigos de pesca</span>
+                </div>
                 <div class="loja_saldo">
-                    <span>Suas moedas</span>
-                    <strong id="saldo_loja">0</strong>
+                    <span class="loja_moeda" aria-hidden="true">$</span>
+                    <div><span>Suas moedas</span><strong id="saldo_loja">—</strong></div>
                 </div>
             </header>
-
-            <p id="mensagem_loja"></p>
+            <div class="loja_intro">
+                <span class="loja_intro_icone" aria-hidden="true">◆</span>
+                <div><h2>Suprimentos</h2><p>Escolha os itens e a quantidade para sua próxima aventura.</p></div>
+            </div>
+            <p id="mensagem_loja" role="status" aria-live="polite"></p>
+            <div class="loja_rotulo"><h2>Produtos disponíveis</h2><span id="resumo_loja"></span></div>
             <div id="produtos_loja"></div>
-
-            <button type="button" class="loja_voltar" onclick="voltarDaLoja()">
-                Voltar
-            </button>
         </div>
+    </template>
+
+    <template id="modelo_produto_loja">
+        <article class="produto_loja">
+            <div class="produto_loja_info">
+                <span class="loja_placeholder" aria-hidden="true"></span>
+                <div class="produto_loja_texto">
+                    <h3></h3><p></p>
+                    <span class="preco_loja"></span>
+                </div>
+            </div>
+            <div class="controles_loja">
+                <label class="loja_quantidade_rotulo">Qtd. <input type="number" min="1" max="99" step="1" value="1" class="quantidade_loja"></label>
+                <span class="loja_total"></span>
+                <button type="button" class="comprar_loja">Comprar</button>
+            </div>
+        </article>
     </template>
 
     <template id="escolher_destino">
