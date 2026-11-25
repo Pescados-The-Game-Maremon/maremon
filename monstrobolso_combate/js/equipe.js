@@ -69,11 +69,8 @@ function renderizarEquipe() {
     const termo = filtroEquipe.value.trim().toLowerCase();
     const filtrados = pescadosEquipe.filter(p => `${p.nome} ${p.tipo}`.toLowerCase().includes(termo));
     if (!filtrados.length) {
-        const vazio = document.createElement('p');
-        vazio.className = 'equipe_vazio';
-        vazio.textContent = 'Nenhum Pescado encontrado.';
-        listaEquipe.appendChild(vazio);
-    }
+    listaEquipe.innerHTML = '<p class="equipe_vazio">Nenhum Pescado encontrado.</p>';
+}
     for (const p of filtrados) {
         const card = document.getElementById('modelo_pescado_equipe').content.firstElementChild.cloneNode(true);
         const slot = slotDo(p);
