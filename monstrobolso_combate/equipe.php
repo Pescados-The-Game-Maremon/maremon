@@ -25,11 +25,17 @@ if (!isset($_SESSION["pescador_id"])) {
 <body class="pagina_equipe maremon-page">
 <main class="maremon-main">
 
-    <header class="maremon-page-header">
-        <span class="maremon-eyebrow">MAREMON · GERENCIAMENTO DE EQUIPE</span>
-        <h1>Minha equipe</h1>
-        <p>Organize até três Pescados. A primeira posição com HP entra na batalha; os demais ficam disponíveis para troca.</p>
+    <header class="equipe_cabecalho">
+        <a class="equipe_voltar" href="index.php" onclick="return voltarMaremon(event)"><span aria-hidden="true">‹</span> Voltar</a>
+        <div class="equipe_titulo">
+            <h1>Minha equipe</h1>
+            <span>Gerenciamento de equipe</span>
+        </div>
+        <span class="equipe_marca">MAREMON</span>
     </header>
+    <div class="equipe_intro">
+        <p>Organize até três Pescados. A primeira posição com HP entra na batalha; os demais ficam disponíveis para troca.</p>
+    </div>
 
     <h2 class="maremon-section-title">Formação de batalha <small id="resumo_equipe"></small></h2>
     <p id="instrucao_equipe">Escolha uma posição.</p>
@@ -44,7 +50,6 @@ if (!isset($_SESSION["pescador_id"])) {
 
     <nav class="maremon-acoes-pagina" aria-label="Ações da equipe">
         <a href="inventario.php">Abrir mochila</a>
-        <a href="index.php">Voltar ao jogo</a>
     </nav>
 
 </main>
@@ -81,5 +86,12 @@ if (!isset($_SESSION["pescador_id"])) {
 
 <script src="js/monstros.js?v=<?= filemtime(__DIR__ . '/js/monstros.js') ?>"></script>
 <script src="js/equipe.js?v=<?= filemtime(__DIR__ . '/js/equipe.js') ?>"></script>
+<script>
+function voltarMaremon(event) {
+    event.preventDefault();
+    window.location.assign('index.php');
+    return false;
+}
+</script>
 </body>
 </html>

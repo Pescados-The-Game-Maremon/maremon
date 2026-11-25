@@ -1,97 +1,125 @@
-/* Hotspots invisíveis: a posição e o tamanho são calculados sobre a arte do mapa. */
-#botao_varanda, #botao_porta, #botao_boia {
+/* Pontos interagíveis posicionados sobre os objetos do cenário. */
+#tela_jogo .ponto_mapa {
     position: absolute;
     z-index: 20;
     display: block;
     padding: 0;
-    border: 0;
-    border-radius: 12px;
+    border: 2px solid transparent;
+    border-radius: 8px;
     background: transparent;
-    color: transparent;
+    box-shadow: none;
+    color: #f0f5ff;
     cursor: pointer;
     box-sizing: border-box;
+    text-decoration: none;
+    transition: background .15s, border-color .15s, box-shadow .15s;
 }
-#botao_varanda:hover, #botao_porta:hover, #botao_boia:hover {
-    background: rgba(153, 221, 255, .10);
-    outline: 2px solid rgba(225, 246, 255, .48);
+#tela_jogo .ponto_objeto { z-index: 21; }
+#tela_jogo .ponto_mapa::after {
+    content: attr(data-rotulo);
+    position: absolute;
+    left: 50%;
+    bottom: 100%;
+    transform: translateX(-50%);
+    padding: 6px 10px;
+    border: 1px solid #405774;
+    border-radius: 8px;
+    background: #151e30;
+    color: #f0f5ff;
+    font: 800 12px/1.2 "Trebuchet MS", Arial, sans-serif;
+    white-space: nowrap;
+    box-shadow: 0 3px 8px #0006;
+    opacity: 0;
+    pointer-events: none;
+}
+#tela_jogo #ponto_historico::after { left: 0; transform: none; }
+#tela_jogo .ponto_mapa:hover:not(:disabled),
+#tela_jogo .ponto_mapa:focus-visible {
+    border-color: #fff;
+    background: #b7ddff24;
+    box-shadow: 0 0 14px #e3f3ff96, inset 0 0 12px #b7ddff38;
+    outline: none;
+}
+#tela_jogo .ponto_mapa:hover:not(:disabled)::after,
+#tela_jogo .ponto_mapa:focus-visible::after { opacity: 1; }
+#tela_jogo .ponto_mapa:disabled { cursor: wait; opacity: .5; }
+
+/* A casa preserva os objetos próximos às bordas em telas estreitas ou muito largas. */
+#tela_jogo.casa_inicial, #tela_jogo.aqua_fora { background-color: #090f1c; }
+@media (max-aspect-ratio: 3/2), (min-aspect-ratio: 2/1) {
+    #tela_jogo.casa_inicial, #tela_jogo.aqua_fora { background-size: contain; }
 }
 
-/* HUD principal inspirada no cartão e nos botões da tela de autenticação. */
+/* Mesma paleta e acabamentos das telas de inventário e equipe. */
+#tela_jogo { --hud-espaco: 70px; }
 .hud_jogo {
     position: absolute;
     z-index: 1002;
-    top: 14px;
-    left: 14px;
+    top: 12px;
     right: 14px;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    pointer-events: none;
-    font-family: 'Nunito', 'Trebuchet MS', Arial, sans-serif;
+    gap: 5px;
+    padding: 5px;
+    border: 1px solid #2d3c54;
+    border-radius: 26px;
+    background: #080e1bf5;
+    box-shadow: 0 5px 18px #0006;
+    font-family: "Trebuchet MS", Arial, sans-serif;
 }
-.hud_jogo a, .hud_jogo button { pointer-events: auto; }
-.hud_marca {
-    display: inline-flex;
-    align-items: center;
-    gap: 9px;
-    padding: 10px 15px;
-    border: 2px solid rgba(255,255,255,.86);
-    border-radius: 14px;
-    background: linear-gradient(105deg, rgba(36,85,138,.97), rgba(18,52,95,.97));
-    box-shadow: 0 4px 0 rgba(5,25,47,.48), 0 8px 20px rgba(0,0,0,.24);
-    color: #fff;
-    font-size: 13px;
-    font-weight: 900;
-    letter-spacing: 2px;
-    text-decoration: none;
-    text-shadow: 0 2px 3px #09213b;
-}
-.hud_marca span { color: #a9d9ff; font-size: 23px; line-height: 1; }
-.hud_acoes { display: flex; align-items: center; justify-content: flex-end; gap: 8px; flex-wrap: wrap; }
-.hud_acao {
-    min-height: 46px;
+#tela_jogo .hud_acao, #tela_jogo .botao_voltar {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
-    padding: 8px 13px;
-    border: 2px solid rgba(255,255,255,.86);
-    border-bottom: 4px solid #0b254b;
-    border-radius: 13px;
-    background: linear-gradient(105deg, #24558a, #12345f);
-    box-shadow: 0 4px 10px rgba(4,22,39,.34);
-    color: #fff;
+    box-sizing: border-box;
+    min-height: 38px;
+    padding: 8px 14px;
+    border: 1px solid #303e55;
+    border-radius: 22px;
+    background: #151e30;
+    color: #f0f5ff;
+    font: 800 13px/1.2 "Trebuchet MS", Arial, sans-serif;
     cursor: pointer;
-    font: 900 12px 'Nunito', 'Trebuchet MS', Arial, sans-serif;
-    text-shadow: 0 1px 2px rgba(0,0,0,.4);
-    transition: transform .15s ease, filter .15s ease;
+    white-space: nowrap;
+    transition: background .15s, border-color .15s;
 }
-.hud_acao:hover { filter: brightness(1.14); transform: translateY(-2px); background: linear-gradient(105deg, #2e6ca8, #194574); }
-.hud_acao:active { transform: translateY(2px); border-bottom-width: 2px; }
-.hud_icone {
-    width: 25px;
-    height: 25px;
-    display: grid;
-    place-items: center;
-    border: 1px solid rgba(255,255,255,.55);
-    border-radius: 8px;
-    background: rgba(7,28,58,.34);
-    color: #c9e8ff;
-    font-size: 17px;
-    line-height: 1;
+#tela_jogo .hud_acao:hover, #tela_jogo .botao_voltar:hover {
+    background: #263c5a;
+    border-color: #83bfff;
 }
-.hud_sair { background: linear-gradient(105deg, #315c83, #173b60); }
+#tela_jogo .hud_acao:focus-visible, #tela_jogo .botao_voltar:focus-visible {
+    outline: 2px solid #83bfff;
+    outline-offset: 2px;
+}
+#tela_jogo .hud_sair, #tela_jogo .casa_sair { color: #aebed4; }
+#tela_jogo .casa_sair { position: absolute; bottom: 14px; right: 14px; z-index: 25; }
+#tela_jogo .botao_voltar { position: absolute; top: 17px; left: 14px; width: auto; height: auto; }
 
-@media (max-width: 700px) {
-    .hud_jogo { top: 8px; left: 8px; right: 8px; align-items: flex-start; }
-    .hud_marca { padding: 8px 10px; font-size: 10px; }
-    .hud_acoes { gap: 5px; max-width: 76%; }
-    .hud_acao { min-height: 38px; gap: 5px; padding: 5px 7px; border-radius: 10px; font-size: 10px; }
-    .hud_icone { width: 20px; height: 20px; font-size: 14px; }
+/* Reserva espaço para a barra nos cenários que possuem outros painéis. */
+#tela_jogo[data-cena="cena_varanda"] #painel_iscas {
+    top: var(--hud-espaco);
+    max-height: calc(100% - var(--hud-espaco) - 18px);
+    box-sizing: border-box;
 }
-@media (max-width: 430px) {
-    .hud_marca { display: none; }
-    .hud_acoes { max-width: 100%; margin-left: auto; }
-    .hud_acao { flex: 1 1 auto; }
+#tela_jogo[data-cena="cena_loja"] .loja_container {
+    margin: var(--hud-espaco) auto 0;
+    max-height: calc(100% - var(--hud-espaco) - 16px);
+}
+#tela_jogo[data-cena="cena_aqua_dentro"] .centro_cura {
+    top: calc(50% + var(--hud-espaco) / 2);
+    max-height: calc(100% - var(--hud-espaco) - 20px);
+    box-sizing: border-box;
+}
+@media (max-width: 650px) {
+    #tela_jogo { --hud-espaco: 112px; }
+    .hud_jogo { top: 8px; right: 8px; left: 8px; flex-wrap: wrap; justify-content: flex-end; }
+    #tela_jogo .hud_acao { min-height: 34px; padding: 6px 10px; font-size: 12px; }
+    #tela_jogo .botao_voltar { top: 61px; left: 8px; min-height: 34px; }
+}
+@media (max-width: 350px) {
+    #tela_jogo { --hud-espaco: 145px; }
+    #tela_jogo .botao_voltar { top: 96px; }
+}
+@media (prefers-reduced-motion: reduce) {
+    #tela_jogo .ponto_mapa, #tela_jogo .hud_acao, #tela_jogo .botao_voltar { transition: none; }
 }

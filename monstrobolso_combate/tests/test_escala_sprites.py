@@ -46,6 +46,26 @@ with sync_playwright() as pw:
                 assert r['left']>=-1 and r['right']<=w+1 and r['top']>=-1, (nome,lado,r)
             assert values['Umi_Bozu']['width']>values['Baiacu']['width']*1.5
             assert values['Baleia_Azul']['width']>values['Cavalo_Marinho']['width']*1.7
+            page.evaluate('''lado=>{
+                atualizarSprite(lado,{nome:'Baleia_Azul'});
+                document.getElementById('sprite_'+lado).style.setProperty('--escala-combate',1);
+            }''',lado)
+            escala_normal=page.locator('#sprite_'+lado).evaluate('e=>e.getBoundingClientRect().width')
+            page.evaluate('''lado=>{
+                document.getElementById('sprite_'+lado).style.setProperty('--escala-combate',1.2);
+            }''',lado)
+            escala_maior=page.locator('#sprite_'+lado).evaluate('e=>e.getBoundingClientRect().width')
+            assert escala_maior>escala_normal, (lado,escala_normal,escala_maior)
+            if w>700:
+                page.evaluate('''lado=>{
+                    document.getElementById('sprite_'+lado).style.setProperty('--escala-combate',5);
+                }''',lado)
+                escala_baleia=page.locator('#sprite_'+lado).evaluate('e=>e.getBoundingClientRect().width')
+                page.evaluate('''lado=>{
+                    document.getElementById('sprite_'+lado).style.setProperty('--escala-combate',1.42);
+                }''',lado)
+                escala_reduzida=page.locator('#sprite_'+lado).evaluate('e=>e.getBoundingClientRect().width')
+                assert escala_baleia>escala_reduzida, (lado,escala_baleia,escala_reduzida)
             # A dimensão não muda durante avanço, impacto ou troca de espécie.
             page.evaluate('''lado=>atualizarSprite(lado,{nome:'Umi_Bozu'})''',lado)
             e=page.locator('#sprite_'+lado)

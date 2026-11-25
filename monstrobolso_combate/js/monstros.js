@@ -56,55 +56,55 @@ const spritesPescados = {
 // Escala visual de cada espécie, sem alterar atributos ou HP.
 // 1 = tamanho normal; 0.75 = 25% menor; 1.40 = 40% maior.
 const escalaSpritesCombate = Object.freeze({
-    "Trilobita": 0.80,
+    "Trilobita": 0.60,
     "Carnifibita": 1.10,
     "Anomalocaris": 0.90,
     "Aniquilocaris": 1.18,
     "Hallucigenia": 0.72,
     "Hallucinado": 1.05,
-    "Peixe_Pescador": 0.80,
+    "Peixe_Pescador": 0.60,
     "Pescador_de_Gente": 1.15,
-    "Peixe_Palhaco": 0.68,
+    "Peixe_Palhaco": 0.50,
     "Bobo_dos_Mares": 1.00,
-    "Peixe_Bolha": 0.78,
+    "Peixe_Bolha": 0.15,
     "Homem_Bolha": 1.05,
-    "Caranguejo_Azul": 0.80,
+    "Caranguejo_Azul": 0.50,
     "Karkinos": 1.28,
-    "Pirarucu": 1.10,
+    "Pirarucu": 0.60,
     "Poraque": 1.00,
     "Narval": 1.19,
     "Tubarao_Martelo": 1.24,
-    "Orca": 1.33,
+    "Orca": 1.20,
     "Arraia": 1.08,
-    "Baiacu": 0.76,
-    "Amargama": 1.10,
-    "Boto": 1.14,
+    "Baiacu": 0.25,
+    "Amargama": 1.35,
+    "Boto": 1.10,
     "Boto_Rosa": 1.20,
     "Truta_Arco_Iris": 0.79,
-    "Monstro_do_Lago_Ness": 1.40,
-    "Bagre": 0.92,
+    "Monstro_do_Lago_Ness": 1.75,
+    "Bagre": 0.80,
     "Namazu": 1.34,
     "Jacare": 1.15,
     "Cipactli": 1.36,
-    "Cavalo_Marinho": 0.64,
-    "Kelpie": 1.25,
+    "Cavalo_Marinho": 0.20,
+    "Kelpie": 1.45,
     "Tubarao_Raposa": 1.20,
-    "Lusca": 1.40,
+    "Lusca": 1.95,
     "Tartaruga": 0.93,
     "Genbu": 1.35,
-    "Agua_Viva": 0.80,
+    "Agua_Viva": 1.00,
     "Hafgufa": 1.42,
-    "Koi_Yin": 0.68,
-    "Koi_Yang": 0.68,
+    "Koi_Yin": 0.50,
+    "Koi_Yang": 0.50,
     "Carpas_Siameses": 0.82,
-    "Polvo": 0.95,
+    "Polvo": 2.00,
     "Lula": 0.89,
     "Kraken": 1.44,
-    "Baleia_Azul": 1.42,
-    "Bake_Kujira": 1.44,
-    "Cachalote": 1.38,
+    "Baleia_Azul": 2.00,
+    "Bake_Kujira": 1.90,
+    "Cachalote": 2.00,
     "Moby_Dick": 1.44,
-    "Salmao": 0.82,
+    "Salmao": 0.60,
     "Leviata": 1.45,
     "Umi_Bozu": 2.00,
 });
@@ -205,6 +205,58 @@ async function prepararSpritesCombate(pescados = []) {
     );
 }
 
+// Margem transparente superior das artes padronizadas (1024 × 1024).
+// Usada apenas para evitar a HUD sem alterar a escala nem a âncora quando há espaço.
+const margensSuperioresCombate = Object.freeze({
+    "bosses/boto_rosa.png": 0.0508,
+    "bosses/cipactli_highres.png": 0.0508,
+    "bosses/genbu_highres.png": 0.3164,
+    "bosses/karkinos_highres.png": 0.4355,
+    "bosses/kelpie_highres.png": 0.2656,
+    "bosses/lusca_highres.png": 0.4297,
+    "bosses/namazu_highres.png": 0.1523,
+    "bosses/ness_highres.png": 0.4902,
+    "pescados/Anomalocaris.png": 0.5566,
+    "pescados/Hallucigenia.png": 0.5049,
+    "pescados/Hallucinado.png": 0.1455,
+    "pescados/Trilobita.png": 0.1494,
+    "pescados/agua_viva.png": 0.3369,
+    "pescados/amargama.png": 0.4131,
+    "pescados/aniquilocaris.png": 0.2754,
+    "pescados/arraia.png": 0.0508,
+    "pescados/bagre.png": 0.5234,
+    "pescados/baiacu.png": 0.0508,
+    "pescados/baleia_azul.png": 0.5205,
+    "pescados/baleia_cachalote.png": 0.6445,
+    "pescados/bobo_dos_mares.png": 0.3213,
+    "pescados/boto.png": 0.3574,
+    "pescados/caranguejo_azul.png": 0.4316,
+    "pescados/carnifibita.png": 0.1963,
+    "pescados/carpas_siameses.png": 0.0508,
+    "pescados/cavalo_marinho.png": 0.0508,
+    "pescados/hafgufa_highres.png": 0.1406,
+    "pescados/homem_bolha.png": 0.0508,
+    "pescados/jacare.png": 0.6123,
+    "pescados/koi_yang.png": 0.0508,
+    "pescados/koi_yin.png": 0.0508,
+    "pescados/lula.png": 0.3477,
+    "pescados/moby_dick_highres.png": 0.4395,
+    "pescados/narval.png": 0.6377,
+    "pescados/peixe_bolha.png": 0.3721,
+    "pescados/peixe_palhaco.png": 0.2881,
+    "pescados/peixe_pescador.png": 0.2705,
+    "pescados/pescador_de_gente.png": 0.0508,
+    "pescados/pirarucu.png": 0.0508,
+    "pescados/polvo.png": 0.3496,
+    "pescados/poraque.png": 0.6572,
+    "pescados/salmao.png": 0.5742,
+    "pescados/tartaruga.png": 0.4639,
+    "pescados/truta_arco_iris.png": 0.6514,
+    "pescados/tubarao_martelo.png": 0.6172,
+    "pescados/tubarao_raposa.png": 0.6348,
+    "pescados/umi_bozu.png": 0.0508
+});
+
 function atualizarSprite(lado, pescado) {
     const elemento = document.getElementById("sprite_" + lado);
 
@@ -216,6 +268,7 @@ function atualizarSprite(lado, pescado) {
     const caminho = caminhoSpriteCombate(pescado);
 
     elemento.onerror = function () {
+        this.style.setProperty("--margem-superior-sprite", 0);
         this.onerror = function () { this.onerror = null; this.src = "assets/pescados/sem_sprite.svg"; };
         if (this.getAttribute("src") !== original) this.src = original;
         else { this.onerror = null; this.src = "assets/pescados/sem_sprite.svg"; }
@@ -225,6 +278,8 @@ function atualizarSprite(lado, pescado) {
     }
 
     elemento.style.setProperty("--escala-combate", obterEscalaSpriteCombate(pescado));
+    const chaveMargem = caminho.replace(/^assets\/sprites_combate\//, "");
+    elemento.style.setProperty("--margem-superior-sprite", margensSuperioresCombate[chaveMargem] ?? 0);
     elemento.alt = pescado.nome;
     elemento.style.display = "block";
 }

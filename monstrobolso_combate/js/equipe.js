@@ -31,6 +31,8 @@ function preencherHP(card, p) {
     hp.value = Math.max(0, Number(p.hp_atual));
     card.querySelector('.hp_texto').textContent = `HP ${p.hp_atual}/${p.hp_max}${vivo(p) ? '' : ' · Sem HP'}`;
     card.classList.toggle('sem_hp', !vivo(p));
+    // Estados exclusivamente visuais da HUD; não modificam a lógica de HP.
+    card.classList.toggle('hp_baixo', vivo(p) && hp.value / hp.max <= 0.3);
 }
 function escolherDestino(slot) {
     destinoEquipe = slot;
@@ -46,10 +48,11 @@ function renderizarEquipe() {
         const card = document.getElementById('modelo_slot_equipe').content.firstElementChild.cloneNode(true);
         const selecionar = card.querySelector('.selecionar_slot');
         card.classList.toggle('destino', slot === destinoEquipe);
+        card.classList.toggle('slot_vazio', !p);
         selecionar.setAttribute('aria-pressed', String(slot === destinoEquipe));
         selecionar.disabled = bloqueado;
         card.querySelector('.numero_slot').textContent = `0${slot} · ${slot === 1 ? 'PRIMEIRA POSIÇÃO' : 'SUPORTE'}`;
-        card.querySelector('.nome_slot').textContent = p?.nome || 'Posição vazia';
+        card.querySelector('.nome_slot').textContent = p ? (window.nomeMaremon ? window.nomeMaremon(p.nome) : p.nome) : 'Posição vazia';
         card.querySelector('.rotulo_slot').textContent = p ? (p === primeiroVivo ? 'Entra primeiro' : `Nv. ${p.nivel} · ${p.tipo}`) : 'Clique para preencher';
         preencherImagem(card.querySelector('img'), p);
         card.querySelector('.slot_hp').hidden = !p;
@@ -65,13 +68,15 @@ function renderizarEquipe() {
     listaEquipe.replaceChildren();
     const termo = filtroEquipe.value.trim().toLowerCase();
     const filtrados = pescadosEquipe.filter(p => `${p.nome} ${p.tipo}`.toLowerCase().includes(termo));
-    if (!filtrados.length) listaEquipe.textContent = 'Nenhum Pescado encontrado.';
+    if (!filtrados.length) {
+    listaEquipe.innerHTML = '<p class="equipe_vazio">Nenhum Pescado encontrado.</p>';
+}
     for (const p of filtrados) {
         const card = document.getElementById('modelo_pescado_equipe').content.firstElementChild.cloneNode(true);
         const slot = slotDo(p);
         card.classList.toggle('ativo', slot > 0);
         preencherImagem(card.querySelector('img'), p);
-        card.querySelector('h3').textContent = p.nome;
+        card.querySelector('h3').textContent = window.nomeMaremon ? window.nomeMaremon(p.nome) : p.nome;
         card.querySelector('.info_tipo').textContent = `${p.tipo} · Nv. ${p.nivel} · ${slot ? 'Posição ' + slot : 'Reserva'}`;
         card.querySelector('.info_stats').textContent = `ATK ${p.atk} · DEF ${p.def} · VEL ${p.spe} · EXP ${p.exp}`;
         preencherHP(card, p);
