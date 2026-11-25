@@ -1,0 +1,380 @@
+<?php
+
+require_once __DIR__ . "/php/sessao.php";
+
+if (!isset($_SESSION["pescador_id"])) {
+    header("Location: login.html");
+    exit;
+}
+
+require_once __DIR__ . "/php/conexao.php";
+
+$stmt = $pdo->prepare("
+    SELECT EXISTS (
+        SELECT 1
+        FROM public.pescador_pescado
+        WHERE pescador_id = :pescador_id
+    )
+");
+
+$stmt->execute([
+    "pescador_id" => $_SESSION["pescador_id"]
+]);
+
+$possuiPescado = $stmt->fetchColumn();
+
+if (
+    $possuiPescado === false ||
+    $possuiPescado === "f" ||
+    $possuiPescado === "0"
+) {
+    header("Location: escolher_inicial.php");
+    exit;
+}
+
+?>
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Maremon</title>
+
+    <link rel="stylesheet"
+          href="css/style.css?v=<?= filemtime(__DIR__ . '/css/style.css') ?>">
+    <link rel="stylesheet"
+          href="css/fundos.css?v=<?= filemtime(__DIR__ . '/css/fundos.css') ?>">
+    <link rel="stylesheet"
+          href="css/buttons.css?v=<?= filemtime(__DIR__ . '/css/buttons.css') ?>">
+    <link rel="stylesheet"
+          href="css/combate.css?v=<?= filemtime(__DIR__ . '/css/combate.css') ?>">
+    <link rel="stylesheet"
+          href="css/centro_cura.css?v=<?= filemtime(__DIR__ . '/css/centro_cura.css') ?>">
+    <link rel="stylesheet"
+          href="css/loja.css?v=<?= filemtime(__DIR__ . '/css/loja.css') ?>">
+    <link rel="stylesheet"
+          href="css/equipe_melhorada.css?v=<?= filemtime(__DIR__ . '/css/equipe_melhorada.css') ?>">
+    <link rel="stylesheet"
+          href="css/iscas.css?v=<?= filemtime(__DIR__ . '/css/iscas.css') ?>">
+    <link rel="stylesheet"
+          href="css/hud_mapa.css?v=<?= filemtime(__DIR__ . '/css/hud_mapa.css') ?>">
+
+    <!-- Versões automáticas dos fundos: evita imagens antigas no cache. -->
+    <style>
+        .fundo_combate {
+            background-image: url("assets/fundo_combate.png?v=<?= filemtime(__DIR__ . '/assets/fundo_combate.png') ?>");
+        }
+
+        .aqua_dentro {
+            background-image: url("assets/Aqua_dentro.png?v=<?= filemtime(__DIR__ . '/assets/Aqua_dentro.png') ?>");
+        }
+    </style>
+</head>
+<body>
+
+    <div id="tela_jogo" class="casa_inicial"></div>
+
+    <template id="cena_casa">
+        <nav class="hud_jogo" aria-label="Menu do jogador">
+            <a class="hud_marca" href="index.php" aria-label="Maremon - início"><span>〰</span> MAREMON</a>
+            <div class="hud_acoes">
+                <button type="button" class="hud_acao" onclick="window.location.href='equipe.php'"><span class="hud_icone">♧</span><span>Equipe</span></button>
+                <button type="button" class="hud_acao" onclick="window.location.href='inventario.php'"><span class="hud_icone">▣</span><span>Minha mochila</span></button>
+                <button type="button" class="hud_acao" onclick="window.location.href='historico.php'"><span class="hud_icone">◷</span><span>Histórico</span></button>
+                <button type="button" class="hud_acao hud_sair" onclick="sairDaConta()"><span class="hud_icone">↪</span><span>Sair da conta</span></button>
+            </div>
+        </nav>
+        <button type="button" id="botao_varanda"
+                aria-label="Ir para a varanda"
+                onclick="trocarfundo('varanda'); goTo('cena_varanda'); carregarIscas()"></button>
+        <button type="button" id="botao_porta"
+                aria-label="Escolher destino"
+                onclick="goTo('escolher_destino')"></button>
+    </template>
+
+    <template id="cena_varanda">
+        <nav class="hud_jogo" aria-label="Menu do jogador">
+            <a class="hud_marca" href="index.php" aria-label="Maremon - início"><span>〰</span> MAREMON</a>
+            <div class="hud_acoes">
+                <button type="button" class="hud_acao" onclick="window.location.href='equipe.php'"><span class="hud_icone">♧</span><span>Equipe</span></button>
+                <button type="button" class="hud_acao" onclick="window.location.href='inventario.php'"><span class="hud_icone">▣</span><span>Minha mochila</span></button>
+                <button type="button" class="hud_acao" onclick="window.location.href='historico.php'"><span class="hud_icone">◷</span><span>Histórico</span></button>
+                <button type="button" class="hud_acao hud_sair" onclick="sairDaConta()"><span class="hud_icone">↪</span><span>Sair da conta</span></button>
+            </div>
+        </nav>
+        <button type="button" class="botao_voltar"
+                onclick="trocarfundo('casa_inicial'); goTo('cena_casa')">
+            Voltar
+        </button>
+        <button type="button" id="botao_boia"
+                aria-label="Procurar Pescado selvagem"
+                onclick="abrirCombate()"></button>
+
+        <div id="aviso_pesca" role="status" aria-live="polite" hidden></div>
+        <aside id="painel_iscas" aria-label="Escolha da isca">
+            <h2>ISCAS DE CHEFE</h2>
+            <p>Escolha uma isca antes de pescar. Chance de chefe: 5%.</p>
+            <div id="lista_iscas"></div>
+            <p id="mensagem_iscas" role="status" aria-live="polite"></p>
+        </aside>
+    </template>
+
+    <template id="cena_combate">
+        <div id="interface_combate">
+            <div id="aviso_boss" class="faixa_boss" hidden>BOSS · DRK · HP ×5</div>
+            <img id="sprite_inimigo"
+                 class="sprite_pescado"
+                 alt="Pescado inimigo">
+
+            <img id="sprite_jogador"
+                 class="sprite_pescado"
+                 alt="Pescado do jogador">
+
+            <div id="painel_inimigo" class="painel_pescado">
+                <span class="marca_maremon" aria-hidden="true">
+                    <svg viewBox="0 0 100 100" focusable="false">
+                        <path d="M85 46 C81 19 48 9 26 25 C6 40 9 67 28 77 C49 88 67 70 62 54 C57 38 42 36 34 45 C26 54 32 66 43 66 C54 66 55 54 48 51" />
+                    </svg>
+                </span>
+                <div class="painel_conteudo">
+                    <div class="painel_identidade">
+                        <h3 id="nome_inimigo">Inimigo</h3>
+                        <span class="nivel_pescado">Nv. <span id="nivel_inimigo">—</span></span>
+                    </div>
+                    <div class="painel_vida">
+                        <span class="rotulo_hp">HP</span>
+                        <div class="barra_hp">
+                            <div id="barra_inimigo" class="vida"></div>
+                        </div>
+                        <p id="hp_inimigo">—</p>
+                    </div>
+                    <span id="status_inimigo" class="tag_status" hidden></span>
+                </div>
+            </div>
+
+            <div id="painel_jogador" class="painel_pescado">
+                <span class="marca_maremon" aria-hidden="true">
+                    <svg viewBox="0 0 100 100" focusable="false">
+                        <path d="M85 46 C81 19 48 9 26 25 C6 40 9 67 28 77 C49 88 67 70 62 54 C57 38 42 36 34 45 C26 54 32 66 43 66 C54 66 55 54 48 51" />
+                    </svg>
+                </span>
+                <div class="painel_conteudo">
+                    <div class="painel_identidade">
+                        <h3 id="nome_jogador">Maremon</h3>
+                        <span class="nivel_pescado">Nv. <span id="nivel_jogador">—</span></span>
+                    </div>
+                    <div class="painel_vida">
+                        <span class="rotulo_hp">HP</span>
+                        <div class="barra_hp">
+                            <div id="barra_jogador" class="vida"></div>
+                        </div>
+                        <p id="hp_jogador">—</p>
+                    </div>
+                    <span id="status_jogador" class="tag_status" hidden></span>
+                </div>
+            </div>
+
+            <div id="menu_combate">
+                <div id="registro_combate">
+                    <button type="button" id="botao_capturar"
+                            aria-label="Capturar Pescado"
+                            title="Capturar Pescado"
+                            onclick="capturarPescado()">
+                        <img src="assets/ui/captura.png" alt="" aria-hidden="true">
+                    </button>
+                    <div id="caixa_dialogo_combate">
+                        <p id="mensagem_combate" role="status" aria-live="polite">
+                            Preparando combate...
+                        </p>
+                    </div>
+                </div>
+
+                <div id="comandos_combate">
+                    <div id="menu_principal_combate" class="menu_acoes">
+                        <button type="button" id="botao_lutar"
+                                class="comando_acao comando_lutar"
+                                onclick="mostrarAtaquesCombate()">
+                            <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+                                <path d="M6 4l7 7-2.5 3.5 6 6-3.5 3.5-6-6L3.5 21l-1-7z"/>
+                                <path d="M26 4l-7 7 2.5 3.5-6 6 3.5 3.5 6-6 3.5 3z"/>
+                                <path d="M12 24l-3 4M20 24l3 4"/>
+                            </svg>
+                            <span>LUTAR</span>
+                        </button>
+
+                        <button type="button" id="botao_itens_combate"
+                                class="comando_acao comando_bolsa"
+                                onclick="abrirItensCombate()">
+                            <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+                                <path d="M6 11h20l2 15H4z"/>
+                                <path d="M12 11V8a4 4 0 0 1 8 0v3"/>
+                                <path d="M15 16v7M11.5 19.5h7"/>
+                            </svg>
+                            <span>BOLSA</span>
+                        </button>
+
+                        <button type="button" id="botao_trocar_combate"
+                                class="comando_acao comando_pescados"
+                                onclick="abrirTrocaCombate()">
+                            <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+                                <path d="M3 16c7-10 16-10 23 0-7 10-16 10-23 0z"/>
+                                <path d="M4 16L1 11v10z"/>
+                                <circle cx="20" cy="14" r="1.5"/>
+                                <path d="M10 19l5 3"/>
+                            </svg>
+                            <span>PESCADOS</span>
+                        </button>
+
+                        <button type="button" id="botao_fugir"
+                                class="comando_acao comando_fugir"
+                                onclick="fugirCombate()">
+                            <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+                                <circle cx="18" cy="5" r="3"/>
+                                <path d="M14 12l-5 6 5 3-4 8M14 12l6 3 6-1M14 12l-2 9 10 4 3 5"/>
+                            </svg>
+                            <span>FUGIR</span>
+                        </button>
+                    </div>
+
+                    <div id="menu_ataques_combate" class="combate_painel_aux" hidden>
+                        <div class="cabecalho_submenu">
+                            <strong>ESCOLHA UM ATAQUE</strong>
+                            <button type="button" onclick="fecharSubmenuCombate()">Voltar ×</button>
+                        </div>
+                        <div id="ataques_combate"></div>
+                    </div>
+
+                    <div id="troca_combate" class="combate_painel_aux" hidden>
+                        <div class="cabecalho_submenu">
+                            <strong>ESCOLHA UM PESCADO</strong>
+                            <button type="button" onclick="fecharTrocaCombate()">Voltar ×</button>
+                        </div>
+                        <p>Trocar voluntariamente consome seu turno.</p>
+                        <div id="opcoes_troca_combate"></div>
+                    </div>
+
+                    <div id="itens_combate" class="combate_painel_aux" hidden>
+                        <div class="cabecalho_submenu">
+                            <strong>MOCHILA DE COMBATE</strong>
+                            <button type="button" onclick="fecharItensCombate()">Voltar ×</button>
+                        </div>
+                        <div class="campos_itens">
+                            <label for="item_batalha">
+                                Item
+                                <select id="item_batalha"></select>
+                            </label>
+                            <label for="alvo_batalha">
+                                Pescado
+                                <select id="alvo_batalha"></select>
+                            </label>
+                        </div>
+                        <div class="acoes_itens">
+                            <button type="button" id="botao_usar_combate"
+                                    onclick="usarItemNoCombate()">
+                                Usar item (consome turno)
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="painel_tipos" class="combate_painel_aux" hidden>
+                        <div class="cabecalho_submenu">
+                            <strong>VANTAGENS DE TIPO (1,3×)</strong>
+                            <button type="button" onclick="mostrarTipos()">Voltar ×</button>
+                        </div>
+                        <ul>
+                            <li>BLU → RED → YEL → PUR → GRN → BLU</li>
+                            <li>LGT vence DRK.</li>
+                            <li>DRK vence RED, BLU, YEL, GRN e PUR.</li>
+                            <li>Demais confrontos: dano normal (1×).</li>
+                        </ul>
+                        <small>O tipo é o do ataque contra o tipo do defensor.</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="cena_aqua_fora">
+        <button type="button" class="botao_voltar"
+                onclick="trocarfundo('casa_inicial'); goTo('cena_casa')">
+            Voltar
+        </button>
+        <button type="button" id="botao_entrar_centro"
+                aria-label="Entrar no Centro Maremon"
+                onclick="trocarfundo('aqua_dentro'); goTo('cena_aqua_dentro')"></button>
+    </template>
+
+    <template id="cena_aqua_dentro">
+        <div class="centro_cura">
+            <div class="centro_cura_emblema" aria-hidden="true">✦</div>
+            <span class="centro_cura_sobretitulo">MAREMON · CENTRO DE RECUPERAÇÃO</span>
+            <h2>Centro de Cura</h2>
+            <p>Uma pausa no oceano para restaurar seus Pescados. Recupere a equipe inteira e volte à aventura!</p>
+            <div class="centro_cura_acoes">
+                <button type="button" class="centro_cura_confirmar" onclick="curarEquipe()">
+                    ✦ Curar meus Pescados
+                </button>
+                <button type="button" class="centro_cura_voltar"
+                        onclick="trocarfundo('aqua_fora'); goTo('cena_aqua_fora')">
+                    Voltar
+                </button>
+            </div>
+            <p id="mensagem_cura" role="status" aria-live="polite"></p>
+            <span class="centro_cura_rodape">◆ SUA EQUIPE MERECE DESCANSAR ◆</span>
+        </div>
+    </template>
+
+    <template id="cena_loja">
+        <div class="loja_container">
+            <header class="loja_cabecalho">
+                <h1>Loja Maremon</h1>
+                <div class="loja_saldo">
+                    <span>Suas moedas</span>
+                    <strong id="saldo_loja">0</strong>
+                </div>
+            </header>
+
+            <p id="mensagem_loja"></p>
+            <div id="produtos_loja"></div>
+
+            <button type="button" class="loja_voltar" onclick="voltarDaLoja()">
+                Voltar
+            </button>
+        </div>
+    </template>
+
+    <template id="escolher_destino">
+        <button type="button" class="botao_voltar"
+                onclick="trocarfundo('casa_inicial'); goTo('cena_casa')">
+            Voltar
+        </button>
+
+        <div id="locais_viagem">
+            <button type="button" class="local_viagem"
+                    onclick="trocarfundo('aqua_fora'); goTo('cena_aqua_fora')">
+                Centro Maremon
+            </button>
+            <button type="button" class="local_viagem" onclick="abrirLoja()">
+                Loja Maremon
+            </button>
+            <button type="button" class="local_viagem"
+                    onclick="window.location.href='pokedex.php'">
+                Enciclopédia
+            </button>
+            <button type="button" class="local_viagem">????????</button>
+        </div>
+    </template>
+
+<script src="js/elementos.js?v=<?= filemtime(__DIR__ . '/js/elementos.js') ?>"></script>
+    <script src="js/game.js?v=<?= filemtime(__DIR__ . '/js/game.js') ?>"></script>
+    <script src="js/monstros.js?v=<?= filemtime(__DIR__ . '/js/monstros.js') ?>"></script>
+    <script src="js/combate.js?v=<?= filemtime(__DIR__ . '/js/combate.js') ?>"></script>
+    <script src="js/cura.js?v=<?= filemtime(__DIR__ . '/js/cura.js') ?>"></script>
+    <script src="js/loja.js?v=<?= filemtime(__DIR__ . '/js/loja.js') ?>"></script>
+    <script src="js/iscas.js?v=<?= filemtime(__DIR__ . '/js/iscas.js') ?>"></script>
+
+</body>
+</html>
