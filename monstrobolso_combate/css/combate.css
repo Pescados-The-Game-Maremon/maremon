@@ -1,623 +1,232 @@
-/*
- * MAREMON · HUD DE COMBATE
- * Cores e painéis angulados inspirados na referência enviada.
- * Os IDs dos controles foram mantidos para preservar os endpoints e eventos JS.
- */
-
+/* Maremon — HUD de batalha. A arena e a escala por espécie são independentes dos menus. */
+#tela_jogo.fundo_combate { background-size: 100% 100%; }
 #interface_combate {
-    --hud-azul: #123de8;
-    --hud-azul-escuro: #071b96;
-    --hud-marinho: #071123;
-    --hud-borda: #f5f8ff;
-    --hud-verde: #54f22b;
-
-    position: absolute;
-    inset: 0;
-    overflow: hidden;
-    isolation: isolate;
-    color: #ffffff;
-    font-family: "Trebuchet MS", "Arial Narrow", Arial, sans-serif;
-    text-shadow: 1px 2px 0 #000;
-}
-
-#interface_combate *,
-#interface_combate *::before,
-#interface_combate *::after {
-    box-sizing: border-box;
-}
-
-#interface_combate::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: 0;
-    pointer-events: none;
-    background: linear-gradient(
-        180deg,
-        transparent 55%,
-        rgba(4, 13, 39, 0.07) 73%,
-        rgba(0, 12, 44, 0.28) 100%
-    );
-}
-
-/* Sprites. O jogador continua espelhado; o tamanho depende da espécie. */
-#interface_combate .sprite_pescado {
-    position: absolute;
-    z-index: 2;
-    width: clamp(115px, 23vw, 290px);
-    height: clamp(115px, 27vh, 260px);
-    object-fit: contain;
-    image-rendering: pixelated;
-    pointer-events: none;
-    filter: drop-shadow(0 13px 7px rgba(3, 12, 36, 0.5));
-    will-change: transform;
-}
-
-#sprite_inimigo {
-    top: 15%;
-    right: 14%;
-    transform: none;
-    transform-origin: center;
-}
-
-#sprite_jogador {
-    left: 13%;
-    bottom: 40%;
-    transform: scaleX(-1);
-    transform-origin: center;
-}
-
-/* Painéis de HP em forma de lâmina. */
-#interface_combate .painel_pescado {
-    position: absolute;
-    z-index: 5;
-    width: clamp(340px, 42vw, 705px);
-    min-height: clamp(125px, 12.3vw, 179px);
-    padding: clamp(15px, 2vw, 27px) clamp(30px, 4.2vw, 70px);
-    background: linear-gradient(135deg, #0a29c6 0%, #082eb3 45%, #02146a 100%);
-    clip-path: polygon(8% 0, 100% 0, 91% 88%, 16% 100%, 0 70%);
-    filter: drop-shadow(5px 7px 0 rgba(0, 0, 0, 0.45));
-}
-
-#interface_combate .painel_pescado::before {
-    content: "";
-    position: absolute;
-    inset: clamp(6px, .65vw, 11px);
-    z-index: -1;
-    background: linear-gradient(125deg, #101827, #030916 68%, #0b1425);
-    clip-path: polygon(8% 0, 100% 0, 91% 88%, 16% 100%, 0 70%);
-}
-
-#interface_combate .painel_pescado::after {
-    content: "";
-    position: absolute;
-    top: 5px;
-    right: 12%;
-    width: 23%;
-    height: 8px;
-    transform: skewX(-40deg);
-    background: #155af8;
-    pointer-events: none;
-}
-
-#interface_combate #painel_inimigo {
-    top: 5.3%;
-    left: 0.8%;
-}
-
-#interface_combate #painel_jogador {
-    right: 0.8%;
-    bottom: 27.5%;
-    transform: scaleX(-1);
-}
-
-/* O painel do jogador é espelhado, mas o conteúdo deve continuar legível. */
-#painel_jogador > * {
-    transform: scaleX(-1);
-}
-
-#interface_combate .painel_conteudo {
-    position: relative;
-    z-index: 1;
-    padding-left: clamp(43px, 5.8vw, 90px);
-}
-
-#interface_combate .marca_maremon {
-    position: absolute;
-    top: 26%;
-    left: 4%;
-    width: clamp(48px, 7.2vw, 106px);
-    height: clamp(48px, 7.2vw, 106px);
-    display: grid;
-    place-items: center;
-    color: #f8fbff;
-    font-size: clamp(44px, 6.5vw, 86px);
-    font-family: Georgia, serif;
-    line-height: 1;
-    text-shadow: 2px 4px 0 #030915, 0 0 7px #000;
-}
-
-#interface_combate .marca_maremon svg {
-    display: block;
-    width: 100%;
-    height: 100%;
-    fill: none;
-    stroke: #f8fbff;
-    stroke-width: 8;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    filter: drop-shadow(2px 3px 0 #010512);
-}
-
-/* Simétrico: reverter a direção do painel do jogador. */
-#painel_jogador .marca_maremon {
-    left: auto;
-    right: 8%;
-}
-
-#interface_combate .painel_identidade {
-    display: flex;
-    gap: clamp(6px, 1vw, 15px);
-    align-items: center;
-    white-space: nowrap;
-    min-width: 0;
-}
-
-#interface_combate .painel_pescado h3 {
-    flex: 1 1 auto;
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    margin: 0;
-    font-size: clamp(18px, 2vw, 34px);
-    font-style: italic;
-    line-height: 1.1;
-    font-weight: 900;
-    letter-spacing: -0.035em;
-    -webkit-text-stroke: 0.35px #fff;
-}
-
-#interface_combate .nivel_pescado {
-    flex: none;
-    font-size: clamp(14px, 1.65vw, 27px);
-    font-style: italic;
-    font-weight: 900;
-}
-
-#interface_combate .tag_tipo {
-    flex: none;
-    display: inline-block;
-    min-width: 45px;
-    padding: 3px 9px;
-    border-radius: 30px;
-    background: #a9a08f;
-    color: #fff;
-    border: 2px solid #1d1d27;
-    text-align: center;
-    font-style: italic;
-    font-size: clamp(11px, 1.3vw, 19px);
-    font-weight: 900;
-    text-shadow: 1px 1px 1px #16151d;
-}
-
-#interface_combate .tag_tipo[data-tipo="RED"] { background: #d73342; }
-#interface_combate .tag_tipo[data-tipo="BLU"] { background: #257bdb; }
-#interface_combate .tag_tipo[data-tipo="YEL"] { background: #dfba2b; }
-#interface_combate .tag_tipo[data-tipo="GRN"] { background: #169751; }
-#interface_combate .tag_tipo[data-tipo="PUR"] { background: #8746c8; }
-#interface_combate .tag_tipo[data-tipo="LGT"] { background: #b3a289; }
-#interface_combate .tag_tipo[data-tipo="DRK"] { background: #39465b; }
-
-#interface_combate .painel_vida {
-    display: flex;
-    align-items: center;
-    gap: clamp(7px, 1vw, 14px);
-    margin-top: clamp(8px, .85vw, 15px);
-}
-
-#interface_combate .rotulo_hp {
-    font-size: clamp(18px, 2vw, 29px);
-    font-weight: 900;
-    font-style: italic;
-}
-
-#interface_combate .barra_hp {
-    flex: 1;
-    height: clamp(13px, 1.7vw, 26px);
-    min-width: 35px;
-    border: clamp(2px, .23vw, 4px) solid #000;
-    border-radius: 99px;
-    overflow: hidden;
-    background: #25252d;
-    box-shadow: 0 2px 0 #606068;
-    transform: rotate(-2deg);
-}
-
-#interface_combate .barra_hp .vida {
-    display: block;
-    width: 100%;
-    height: 100%;
-    border-radius: inherit;
-    background: var(--hud-verde);
-    transition: width .36s ease, background-color .25s ease;
-}
-
-#interface_combate .painel_vida p {
-    position: absolute;
-    right: 0;
-    bottom: -14px;
-    margin: 0;
-    font-size: clamp(14px, 1.3vw, 20px);
-    font-weight: 800;
-    color: #cbd8ed;
-}
-
-#interface_combate .tag_status {
-    position: absolute;
-    bottom: -18px;
-    left: 32%;
-    border: 1px solid white;
-    border-radius: 4px;
-    background: #9f2858;
-    padding: 2px 8px;
-    font-size: 10px;
-    font-weight: 900;
-    letter-spacing: .05em;
-}
-
-/* Rodapé: caixa de diálogo à esquerda e comandos à direita. */
-#interface_combate #menu_combate {
-    position: absolute;
-    z-index: 10;
-    left: 0.8%;
-    right: 1.3%;
-    bottom: 1.5%;
-    height: clamp(176px, 24vh, 240px);
-    display: grid;
-    grid-template-columns: minmax(0, 57%) minmax(0, 42%);
-    align-items: stretch;
-    gap: 1%;
-    pointer-events: none;
-}
-
-#menu_combate > * {
-    pointer-events: auto;
-    min-width: 0;
-}
-
-#interface_combate #caixa_dialogo_combate {
-    position: relative;
-    background: linear-gradient(145deg, #123fe4, #001267);
-    clip-path: polygon(3% 7%, 100% 0, 96% 94%, 6% 100%, 0 84%);
-    padding: 9px;
-    filter: drop-shadow(0 6px 0 #020613);
-}
-
-#interface_combate #caixa_dialogo_combate::before {
-    content: "";
-    position: absolute;
-    inset: clamp(5px, .65vw, 11px);
-    z-index: 0;
-    background: #f4f5fc;
-    clip-path: polygon(3% 7%, 100% 0, 96% 94%, 6% 100%, 0 84%);
-}
-
-#interface_combate #caixa_dialogo_combate::after {
-    content: "";
-    position: absolute;
-    inset: clamp(9px, 1.05vw, 17px);
-    z-index: 0;
-    background: linear-gradient(145deg, #111e33, #070e20 85%);
-    clip-path: polygon(3% 7%, 100% 0, 96% 94%, 6% 100%, 0 84%);
-}
-
-#interface_combate #botao_capturar,
-#interface_combate #mensagem_combate,
-#interface_combate #painel_equipe_combate,
-#interface_combate .atalhos_combate {
-    position: relative;
-    z-index: 2;
-}
-
-#interface_combate .dialogo_titulo {
-    margin: 30px 0 0 8%;
-    font-size: clamp(9px, .9vw, 13px);
-    letter-spacing: .16em;
-    color: #8ab6ff;
-    font-weight: 900;
-}
-
-#interface_combate .dialogo_titulo span {
-    margin-left: 5px;
-    color: #f4f4ff;
-}
-
-#interface_combate #mensagem_combate {
-    margin: 9px 8% 8px;
-    padding-right: 10%;
-    min-height: 42px;
-    max-height: 38%;
-    overflow-y: auto;
-    font-size: clamp(12px, 1.2vw, 17px);
-    line-height: 1.35;
-    font-weight: 700;
-}
-
-#interface_combate #painel_equipe_combate {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 5px;
-    margin: 7px 8%;
-    max-width: 84%;
-}
-
-#interface_combate .integrante_combate {
-    min-width: 0;
-    max-width: 33%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    padding: 4px 7px;
-    border: 1px solid #6281ca;
-    transform: skewX(-9deg);
-    background: #101e3c;
-    font-size: clamp(9px, .8vw, 12px);
-    font-weight: 700;
-}
-
-#interface_combate .integrante_ativo {
-    background: #153cc8;
-    border-color: #e9f1ff;
-    box-shadow: inset 0 -2px 0 #698df3;
-}
-
-#interface_combate .integrante_derrotado {
-    opacity: .48;
-    text-decoration: line-through;
-}
-
-#interface_combate .atalhos_combate {
-    display: flex;
-    gap: 6px;
-    margin: 4px 8% 14px;
-}
-
-#interface_combate .atalhos_combate button {
-    border: 1px solid #94b9ff;
-    background: #172b5a;
-    color: #f5f7ff;
-    padding: 4px 11px;
-    transform: skewX(-10deg);
-    cursor: pointer;
-    font: 900 clamp(10px, .87vw, 13px) "Trebuchet MS", Arial, sans-serif;
-    text-transform: uppercase;
-}
-
-#interface_combate .atalhos_combate button span {
-    color: #93bcff;
-    margin-right: 4px;
-}
-
-#interface_combate .atalhos_combate button:hover:not(:disabled) {
-    background: #1c4ec6;
-}
-
-#interface_combate #comandos_combate {
-    position: relative;
-    min-height: 0;
-}
-
-#interface_combate .menu_acoes {
-    display: grid;
-    width: 100%;
-    height: 100%;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: 1fr 1fr;
-    gap: clamp(5px, .75vw, 12px);
-}
-
-#interface_combate .comando_acao {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: clamp(5px, .9vw, 15px);
-    min-width: 0;
-    padding: 9px 8px;
-    border: 0;
-    background: #ffffff;
-    clip-path: polygon(15% 0, 100% 0, 86% 100%, 0 100%);
-    color: #ffffff;
-    cursor: pointer;
-    font-size: clamp(14px, 2.15vw, 32px);
-    font-style: italic;
-    font-weight: 900;
+    --fundo-hud: #151e30;
+    --card-hud: #172338;
+    --borda-hud: #344b67;
+    --texto-hud: #f0f5ff;
+    --suave-hud: #b8c8dd;
+    --azul-hud: #8bc9ff;
+    --sombra-hud: 0 4px 0 #080d18aa, 0 8px 20px #0004;
+    --margem-hud: clamp(8px, 2vw, 32px);
+    --altura-painel: clamp(58px, 10.8vh, 94px);
+    --topo-painel: 1.5vh;
+    --espaco-arena: clamp(4px, .8vh, 10px);
+    --altura-menu: 24vh;
+    /* Mesmas dimensões e limites da versão anterior. */
+    --tamanho-jogador: min(30vw, 34vh, 330px);
+    --tamanho-inimigo: min(28vw, 31vh, 300px);
+    --apoio-jogador: 48%;
+    --apoio-inimigo: 53%;
+    position: absolute; inset: 0; overflow: hidden; isolation: isolate;
+    color: var(--texto-hud);
     font-family: "Trebuchet MS", Arial, sans-serif;
-    letter-spacing: -.035em;
-    text-shadow: 2px 3px 0 #030619;
-    transition: filter .16s ease, translate .16s ease;
+}
+#interface_combate *, #interface_combate *::before, #interface_combate *::after { box-sizing: border-box; }
+#interface_combate [hidden] { display: none !important; }
+#interface_combate::before {
+    content: ""; position: absolute; inset: 0; pointer-events: none;
+    background: linear-gradient(180deg, transparent 56%, #08122315 74%, #08122355 100%);
+}
+#interface_combate .sprite_pescado {
+    position: absolute; z-index: 2; object-fit: contain; object-position: center bottom;
+    image-rendering: auto; pointer-events: none; transform-origin: center bottom;
+    filter: drop-shadow(0 13px 7px rgba(3,12,36,.5)); will-change: transform;
+}
+#interface_combate #sprite_jogador {
+    --tamanho-sprite: min(calc(var(--tamanho-jogador) * var(--escala-combate, 1)), 40vw, 52vh);
+    width: var(--tamanho-sprite); height: var(--tamanho-sprite);
+    left: calc(21% - var(--tamanho-sprite) / 2);
+    /* Mantém a âncora original; só desloca para baixo se o sprite grande invadir o HP. */
+    top: max(calc(100% - var(--apoio-jogador) - var(--tamanho-sprite) * .94921875),
+             calc(var(--topo-painel) + var(--altura-painel) + var(--espaco-arena) - var(--tamanho-sprite) * var(--margem-superior-sprite, 0)));
+    bottom: auto; right: auto; transform: scaleX(-1);
+}
+#interface_combate #sprite_inimigo {
+    --tamanho-sprite: min(calc(var(--tamanho-inimigo) * var(--escala-combate, 1)), 38vw, 49vh);
+    width: var(--tamanho-sprite); height: var(--tamanho-sprite);
+    left: calc(81% - var(--tamanho-sprite) / 2);
+    bottom: calc(var(--apoio-inimigo) - var(--tamanho-sprite) * .05078125);
+    top: auto; right: auto; transform: none;
 }
 
-#interface_combate .comando_acao::before {
-    content: "";
-    position: absolute;
-    inset: 4px;
-    background: linear-gradient(155deg, #14243c, #030914);
-    clip-path: polygon(15% 0, 100% 0, 86% 100%, 0 100%);
+/* Cartões compactos de HP: cada painel pertence ao Pescado do seu lado. */
+#interface_combate .painel_pescado {
+    --cor-tipo: #768aa5;
+    position: absolute; z-index: 5; width: min(39vw, 600px); height: var(--altura-painel);
+    display: flex; align-items: center; gap: clamp(7px, 1vw, 16px);
+    padding: clamp(7px, 1.2vh, 13px) clamp(10px, 1.3vw, 21px);
+    padding-left: clamp(15px, 1.8vw, 29px);
+    overflow: hidden; border-radius: 17px; border: 1px solid var(--borda-hud);
+    background: var(--card-hud); box-shadow: var(--sombra-hud);
+}
+#interface_combate #painel_jogador { top: var(--topo-painel); left: var(--margem-hud); }
+#interface_combate #painel_inimigo { top: 53%; right: var(--margem-hud); }
+#interface_combate .painel_pescado[data-tipo="LGT"] { --cor-tipo: #ffffff; }
+#interface_combate .painel_pescado[data-tipo="DRK"] { --cor-tipo: #42454e; }
+#interface_combate .painel_pescado[data-tipo="BLU"] { --cor-tipo: #429bff; }
+#interface_combate .painel_pescado[data-tipo="GRN"] { --cor-tipo: #48c779; }
+#interface_combate .painel_pescado[data-tipo="RED"] { --cor-tipo: #ed505a; }
+#interface_combate .painel_pescado[data-tipo="PUR"] { --cor-tipo: #a573e8; }
+#interface_combate .painel_pescado[data-tipo="YEL"] { --cor-tipo: #f4d14b; }
+#interface_combate .faixa_tipo_pescado {
+    position: absolute; top: 0; bottom: 0; left: 0; width: clamp(6px, .65vw, 10px);
+    background: var(--cor-tipo); border-right: 1px solid #ffffff32;
+}
+#interface_combate .marca_maremon {
+    flex: 0 0 clamp(25px, 3.1vw, 48px); display: grid; place-items: center;
+    aspect-ratio: 1; color: var(--azul-hud); border-radius: 10px; background: #203851;
+}
+#interface_combate .marca_maremon svg {
+    width: 79%; height: 79%; fill: none; stroke: currentColor; stroke-width: 8;
+    stroke-linecap: round; stroke-linejoin: round;
+}
+#interface_combate .painel_conteudo { flex: 1; min-width: 0; display: grid; gap: clamp(4px, .7vh, 8px); }
+#interface_combate .painel_identidade { display: flex; align-items: baseline; gap: 7px; min-width: 0; }
+#interface_combate .painel_pescado h3 {
+    flex: 1; min-width: 0; margin: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+    font-size: clamp(14px, 1.65vw, 26px); line-height: 1.15; font-weight: 800; color: var(--texto-hud);
+}
+#interface_combate .nivel_pescado { white-space: nowrap; font-size: clamp(11px, 1vw, 16px); color: var(--suave-hud); font-weight: 800; }
+#interface_combate .tag_tipo {
+    color: var(--cor-tipo); font-size: 10px; font-weight: 800; white-space: nowrap;
+}
+#interface_combate [data-tipo="DRK"] .tag_tipo { color: #b9bec9; }
+#interface_combate .tag_status {
+    padding: 2px 5px; border-radius: 6px; background: #632d55; color: #ffe0f3;
+    font-size: clamp(9px, .7vw, 11px); font-weight: 800; white-space: nowrap;
+}
+#interface_combate .painel_vida {
+    display: grid; grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center; gap: clamp(4px, .7vw, 10px);
+}
+#interface_combate .rotulo_hp { font-size: clamp(10px, .95vw, 15px); font-weight: 800; color: var(--azul-hud); }
+#interface_combate .barra_hp {
+    position: relative; height: clamp(8px, 1.4vh, 13px); border-radius: 999px; overflow: hidden;
+    background: #080e1b; border: 1px solid #526581; box-shadow: inset 0 1px 3px #0005;
+}
+#interface_combate .barra_hp .vida { display: block; width: 100%; height: 100%; border-radius: inherit; background: #46d6a1; transition: width .3s, background .2s; }
+#interface_combate .painel_vida p { margin: 0; white-space: nowrap; color: var(--suave-hud); font-weight: 800; font-size: clamp(10px, 1vw, 16px); font-variant-numeric: tabular-nums; }
+#interface_combate #aviso_boss {
+    flex: none; align-self: flex-start; max-width: 100%; padding: 3px 9px; background: #351f3c; color: #f8d5ec;
+    border: 1px solid #84516f; border-radius: 12px; font-size: clamp(10px, 1vw, 15px); font-weight: 800;
 }
 
-#interface_combate .comando_lutar {
-    background: #f7fbff;
+/* Faixa de comandos fixa: o registro à esquerda e um único menu à direita. */
+#interface_combate #menu_combate {
+    position: absolute; z-index: 10; left: var(--margem-hud); right: var(--margem-hud); bottom: 2vh;
+    height: var(--altura-menu); display: grid; grid-template-columns: minmax(0, 1.22fr) minmax(0, 1fr);
+    gap: clamp(8px, 1.2vw, 20px); align-items: stretch;
 }
-
-#interface_combate .comando_lutar::before {
-    background: linear-gradient(140deg, #072fbf 5%, #0724a2 65%, #06195a);
-}
-
-#interface_combate .comando_acao svg,
-#interface_combate .comando_acao span {
-    position: relative;
-    z-index: 1;
-}
-
-#interface_combate .comando_acao svg {
-    flex: none;
-    width: clamp(22px, 3.1vw, 49px);
-    height: clamp(22px, 3.1vw, 49px);
-    fill: none;
-    stroke: #ffffff;
-    stroke-width: 2.7;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    filter: drop-shadow(2px 3px 0 #010817);
-}
-
-#interface_combate .comando_acao:hover:not(:disabled) {
-    filter: brightness(1.3) drop-shadow(0 0 6px #8eb6ff);
-    translate: 0 -2px;
-}
-
-#interface_combate button:disabled {
-    opacity: .53;
-    cursor: not-allowed;
-}
-
-#interface_combate button:focus-visible,
-#interface_combate select:focus-visible {
-    outline: 3px solid #ffe484;
-    outline-offset: 2px;
-}
-
+#interface_combate #registro_combate, #interface_combate #comandos_combate { min-width: 0; min-height: 0; }
+#interface_combate #caixa_dialogo_combate,
+#interface_combate #menu_principal_combate,
 #interface_combate .combate_painel_aux {
-    width: 100%;
-    height: 100%;
-    overflow-y: auto;
-    padding: clamp(9px, 1vw, 17px);
-    border: 4px solid #f3f5ff;
-    background: linear-gradient(155deg, #0926a5, #071638 65%, #080e24);
-    box-shadow: inset 0 0 0 3px #061239, 0 5px 0 #00177d;
-    color: #fff;
+    height: 100%; min-height: 0; border-radius: 17px; border: 1px solid var(--borda-hud);
+    background: var(--fundo-hud); box-shadow: var(--sombra-hud);
 }
+#interface_combate #caixa_dialogo_combate { padding: clamp(8px, 1.5vh, 16px) clamp(12px, 1.6vw, 24px); display: flex; flex-direction: column; gap: 8px; overflow: hidden; }
+#interface_combate #caixa_dialogo_combate::before {
+    content: "BATALHA"; display: block; flex: none; color: var(--azul-hud);
+    font-size: clamp(10px, .85vw, 13px); font-weight: 900; letter-spacing: .16em;
+}
+#interface_combate #mensagem_combate {
+    flex: 1; min-height: 0; margin: 0; overflow: auto; overflow-wrap: anywhere;
+    font-size: clamp(12px, 1.15vw, 18px); font-weight: 600; line-height: 1.5;
+    scrollbar-width: thin; scrollbar-color: #425e80 transparent;
+}
+#interface_combate #menu_principal_combate {
+    --diametro-captura: min(clamp(40px, 5vw, 76px), 12vh);
+    display: grid; grid-template-columns: minmax(0, 1fr) var(--diametro-captura) minmax(0, 1fr);
+    grid-template-rows: repeat(2, minmax(0, 1fr));
+    grid-template-areas: "lutar capturar bolsa" "pescados capturar fugir";
+    gap: clamp(5px, .75vw, 12px); padding: clamp(6px, 1.1vh, 13px);
+    background: #090f1ce8;
+}
+#interface_combate .comando_lutar { grid-area: lutar; }
+#interface_combate .comando_bolsa { grid-area: bolsa; }
+#interface_combate .comando_pescados { grid-area: pescados; }
+#interface_combate .comando_fugir { grid-area: fugir; }
+#interface_combate .comando_acao {
+    display: flex; align-items: center; justify-content: center; min-width: 0; min-height: 0;
+    gap: clamp(4px, .7vw, 12px); padding: 4px 7px; border: 1px solid #354d6b; border-radius: 12px;
+    background: #172338; color: var(--texto-hud); box-shadow: 0 2px 0 #080d18;
+    font: inherit; font-weight: 800; font-size: clamp(10px, 1.18vw, 19px); cursor: pointer;
+    transition: background .15s, border-color .15s;
+}
+#interface_combate .comando_lutar { background: repeating-linear-gradient(-45deg,#ffffff09 0 9px,transparent 9px 18px),linear-gradient(120deg,#203957,#344d70); border-color: #486689; }
+#interface_combate .comando_acao svg { flex: none; width: clamp(16px, 2vw, 31px); height: clamp(16px, 2vw, 31px); fill: none; stroke: var(--azul-hud); stroke-width: 2.3; stroke-linecap: round; stroke-linejoin: round; }
+#interface_combate #botao_capturar {
+    grid-area: capturar; place-self: center; display: grid; place-items: center;
+    width: var(--diametro-captura); height: var(--diametro-captura); padding: 0;
+    border-radius: 50%; border: 2px solid #8bc9ff; color: white;
+    background: linear-gradient(145deg, #365b88, #121e35 75%); box-shadow: 0 3px 0 #050b15, inset 0 0 0 3px #ffffff0b;
+    cursor: pointer; transition: background .15s, border-color .15s;
+}
+#interface_combate #botao_capturar img { display: block; width: 58%; height: 68%; min-width: 0; min-height: 0; object-fit: contain; filter: brightness(0) invert(1); pointer-events: none; }
+#interface_combate button:hover:not(:disabled) { background-color: #29415e; border-color: #81b8ef; filter: brightness(1.15); }
+#interface_combate button:disabled { cursor: not-allowed; opacity: .48; box-shadow: none; }
+#interface_combate button:focus-visible, #interface_combate select:focus-visible { outline: 2px solid #b5dfff; outline-offset: 2px; }
 
+/* Submenus ocupam exatamente o lugar dos cinco comandos, com rolagem interna. */
+#interface_combate .combate_painel_aux {
+    padding: clamp(7px, 1.1vh, 14px); overflow: auto; overscroll-behavior: contain;
+    scrollbar-width: thin; scrollbar-color: #425e80 #101827;
+}
 #interface_combate .cabecalho_submenu {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 10px;
+    display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px;
+    color: var(--azul-hud); font-size: clamp(11px, 1vw, 15px);
 }
-
-#interface_combate .cabecalho_submenu strong {
-    font-size: clamp(11px, 1.1vw, 15px);
-    letter-spacing: .07em;
+#interface_combate .cabecalho_submenu strong { letter-spacing: .03em; }
+#interface_combate .combate_painel_aux button {
+    border: 1px solid #3b5372; border-radius: 10px; background: var(--card-hud); color: var(--texto-hud);
+    padding: 7px 10px; font: inherit; font-weight: 700; cursor: pointer;
 }
+#interface_combate .cabecalho_submenu button { flex: none; white-space: nowrap; }
+#interface_combate .combate_painel_aux p, #interface_combate .combate_painel_aux small,
+#interface_combate .combate_painel_aux label, #interface_combate .combate_painel_aux li { color: var(--suave-hud); font-size: clamp(11px, .95vw, 14px); }
+#interface_combate .combate_painel_aux p { margin: 0 0 8px; }
+#interface_combate #ataques_combate, #interface_combate #opcoes_troca_combate { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; }
+#interface_combate .botao_ataque, #interface_combate #opcoes_troca_combate button { min-width: 0; text-align: left; overflow-wrap: anywhere; font-size: clamp(11px, 1vw, 15px); }
+#interface_combate .botao_ataque span, #interface_combate .botao_ataque small { display: block; }
+#interface_combate .botao_ataque span { color: var(--azul-hud); font-weight: 800; }
+#interface_combate .botao_ataque small { margin-top: 3px; }
+#interface_combate .campos_itens { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+#interface_combate .campos_itens label { display: grid; gap: 4px; min-width: 0; font-weight: 700; }
+#interface_combate .campos_itens select { width: 100%; min-width: 0; padding: 7px; color: var(--texto-hud); background: #090f1c; border: 1px solid #3b5372; border-radius: 8px; font: inherit; }
+#interface_combate .acoes_itens { margin-top: 8px; }
+#interface_combate #botao_usar_combate { width: 100%; font-size: clamp(11px, .95vw, 14px); background: #203851; }
+#interface_combate #painel_tipos ul { margin: 8px 0; padding-left: 20px; }
 
-#interface_combate .cabecalho_submenu button {
-    background: transparent;
-    color: #fff;
-    border: 1px solid #adc5ff;
-    padding: 4px 10px;
-    cursor: pointer;
-    font-size: 11px;
+@media (max-width: 850px) {
+    #interface_combate .painel_pescado { width: min(46vw, 500px); border-radius: 12px; }
+    #interface_combate .marca_maremon { display: none; }
+    #interface_combate #menu_combate { grid-template-columns: minmax(0, .8fr) minmax(0, 1fr); }
+    #interface_combate .comando_acao { gap: 3px; padding-inline: 3px; }
 }
-
-#interface_combate #ataques_combate {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 7px;
+@media (max-width: 650px) and (orientation: portrait) {
+    #interface_combate { --altura-menu: 32vh; --altura-painel: clamp(56px, 9vh, 80px); }
+    #interface_combate #menu_combate { grid-template-columns: 1fr; grid-template-rows: minmax(0, .38fr) minmax(0, 1fr); gap: 6px; }
+    #interface_combate .painel_pescado { width: min(55vw, 360px); }
+    #interface_combate #painel_inimigo { top: 51%; }
+    #interface_combate #caixa_dialogo_combate { padding: 6px 10px; gap: 3px; }
+    #interface_combate #caixa_dialogo_combate:has(#aviso_boss:not([hidden]))::before { display: none; }
+    #interface_combate #menu_principal_combate { --diametro-captura: min(58px, 10vh); }
+    #interface_combate .comando_acao { font-size: 13px; }
+    #interface_combate .tag_tipo { display: none; }
 }
-
-#interface_combate .botao_ataque,
-#interface_combate #opcoes_troca_combate button,
-#interface_combate .acoes_itens button {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: center;
-    min-width: 0;
-    padding: 8px 11px;
-    border: 2px solid #f5f8ff;
-    background: #10244a;
-    color: #ffffff;
-    cursor: pointer;
-    text-align: left;
-    font-family: inherit;
-    font-weight: 900;
-    font-size: clamp(11px, .95vw, 15px);
-    transition: background-color .15s ease, transform .15s ease;
+@media (max-height: 500px) and (orientation: landscape) {
+    #interface_combate { --altura-painel: clamp(45px, 13vh, 60px); }
+    #interface_combate .painel_pescado { padding-block: 4px; }
+    #interface_combate .painel_pescado h3 { font-size: clamp(12px, 1.5vw, 17px); }
+    #interface_combate .painel_conteudo { gap: 3px; }
+    #interface_combate #caixa_dialogo_combate { gap: 3px; padding-block: 5px; }
 }
-
-#interface_combate .botao_ataque:hover:not(:disabled),
-#interface_combate #opcoes_troca_combate button:hover:not(:disabled),
-#interface_combate .acoes_itens button:hover:not(:disabled) {
-    background: #1f4dc0;
-    transform: translateY(-2px);
-}
-
-#interface_combate .botao_ataque small {
-    color: #a9cbff;
-    font-size: clamp(9px, .74vw, 12px);
-    font-weight: 600;
-    margin-top: 4px;
-    line-height: 1.2;
-}
-
-#interface_combate .combate_painel_aux > p {
-    font-size: clamp(11px, .94vw, 14px);
-    margin: 4px 0 10px;
-}
-
-#interface_combate #opcoes_troca_combate {
-    display: grid;
-    gap: 7px;
-    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-}
-
-#interface_combate .campos_itens {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 10px;
-    margin-bottom: 10px;
-}
-
-#interface_combate .campos_itens label {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-    font-size: 11px;
-    font-weight: 900;
-}
-
-#interface_combate .campos_itens select {
-    width: 100%;
-    min-width: 0;
-    padding: 8px 9px;
-    color: #14213b;
-    border: 2px solid white;
-    background: #ecf4ff;
-}
-
-#interface_combate .acoes_itens button {
-    background: #153aa6;
-    width: 100%;
-    align-items: center;
-}
-
-#interface_combate #painel_tipos ul {
-    font-size: 12px;
-    line-height: 1.5;
-    margin: 6px 0;
-    padding-left: 21px;
-}
-
-#interface_combate #painel_tipos small {
-    color: #bbd1ff;
-    font-size: 10px;
-}
-
-/* Honrar o atributo hidden: evita sobreposições das quatro abas. */
-#interface_combate [hidden] {
-    display: none !important;
+@media (max-width: 380px) {
+    #interface_combate .painel_pescado { padding-right: 7px; gap: 4px; }
+    #interface_combate .painel_identidade { gap: 4px; }
+    #interface_combate .painel_pescado h3 { font-size: 13px; }
+    #interface_combate .comando_acao { font-size: 11px; }
 }
 
 /* Animação universal: avanço curto + impacto, sem alterar os dados da luta. */
@@ -682,231 +291,8 @@
     to { transform: scale(1.35) rotate(14deg); opacity: 0; }
 }
 
-/* Compactação progressiva para notebooks e telas menores. */
-@media (max-width: 1050px) {
-    #interface_combate .painel_pescado {
-        width: 46vw;
-        min-height: 104px;
-        padding: 15px 24px;
-    }
-
-    #interface_combate #painel_jogador { bottom: 29%; }
-    #interface_combate .painel_conteudo { padding-left: 51px; }
-    #interface_combate .painel_pescado h3 { font-size: clamp(15px, 2.1vw, 23px); }
-    #interface_combate .nivel_pescado { font-size: clamp(13px, 1.6vw, 19px); }
-    #interface_combate .marca_maremon { font-size: 55px; width: 65px; height: 65px; }
-    #interface_combate #menu_combate { height: clamp(165px, 27vh, 225px); }
-}
-
-@media (max-width: 700px) {
-    #interface_combate .painel_pescado {
-        width: min(75vw, 395px);
-        min-height: 90px;
-        padding: 13px 23px;
-    }
-
-    #interface_combate #painel_inimigo { top: 1%; left: -1%; }
-    #interface_combate #painel_jogador { right: -1%; bottom: 46%; }
-    #interface_combate .painel_conteudo { padding-left: 43px; }
-    #interface_combate .painel_pescado h3 { font-size: 16px; }
-    #interface_combate .tag_tipo { font-size: 10px; min-width: 31px; padding: 2px 5px; }
-    #interface_combate .nivel_pescado { font-size: 12px; }
-    #interface_combate .rotulo_hp { font-size: 17px; }
-    #interface_combate .marca_maremon { font-size: 42px; width: 45px; height: 45px; }
-    #interface_combate .painel_vida p { bottom: -11px; font-size: 9px; }
-    #interface_combate .sprite_pescado { width: 26vw; height: 19vh; }
-    #sprite_inimigo { top: 23%; right: 14%; }
-    #sprite_jogador { left: 10%; bottom: 49%; }
-
-    #interface_combate #menu_combate {
-        left: 1%;
-        right: 1%;
-        bottom: 1%;
-        height: 41%;
-        display: flex;
-        flex-direction: column;
-        gap: 5px;
-    }
-
-    #interface_combate #caixa_dialogo_combate { flex: 1 1 42%; min-height: 0; }
-    #interface_combate #comandos_combate { flex: 1 1 58%; min-height: 0; }
-    #interface_combate .dialogo_titulo { margin-top: 8px; }
-    #interface_combate #mensagem_combate { margin-top: 5px; min-height: 20px; max-height: 42%; font-size: 11px; }
-    #interface_combate .atalhos_combate { position: absolute; right: 4%; bottom: 6%; margin: 0; }
-    #interface_combate #painel_equipe_combate { position: absolute; left: 5%; bottom: 6%; margin: 0; }
-    #interface_combate .integrante_combate { max-width: none; font-size: 9px; padding: 3px 5px; }
-    #interface_combate .menu_acoes { gap: 3px; }
-    #interface_combate .comando_acao { font-size: clamp(15px, 4vw, 24px); }
-    #interface_combate .comando_acao svg { width: 28px; height: 28px; }
-    #interface_combate .combate_painel_aux { padding: 8px; border-width: 3px; }
-    #interface_combate #ataques_combate { gap: 4px; }
-    #interface_combate .botao_ataque { padding: 5px 7px; }
-}
-
-@media (max-width: 420px) {
-    #interface_combate .painel_pescado { width: 84vw; }
-    #interface_combate .painel_pescado h3 { font-size: 13px; }
-    #interface_combate .painel_identidade { gap: 5px; }
-    #interface_combate .tag_tipo { font-size: 9px; }
-    #interface_combate .nivel_pescado { font-size: 11px; }
-    #interface_combate .comando_acao { font-size: 14px; }
-    #interface_combate .comando_acao svg { width: 20px; height: 20px; }
-    #interface_combate .integrante_combate { max-width: 100px; }
-}
 
 @media (prefers-reduced-motion: reduce) {
-    #interface_combate .sprite_pescado,
-    #interface_combate .flash_golpe {
-        animation: none !important;
-    }
-
+    #interface_combate .sprite_pescado, #interface_combate .flash_golpe { animation: none !important; }
     #interface_combate .barra_hp .vida { transition: none; }
-}
-
-@media (max-height: 640px) and (min-width: 701px) {
-    #interface_combate #menu_combate {
-        height: clamp(145px, 28vh, 185px);
-    }
-
-    #interface_combate #painel_jogador {
-        bottom: 34%;
-    }
-
-    #interface_combate .sprite_pescado {
-        height: 24vh;
-    }
-}
-
-/* A escala altera as dimensões, não o transform das animações.
-   Limites responsivos evitam sprites gigantes fora da arena.
-   Âncoras da arena: centros dos dois círculos da água (21%, 52%) e (81%, 47%).
-   PNG quadrado com 5% de margem inferior; compensamos a margem no bottom. */
-#tela_jogo.fundo_combate { background-size: 100% 100%; }
-#interface_combate {
-    --tamanho-jogador: min(30vw, 34vh, 330px);
-    --tamanho-inimigo: min(28vw, 31vh, 300px);
-    --apoio-jogador: 48%;
-    --apoio-inimigo: 53%;
-}
-#interface_combate .sprite_pescado {
-    object-fit: contain;
-    object-position: center bottom;
-    image-rendering: auto;
-    transform-origin: center bottom;
-}
-#interface_combate #sprite_jogador {
-    --tamanho-sprite: min(calc(var(--tamanho-jogador) * var(--escala-combate, 1)), 40vw, 49vh);
-    width: var(--tamanho-sprite); height: var(--tamanho-sprite);
-    left: calc(21% - var(--tamanho-sprite) / 2);
-    bottom: calc(var(--apoio-jogador) - var(--tamanho-sprite) * .05078125);
-    top: auto; right: auto;
-}
-#interface_combate #sprite_inimigo {
-    --tamanho-sprite: min(calc(var(--tamanho-inimigo) * var(--escala-combate, 1)), 36vw, 45vh);
-    width: var(--tamanho-sprite); height: var(--tamanho-sprite);
-    left: calc(81% - var(--tamanho-sprite) / 2);
-    bottom: calc(var(--apoio-inimigo) - var(--tamanho-sprite) * .05078125);
-    top: auto; right: auto;
-}
-#interface_combate .flash_golpe_alvo_jogador { left: 21%; bottom: 53%; }
-#interface_combate .flash_golpe_alvo_inimigo { right: 19%; top: 38%; }
-
-
-/* Ajustes da versão 2026-11-24: log simplificado, botão de captura em ícone e HUD mais limpa. */
-#interface_combate .tag_tipo,
-#interface_combate .dialogo_titulo,
-#interface_combate #painel_equipe_combate,
-#interface_combate .atalhos_combate,
-#interface_combate #botao_tipos {
-    display: none !important;
-}
-
-/* O botão é irmão do quadro recortado, nunca filho dele. */
-#interface_combate #registro_combate {
-    position: relative;
-    min-width: 0;
-    min-height: 0;
-    overflow: visible;
-}
-
-#interface_combate #caixa_dialogo_combate {
-    height: 100%;
-    min-height: 0;
-    padding: 0;
-    display: flex;
-    align-items: stretch;
-}
-
-#interface_combate #botao_capturar {
-    position: absolute;
-    bottom: calc(100% + 10px);
-    left: 1.5%;
-    z-index: 6;
-    width: clamp(44px, 4.3vw, 68px);
-    height: clamp(44px, 4.3vw, 68px);
-    padding: 8px;
-    border: 3px solid #f5f8ff;
-    border-radius: 15px;
-    background: linear-gradient(160deg, #1038e1 0%, #0a1753 80%);
-    box-shadow: 0 4px 0 #020613, inset 0 0 0 2px rgba(255,255,255,.12);
-    display: grid;
-    place-items: center;
-    cursor: pointer;
-}
-
-#interface_combate #botao_capturar:hover:not(:disabled) {
-    filter: brightness(1.15);
-}
-
-#interface_combate #botao_capturar img {
-    display: block;
-    width: 100%;
-    height: 100%;
-    min-height: 0;
-    object-fit: contain;
-    filter: brightness(0) invert(1);
-    pointer-events: none;
-}
-
-#interface_combate #mensagem_combate {
-    margin: clamp(15px, 3vh, 30px) 8% 18px;
-    padding: 0;
-    min-height: 0;
-    max-height: none;
-    flex: 1;
-    overflow-y: auto;
-    overflow-wrap: anywhere;
-    font-size: clamp(13px, 1.25vw, 18px);
-    line-height: 1.5;
-    font-weight: 700;
-}
-
-#interface_combate #painel_jogador {
-    bottom: 25.8%;
-}
-
-#interface_combate #sprite_jogador {
-    --tamanho-sprite: min(calc(var(--tamanho-jogador) * var(--escala-combate, 1)), 40vw, 52vh);
-}
-
-#interface_combate #sprite_inimigo {
-    --tamanho-sprite: min(calc(var(--tamanho-inimigo) * var(--escala-combate, 1)), 38vw, 49vh);
-}
-
-@media (max-width: 700px) {
-    #interface_combate #registro_combate { flex: 1 1 42%; }
-    #interface_combate #botao_capturar {
-        bottom: calc(100% + 7px);
-        left: 2%;
-        border-radius: 12px;
-        padding: 6px;
-    }
-    #interface_combate #mensagem_combate {
-        margin: 16px 8% 12px;
-        font-size: 12px;
-    }
-    #interface_combate #painel_jogador { bottom: 46%; }
-}
-@media (max-height: 640px) and (min-width: 701px) {
-    #interface_combate #painel_jogador { bottom: 34%; }
 }

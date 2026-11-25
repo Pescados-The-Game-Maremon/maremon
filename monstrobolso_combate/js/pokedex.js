@@ -1,33 +1,48 @@
 (async () => {
-    const aviso = document.getElementById('aviso_pokedex');
+    const aviso = document.querySelector('#aviso_pokedex');
+    const lista = document.querySelector('#lista_equipe');
+    const modelo = document.querySelector('#modelo_especie');
+    const mostrarVazio = mensagem => {
+        const texto = document.querySelector('#modelo_vazio').content.cloneNode(true);
+        texto.firstElementChild.textContent = mensagem;
+        lista.replaceChildren(texto);
+    };
     try {
-        // Consumo assíncrono da API JSON do próprio projeto (MVC: PokedexController).
         const r = await fetch('php/catalogo_pescados.php', { credentials: 'same-origin' });
         const dados = await r.json();
-        if (!r.ok || !dados.sucesso)
+        if (!r.ok || !dados.sucesso || !Array.isArray(dados.pescados)) {
             throw new Error(dados.erro || 'Falha ao consultar API.');
-        aviso.textContent = `${dados.pescados.length} espécies cadastradas.`;
-        const lista = document.getElementById('lista_equipe');
-        for (const p of dados.pescados) {
-            const card = elementoHTML("<article></article>");
-            card.className = 'card_equipe';
-            const imagem = elementoHTML("<img>");
-            imagem.alt = p.nome;
-            imagem.onerror = () => { imagem.onerror = null; imagem.src = 'assets/pescados/sem_sprite.svg'; };
-            imagem.src = caminhoSprite(p);
-            const texto = elementoHTML("<div></div>");
-            const titulo = elementoHTML("<h3></h3>");
-            titulo.textContent = `${p.nome} — ${p.tipo}`;
-            const desc = elementoHTML("<p></p>");
-            desc.textContent = p.descricao || 'Pescado do Maremon';
-            const stats = elementoHTML("<p></p>");
-            stats.textContent = `HP ${p.hp} · ATK ${p.atk} · DEF ${p.def} · VEL ${p.spe}`;
-            texto.append(titulo, desc, stats);
-            card.append(imagem, texto);
-            lista.appendChild(card);
         }
-    }
-    catch (e) {
-        aviso.textContent = e.message;
+        const cards = dados.pescados.map(p => {
+            const card = modelo.content.firstElementChild.cloneNode(true);
+            const imagem = card.querySelector('img');
+            imagem.alt = p.nome ?? '';
+            imagem.addEventListener('error', () => {
+                imagem.addEventListener('error', () => {
+                    imagem.src = 'assets/pescados/sem_sprite.svg';
+                }, { once: true });
+                imagem.src = caminhoSprite(p);
+            }, { once: true });
+            const original = caminhoSprite(p);
+            const normalizado = original.replace(/^assets\/(pescados|bosses)\/(.+\.png)$/i, 'assets/sprites_enciclopedia/$1/$2');
+            imagem.src = normalizado;
+            card.querySelector('.especie_nome').textContent = p.nome ?? 'Pescado';
+            const tipo = card.querySelector('.especie_tipo');
+            tipo.textContent = p.tipo ?? '—';
+            tipo.dataset.tipo = String(p.tipo ?? '').trim().toLowerCase();
+            card.querySelector('.especie_descricao').textContent = p.descricao || 'Pescado do Maremon';
+            for (const atributo of card.querySelectorAll('[data-stat]')) {
+                atributo.textContent = p[atributo.dataset.stat] ?? '—';
+            }
+            return card;
+        });
+        aviso.textContent = `${cards.length} espécies cadastradas.`;
+        if (cards.length) lista.replaceChildren(...cards);
+        else mostrarVazio('Nenhuma espécie cadastrada.');
+    } catch (erro) {
+        aviso.textContent = 'Catálogo indisponível.';
+        mostrarVazio(erro.message);
+    } finally {
+        lista.setAttribute('aria-busy', 'false');
     }
 })();

@@ -127,7 +127,6 @@ if (
 
     <template id="cena_combate">
         <div id="interface_combate">
-            <div id="aviso_boss" class="faixa_boss" hidden>BOSS · DRK · HP ×5</div>
             <img id="sprite_inimigo"
                  class="sprite_pescado"
                  alt="Pescado inimigo">
@@ -136,7 +135,8 @@ if (
                  class="sprite_pescado"
                  alt="Pescado do jogador">
 
-            <div id="painel_inimigo" class="painel_pescado">
+            <div id="painel_inimigo" class="painel_pescado" data-tipo="">
+                <span class="faixa_tipo_pescado" aria-hidden="true"></span>
                 <span class="marca_maremon" aria-hidden="true">
                     <svg viewBox="0 0 100 100" focusable="false">
                         <path d="M85 46 C81 19 48 9 26 25 C6 40 9 67 28 77 C49 88 67 70 62 54 C57 38 42 36 34 45 C26 54 32 66 43 66 C54 66 55 54 48 51" />
@@ -145,6 +145,8 @@ if (
                 <div class="painel_conteudo">
                     <div class="painel_identidade">
                         <h3 id="nome_inimigo">Inimigo</h3>
+                        <span id="tipo_inimigo" class="tag_tipo" aria-label="Tipo"></span>
+                        <span id="status_inimigo" class="tag_status" hidden></span>
                         <span class="nivel_pescado">Nv. <span id="nivel_inimigo">—</span></span>
                     </div>
                     <div class="painel_vida">
@@ -154,11 +156,11 @@ if (
                         </div>
                         <p id="hp_inimigo">—</p>
                     </div>
-                    <span id="status_inimigo" class="tag_status" hidden></span>
                 </div>
             </div>
 
-            <div id="painel_jogador" class="painel_pescado">
+            <div id="painel_jogador" class="painel_pescado" data-tipo="">
+                <span class="faixa_tipo_pescado" aria-hidden="true"></span>
                 <span class="marca_maremon" aria-hidden="true">
                     <svg viewBox="0 0 100 100" focusable="false">
                         <path d="M85 46 C81 19 48 9 26 25 C6 40 9 67 28 77 C49 88 67 70 62 54 C57 38 42 36 34 45 C26 54 32 66 43 66 C54 66 55 54 48 51" />
@@ -167,6 +169,8 @@ if (
                 <div class="painel_conteudo">
                     <div class="painel_identidade">
                         <h3 id="nome_jogador">Maremon</h3>
+                        <span id="tipo_jogador" class="tag_tipo" aria-label="Tipo"></span>
+                        <span id="status_jogador" class="tag_status" hidden></span>
                         <span class="nivel_pescado">Nv. <span id="nivel_jogador">—</span></span>
                     </div>
                     <div class="painel_vida">
@@ -176,19 +180,14 @@ if (
                         </div>
                         <p id="hp_jogador">—</p>
                     </div>
-                    <span id="status_jogador" class="tag_status" hidden></span>
                 </div>
             </div>
 
             <div id="menu_combate">
                 <div id="registro_combate">
-                    <button type="button" id="botao_capturar"
-                            aria-label="Capturar Pescado"
-                            title="Capturar Pescado"
-                            onclick="capturarPescado()">
-                        <img src="assets/ui/captura.png" alt="" aria-hidden="true">
-                    </button>
+
                     <div id="caixa_dialogo_combate">
+                        <div id="aviso_boss" class="faixa_boss" hidden>BOSS · DRK · HP ×5</div>
                         <p id="mensagem_combate" role="status" aria-live="polite">
                             Preparando combate...
                         </p>
@@ -239,6 +238,12 @@ if (
                                 <path d="M14 12l-5 6 5 3-4 8M14 12l6 3 6-1M14 12l-2 9 10 4 3 5"/>
                             </svg>
                             <span>FUGIR</span>
+                        </button>
+                        <button type="button" id="botao_capturar"
+                                aria-label="Capturar Pescado"
+                                title="Capturar Pescado"
+                                onclick="capturarPescado()">
+                            <img src="assets/ui/captura.png" alt="" aria-hidden="true">
                         </button>
                     </div>
 

@@ -363,6 +363,16 @@ function atualizarPescado(lado, pescado) {
         return;
     }
 
+    const painel = document.getElementById("painel_" + lado);
+    const tipo = String(pescado.tipo || painel?.dataset.tipo || "").trim().toUpperCase();
+    if (painel) painel.dataset.tipo = tipo;
+    const rotuloTipo = document.getElementById("tipo_" + lado);
+    if (rotuloTipo) {
+        rotuloTipo.textContent = tipo;
+        rotuloTipo.setAttribute("aria-label", tipo ? `Tipo ${tipo}` : "Tipo não informado");
+    }
+    if (nome) nome.title = pescado.nome;
+
     nome.textContent = pescado.nome;
     hp.textContent = `${pescado.hp}/${pescado.hp_max}`;
 
