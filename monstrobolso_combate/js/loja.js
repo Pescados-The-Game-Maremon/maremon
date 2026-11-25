@@ -1,7 +1,9 @@
 const API_LOJA = "php/";
 let tokenLoja = null;
 let compraEmAndamento = false;
+let origemLoja = "escolher_destino";
 async function abrirLoja() {
+    origemLoja = cenaAtual === "cena_aqua_fora" ? "cena_aqua_fora" : "escolher_destino";
     trocarfundo("fundo_loja");
     goTo("cena_loja");
     await carregarLoja();
@@ -10,8 +12,8 @@ function voltarDaLoja() {
     if (compraEmAndamento)
         return;
     tokenLoja = null;
-    trocarfundo("casa_inicial");
-    goTo("escolher_destino");
+    trocarfundo(origemLoja === "cena_aqua_fora" ? "aqua_fora" : "casa_inicial");
+    goTo(origemLoja);
 }
 function mensagemLoja(texto) {
     const elemento = document.getElementById("mensagem_loja");

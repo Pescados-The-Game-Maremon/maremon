@@ -310,7 +310,10 @@ if (
                 onclick="trocarfundo('casa_inicial'); goTo('cena_casa')">
             Voltar
         </button>
-        <button type="button" id="botao_entrar_centro" class="ponto_mapa" data-rotulo="Entrar"
+        <button type="button" id="botao_entrar_loja" class="ponto_mapa" data-rotulo="Loja Maremon"
+                aria-label="Entrar na Loja Maremon"
+                onclick="abrirLoja()"></button>
+        <button type="button" id="botao_entrar_centro" class="ponto_mapa" data-rotulo="Centro Maremon"
                 aria-label="Entrar no Centro Maremon"
                 onclick="trocarfundo('aqua_dentro'); goTo('cena_aqua_dentro')"></button>
     </template>

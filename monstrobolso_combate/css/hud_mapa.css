@@ -45,9 +45,9 @@
 #tela_jogo .ponto_mapa:disabled { cursor: wait; opacity: .5; }
 
 /* A casa preserva os objetos próximos às bordas em telas estreitas ou muito largas. */
-#tela_jogo.casa_inicial { background-color: #090f1c; }
+#tela_jogo.casa_inicial, #tela_jogo.aqua_fora { background-color: #090f1c; }
 @media (max-aspect-ratio: 3/2), (min-aspect-ratio: 2/1) {
-    #tela_jogo.casa_inicial { background-size: contain; }
+    #tela_jogo.casa_inicial, #tela_jogo.aqua_fora { background-size: contain; }
 }
 
 /* Mesma paleta e acabamentos das telas de inventário e equipe. */

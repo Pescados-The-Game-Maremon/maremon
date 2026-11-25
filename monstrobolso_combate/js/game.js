@@ -25,7 +25,7 @@ function goTo(cena) {
     posicionarPontosMapa(cena);
 }
 
-// Coordenadas na arte original (1536 × 1024), não na janela do navegador.
+// Coordenadas na arte original de cada cenário, não na janela do navegador.
 const mapasInteragiveis = {
     cena_casa: {
         imagem: [1536, 1024],
@@ -40,6 +40,13 @@ const mapasInteragiveis = {
     cena_varanda: {
         imagem: [1536, 1024],
         pontos: { botao_boia: [770, 455, 1015, 690] }
+    },
+    cena_aqua_fora: {
+        imagem: [1672, 941],
+        pontos: {
+            botao_entrar_loja: [545, 469, 695, 676],
+            botao_entrar_centro: [984, 445, 1193, 658]
+        }
     }
 };
 
