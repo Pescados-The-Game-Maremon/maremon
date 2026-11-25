@@ -64,6 +64,10 @@ if (
 
     <!-- Versões automáticas dos fundos: evita imagens antigas no cache. -->
     <style>
+        .casa_inicial {
+            background-image: url("assets/casa.png?v=<?= filemtime(__DIR__ . '/assets/casa.png') ?>");
+        }
+
         .fundo_combate {
             background-image: url("assets/fundo_combate.png?v=<?= filemtime(__DIR__ . '/assets/fundo_combate.png') ?>");
         }
@@ -77,39 +81,38 @@ if (
 
     <div id="tela_jogo" class="casa_inicial"></div>
 
-    <template id="cena_casa">
+    <template id="navegacao_jogo">
         <nav class="hud_jogo" aria-label="Menu do jogador">
-            <a class="hud_marca" href="index.php" aria-label="Maremon - início"><span>〰</span> MAREMON</a>
-            <div class="hud_acoes">
-                <button type="button" class="hud_acao" onclick="window.location.href='equipe.php'"><span class="hud_icone">♧</span><span>Equipe</span></button>
-                <button type="button" class="hud_acao" onclick="window.location.href='inventario.php'"><span class="hud_icone">▣</span><span>Minha mochila</span></button>
-                <button type="button" class="hud_acao" onclick="window.location.href='historico.php'"><span class="hud_icone">◷</span><span>Histórico</span></button>
-                <button type="button" class="hud_acao hud_sair" onclick="sairDaConta()"><span class="hud_icone">↪</span><span>Sair da conta</span></button>
-            </div>
+            <button type="button" class="hud_acao" data-destino="inventario.php">Inventário</button>
+            <button type="button" class="hud_acao" data-destino="historico.php">Histórico</button>
+            <button type="button" class="hud_acao" data-destino="equipe.php">Equipe</button>
+            <button type="button" class="hud_acao hud_sair" data-sair>Sair da conta</button>
         </nav>
-        <button type="button" id="botao_varanda"
+    </template>
+
+    <template id="cena_casa">
+        <a id="ponto_inventario" class="ponto_mapa ponto_objeto" href="inventario.php"
+           aria-label="Abrir inventário" data-rotulo="Inventário"></a>
+        <a id="ponto_historico" class="ponto_mapa ponto_objeto" href="historico.php"
+           aria-label="Abrir histórico" data-rotulo="Histórico"></a>
+        <a id="ponto_equipe" class="ponto_mapa ponto_objeto" href="equipe.php"
+           aria-label="Abrir equipe" data-rotulo="Equipe"></a>
+        <button type="button" class="hud_acao casa_sair" data-sair>Sair da conta</button>
+        <button type="button" id="botao_varanda" class="ponto_mapa" data-rotulo="Varanda"
                 aria-label="Ir para a varanda"
                 onclick="trocarfundo('varanda'); goTo('cena_varanda'); carregarIscas()"></button>
-        <button type="button" id="botao_porta"
+        <button type="button" id="botao_porta" class="ponto_mapa" data-rotulo="Destinos"
                 aria-label="Escolher destino"
                 onclick="goTo('escolher_destino')"></button>
     </template>
 
     <template id="cena_varanda">
-        <nav class="hud_jogo" aria-label="Menu do jogador">
-            <a class="hud_marca" href="index.php" aria-label="Maremon - início"><span>〰</span> MAREMON</a>
-            <div class="hud_acoes">
-                <button type="button" class="hud_acao" onclick="window.location.href='equipe.php'"><span class="hud_icone">♧</span><span>Equipe</span></button>
-                <button type="button" class="hud_acao" onclick="window.location.href='inventario.php'"><span class="hud_icone">▣</span><span>Minha mochila</span></button>
-                <button type="button" class="hud_acao" onclick="window.location.href='historico.php'"><span class="hud_icone">◷</span><span>Histórico</span></button>
-                <button type="button" class="hud_acao hud_sair" onclick="sairDaConta()"><span class="hud_icone">↪</span><span>Sair da conta</span></button>
-            </div>
-        </nav>
+
         <button type="button" class="botao_voltar"
                 onclick="trocarfundo('casa_inicial'); goTo('cena_casa')">
             Voltar
         </button>
-        <button type="button" id="botao_boia"
+        <button type="button" id="botao_boia" class="ponto_mapa" data-rotulo="Pescar"
                 aria-label="Procurar Pescado selvagem"
                 onclick="abrirCombate()"></button>
 
@@ -302,7 +305,7 @@ if (
                 onclick="trocarfundo('casa_inicial'); goTo('cena_casa')">
             Voltar
         </button>
-        <button type="button" id="botao_entrar_centro"
+        <button type="button" id="botao_entrar_centro" class="ponto_mapa" data-rotulo="Entrar"
                 aria-label="Entrar no Centro Maremon"
                 onclick="trocarfundo('aqua_dentro'); goTo('cena_aqua_dentro')"></button>
     </template>
