@@ -31,6 +31,8 @@ function preencherHP(card, p) {
     hp.value = Math.max(0, Number(p.hp_atual));
     card.querySelector('.hp_texto').textContent = `HP ${p.hp_atual}/${p.hp_max}${vivo(p) ? '' : ' · Sem HP'}`;
     card.classList.toggle('sem_hp', !vivo(p));
+    // Estados exclusivamente visuais da HUD; não modificam a lógica de HP.
+    card.classList.toggle('hp_baixo', vivo(p) && hp.value / hp.max <= 0.3);
 }
 function escolherDestino(slot) {
     destinoEquipe = slot;
@@ -46,6 +48,7 @@ function renderizarEquipe() {
         const card = document.getElementById('modelo_slot_equipe').content.firstElementChild.cloneNode(true);
         const selecionar = card.querySelector('.selecionar_slot');
         card.classList.toggle('destino', slot === destinoEquipe);
+        card.classList.toggle('slot_vazio', !p);
         selecionar.setAttribute('aria-pressed', String(slot === destinoEquipe));
         selecionar.disabled = bloqueado;
         card.querySelector('.numero_slot').textContent = `0${slot} · ${slot === 1 ? 'PRIMEIRA POSIÇÃO' : 'SUPORTE'}`;
@@ -65,7 +68,12 @@ function renderizarEquipe() {
     listaEquipe.replaceChildren();
     const termo = filtroEquipe.value.trim().toLowerCase();
     const filtrados = pescadosEquipe.filter(p => `${p.nome} ${p.tipo}`.toLowerCase().includes(termo));
-    if (!filtrados.length) listaEquipe.textContent = 'Nenhum Pescado encontrado.';
+    if (!filtrados.length) {
+        const vazio = document.createElement('p');
+        vazio.className = 'equipe_vazio';
+        vazio.textContent = 'Nenhum Pescado encontrado.';
+        listaEquipe.appendChild(vazio);
+    }
     for (const p of filtrados) {
         const card = document.getElementById('modelo_pescado_equipe').content.firstElementChild.cloneNode(true);
         const slot = slotDo(p);

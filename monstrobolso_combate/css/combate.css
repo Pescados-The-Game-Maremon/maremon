@@ -886,11 +886,11 @@
 }
 
 #interface_combate #sprite_jogador {
-    --tamanho-sprite: min(calc(var(--tamanho-jogador) * var(--escala-combate, 1)), 38vw, 46vh);
+    --tamanho-sprite: min(calc(var(--tamanho-jogador) * var(--escala-combate, 1)), 40vw, 52vh);
 }
 
 #interface_combate #sprite_inimigo {
-    --tamanho-sprite: min(calc(var(--tamanho-inimigo) * var(--escala-combate, 1)), 34vw, 42vh);
+    --tamanho-sprite: min(calc(var(--tamanho-inimigo) * var(--escala-combate, 1)), 38vw, 49vh);
 }
 
 @media (max-width: 700px) {
