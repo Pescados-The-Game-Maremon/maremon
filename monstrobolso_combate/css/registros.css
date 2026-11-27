@@ -18,7 +18,7 @@ body.pagina_registros {
     z-index: 0;
     inset: -8px;
     background: linear-gradient(180deg, rgba(5, 10, 24, .48), rgba(3, 8, 17, .74)),
-        var(--reg-cenario, url("../assets/casa_inicial_inventario.png")) center / cover no-repeat;
+        var(--reg-cenario, url("../assets/casa.png")) center / cover no-repeat;
     filter: blur(4px);
     pointer-events: none;
 }

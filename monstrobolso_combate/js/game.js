@@ -67,6 +67,10 @@ const mapasInteragiveis = {
         imagem: [1536, 1024],
         pontos: { botao_boia: [770, 455, 1015, 690] }
     },
+    cena_aqua_dentro: {
+        imagem: [1672, 941],
+        pontos: { ponto_enfermeira: [780, 385, 904, 549] }
+    },
     cena_aqua_fora: {
         imagem: [1672, 941],
         pontos: {
@@ -120,7 +124,8 @@ telaJogo.addEventListener("click", async (evento) => {
     }
 
     // Não abandona uma requisição ou um turno ainda em processamento.
-    if (combateOcupado || (cenaAtual === "cena_loja" && compraEmAndamento)) {
+    if (combateOcupado || (cenaAtual === "cena_loja" && compraEmAndamento) ||
+        (cenaAtual === "cena_aqua_dentro" && curandoEquipe)) {
         alert("Aguarde a ação atual terminar antes de sair.");
         return;
     }
@@ -146,7 +151,7 @@ async function sairDaConta() {
         });
         const dados = await resposta.json();
         if (dados.sucesso) {
-            window.location.href = "login.html";
+            window.location.href = "login.php";
         }
         else {
             alert("Não foi possível sair da conta.");

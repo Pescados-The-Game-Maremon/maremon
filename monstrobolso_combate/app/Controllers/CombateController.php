@@ -85,15 +85,7 @@ final class CombateController
         $this->pdo->beginTransaction();
 
         try {
-            $stmt = $this->pdo->prepare("
-                SELECT nivel, COALESCE(exp, 0) AS exp
-                FROM public.pescador_pescado
-                WHERE pescador_id = :jogador
-                  AND pescado_id = :pescado
-                FOR UPDATE
-            ");
-
-            $stmt->execute([
+            $stmt = (new \Maremon\Models\CombateDadosRepository($this->pdo))->bloquearProgressaoTurno([
                 "jogador" => $pescadorId,
                 "pescado" => (int) $jogador["id"]
             ]);
@@ -106,7 +98,7 @@ final class CombateController
 
             $nivelAnterior = (int) $registro["nivel"];
             $expTotal = (int) $registro["exp"] + $expGanha;
-            $nivelNovo = \calcularNivel($nivelAnterior, $expTotal);
+            $nivelNovo = \Maremon\Services\ExperienciaService::calcularNivel($nivelAnterior, $expTotal);
             $niveisGanhos = $nivelNovo - $nivelAnterior;
 
             if ($niveisGanhos > 0) {
@@ -128,12 +120,7 @@ final class CombateController
 
             // EXP vai apenas para o integrante ativo que venceu.
             if ($expGanha > 0) {
-                $stmt = $this->pdo->prepare("
-                    UPDATE public.pescador_pescado
-                    SET nivel = :nivel, exp = :exp
-                    WHERE pescador_id = :jogador AND pescado_id = :pescado
-                ");
-                $stmt->execute([
+                $stmt = (new \Maremon\Models\CombateDadosRepository($this->pdo))->salvarProgressaoTurno([
                     "nivel" => $nivelNovo,
                     "exp" => $expTotal,
                     "jogador" => $pescadorId,
@@ -141,7 +128,7 @@ final class CombateController
                 ]);
             }
 
-            \atualizarLogCombate(
+            \Maremon\Models\LogCombateRepository::atualizarLogCombate(
                 $this->pdo,
                 (int) $combate["log_id"],
                 $pescadorId,
@@ -151,13 +138,7 @@ final class CombateController
             );
 
             if ($moedas > 0) {
-                $stmt = $this->pdo->prepare("
-                    UPDATE public.pescador
-                    SET dinheiro = COALESCE(dinheiro, 0) + :moedas
-                    WHERE id = :pescador_id
-                ");
-
-                $stmt->execute([
+                $stmt = (new \Maremon\Models\CombateDadosRepository($this->pdo))->creditarMoedasTurno([
                     "moedas" => $moedas,
                     "pescador_id" => $pescadorId
                 ]);

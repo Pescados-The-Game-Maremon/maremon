@@ -105,11 +105,6 @@
     margin: var(--hud-espaco) auto 0;
     max-height: calc(100% - var(--hud-espaco) - 16px);
 }
-#tela_jogo[data-cena="cena_aqua_dentro"] .centro_cura {
-    top: calc(50% + var(--hud-espaco) / 2);
-    max-height: calc(100% - var(--hud-espaco) - 20px);
-    box-sizing: border-box;
-}
 @media (max-width: 650px) {
     #tela_jogo { --hud-espaco: 112px; }
     .hud_jogo { top: 8px; right: 8px; left: 8px; flex-wrap: wrap; justify-content: flex-end; }

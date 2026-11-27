@@ -64,23 +64,6 @@ final class EquipeCombate
     {
         self::sincronizar($combate);
 
-        $stmt = $pdo->prepare("
-            UPDATE public.pescador_pescado
-            SET hp_atual = :hp,
-                status = :status,
-                status_turnos = :turnos
-            WHERE pescador_id = :pescador
-              AND pescado_id = :pescado
-        ");
-
-        foreach ($combate["equipe"] as $pescado) {
-            $stmt->execute([
-                "hp" => (int) $pescado["hp"],
-                "status" => (string) ($pescado["status"] ?? "normal"),
-                "turnos" => (int) ($pescado["status_turnos"] ?? 0),
-                "pescador" => $pescadorId,
-                "pescado" => (int) $pescado["id"]
-            ]);
-        }
+        (new \Maremon\Models\EquipeDadosRepository($pdo))->salvarEstadoCombate($pescadorId, $combate["equipe"]);
     }
 }

@@ -320,13 +320,24 @@ async function abrirCombate() {
     }
 }
 
+function ehUmiBozu(pescado) {
+    const nome = String(pescado?.nome ?? "").toLowerCase().replace(/[^a-z0-9]/g, "");
+    return nome === "umibozu" || nome === "umizobu";
+}
+
 function atualizarInterfaceCombate(dados) {
+    if (dados.inimigo) {
+        const capturar = document.getElementById("botao_capturar");
+        if (capturar) capturar.dataset.umiBozu = ehUmiBozu(dados.inimigo) ? "1" : "0";
+    }
     if (dados.boss_ordem !== undefined) {
         const faixa = document.getElementById("aviso_boss");
         if (faixa) {
             faixa.hidden = !dados.boss_ordem;
             if (dados.boss_ordem) {
-                faixa.textContent = `CHEFE · ${dados.inimigo?.nome || "MAREMON"} · DRK · HP ×5`;
+                faixa.textContent = "BOSS · DRK · HP ×5";
+                const nomeBoss = window.nomeMaremon ? window.nomeMaremon(dados.inimigo?.nome) : dados.inimigo?.nome;
+                faixa.title = `Chefe: ${nomeBoss || "Maremon"} · Tipo DRK · HP ×5`;
             }
         }
         const capturar = document.getElementById("botao_capturar");
@@ -379,7 +390,7 @@ function atualizarPescado(lado, pescado) {
     const nivel = document.getElementById("nivel_" + lado);
 
     if (nivel) {
-        nivel.textContent = pescado.nivel;
+        nivel.textContent = ehUmiBozu(pescado) ? "???" : pescado.nivel;
     }
 
     const percentual = Math.max(
@@ -431,7 +442,8 @@ async function carregarAtaques() {
 
         botao.type = "button";
         botao.className = "botao_ataque";
-        nome.textContent = window.nomeMaremon ? window.nomeMaremon(ataque.nome) : ataque.nome;
+        // O catálogo já contém a grafia dos ataques, incluindo acentos e preposições.
+        nome.textContent = String(ataque.nome ?? "").trim();
         detalhes.textContent = `${ataque.tipo} · PP ${ataque.pp_atual}/${ataque.pp_max}` +
             (ataque.status_aplicado
                 ? ` · ${ataque.chance_status}% ${ataque.status_aplicado}`
@@ -577,8 +589,12 @@ function atualizarBotaoCaptura() {
     const botao = document.getElementById("botao_capturar");
 
     if (botao) {
-        botao.disabled = !combateIniciado || combateOcupado || capturaTentada || trocaObrigatoria || botao.dataset.boss === "1";
-        botao.title = botao.dataset.boss === "1" ? "Chefes não podem ser capturados." : "Capturar Pescado";
+        const umiBozu = botao.dataset.umiBozu === "1";
+        const boss = botao.dataset.boss === "1";
+        botao.disabled = !combateIniciado || combateOcupado || capturaTentada || trocaObrigatoria || boss || umiBozu;
+        botao.title = umiBozu ? "Umi Bozu não pode ser capturado."
+            : boss ? "Chefes não podem ser capturados." : "Capturar Pescado";
+        botao.setAttribute("aria-label", botao.title);
     }
 }
 
@@ -597,7 +613,8 @@ function atualizarBotoesAcao() {
 }
 
 async function capturarPescado() {
-    if (combateOcupado || !combateIniciado || capturaTentada) {
+    const botao = document.getElementById("botao_capturar");
+    if (combateOcupado || !combateIniciado || capturaTentada || trocaObrigatoria || botao?.disabled) {
         return;
     }
 

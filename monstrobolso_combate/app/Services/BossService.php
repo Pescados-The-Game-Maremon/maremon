@@ -10,19 +10,7 @@ final class BossService
 {
     public static function iscas(PDO $pdo, int $pescadorId): array
     {
-        $stmt = $pdo->prepare("
-            SELECT b.ordem, b.nome, b.isca, b.dna_nome, b.sprite,
-                (v.pescador_id IS NOT NULL) AS derrotado,
-                (b.ordem = 1 OR anterior.pescador_id IS NOT NULL) AS liberado
-            FROM public.bosses b
-            LEFT JOIN public.boss_vitorias v
-                ON v.boss_ordem = b.ordem AND v.pescador_id = :pescador
-            LEFT JOIN public.boss_vitorias anterior
-                ON anterior.boss_ordem = b.ordem - 1
-                AND anterior.pescador_id = :pescador_anterior
-            ORDER BY b.ordem
-        ");
-        $stmt->execute([
+        $stmt = (new \Maremon\Models\BossRepository($pdo))->listarIscas([
             "pescador" => $pescadorId,
             "pescador_anterior" => $pescadorId
         ]);
@@ -45,8 +33,7 @@ final class BossService
 
     public static function iscaAtual(PDO $pdo, int $pescadorId): int
     {
-        $stmt = $pdo->prepare("SELECT isca_atual FROM public.pescador WHERE id = :id");
-        $stmt->execute(["id" => $pescadorId]);
+        $stmt = (new \Maremon\Models\BossRepository($pdo))->consultarIsca(["id" => $pescadorId]);
         $ordem = (int) $stmt->fetchColumn();
         foreach (self::iscas($pdo, $pescadorId) as $isca) {
             if ($isca["ordem"] === $ordem && $isca["liberado"]) {
@@ -70,10 +57,7 @@ final class BossService
             throw new RuntimeException("Essa isca ainda está bloqueada.");
         }
 
-        $stmt = $pdo->prepare("
-            UPDATE public.pescador SET isca_atual = :ordem WHERE id = :pescador
-        ");
-        $stmt->execute(["ordem" => $ordem, "pescador" => $pescadorId]);
+        $stmt = (new \Maremon\Models\BossRepository($pdo))->selecionarIsca(["ordem" => $ordem, "pescador" => $pescadorId]);
     }
 
     /** Deve ser chamada dentro da transação da vitória, antes do COMMIT. */
@@ -84,18 +68,10 @@ final class BossService
             return null;
         }
 
-        $stmt = $pdo->prepare("
-            INSERT INTO public.boss_vitorias (pescador_id, boss_ordem)
-            VALUES (:pescador, :ordem)
-            ON CONFLICT (pescador_id, boss_ordem) DO NOTHING
-        ");
-        $stmt->execute(["pescador" => $pescadorId, "ordem" => $ordem]);
+        $stmt = (new \Maremon\Models\BossRepository($pdo))->registrarVitoria(["pescador" => $pescadorId, "ordem" => $ordem]);
         $primeiraVitoria = $stmt->rowCount() === 1;
 
-        $stmt = $pdo->prepare("
-            SELECT nome, dna_nome FROM public.bosses WHERE ordem = :ordem
-        ");
-        $stmt->execute(["ordem" => $ordem]);
+        $stmt = (new \Maremon\Models\BossRepository($pdo))->buscarChefe(["ordem" => $ordem]);
         $boss = $stmt->fetch(PDO::FETCH_ASSOC);
         if (!$boss) {
             throw new RuntimeException("Chefe não cadastrado.");
