@@ -1,0 +1,119 @@
+/* Identidade visual compartilhada: histórico e Pokédex. */
+body.pagina_registros {
+    --reg-fundo: #090f1c;
+    --reg-painel: #151f33;
+    --reg-card: #172338;
+    --reg-borda: #2a3b55;
+    --reg-texto: #f0f5ff;
+    --reg-suave: #aebed4;
+    --reg-azul: #8bc9ff;
+    --reg-evolucao: #a6b7ff;
+    padding: 26px clamp(16px, 4vw, 60px) 42px;
+    background: #090e18;
+    color: var(--reg-texto);
+}
+.pagina_registros::before {
+    content: "";
+    position: fixed;
+    z-index: 0;
+    inset: -8px;
+    background: linear-gradient(180deg, rgba(5, 10, 24, .48), rgba(3, 8, 17, .74)),
+        var(--reg-cenario, url("../assets/casa.png")) center / cover no-repeat;
+    filter: blur(4px);
+    pointer-events: none;
+}
+.pagina_registros main.maremon-main { width: min(1160px, 100%); z-index: 1; }
+.pagina_registros [hidden] { display: none !important; }
+.pagina_registros button { font-family: inherit; }
+.pagina_registros .registros_cabecalho { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; }
+.pagina_registros .registros_voltar {
+    display: inline-flex; align-items: center; gap: 8px; padding: 9px 15px;
+    background: #151e2e; border: 1px solid #303e55; border-radius: 24px;
+    color: var(--reg-texto); text-decoration: none; font-weight: 800; font-size: 14px;
+    box-shadow: 0 4px 12px #0004;
+}
+.pagina_registros .registros_voltar span { font-size: 23px; line-height: .8; color: var(--reg-azul); }
+.pagina_registros .registros_voltar:hover { background: #263c5a; }
+.pagina_registros .registros_titulo {
+    display: flex; align-items: baseline; flex-wrap: wrap; gap: 8px 17px;
+    padding: 13px 25px; background: linear-gradient(110deg, #182d50, #254c78);
+    border: 1px solid #43648c; border-radius: 13px; box-shadow: 0 4px 0 #0a1323, 0 8px 18px #0005;
+}
+.pagina_registros .registros_titulo h1 { margin: 0; font-size: clamp(24px, 3vw, 34px); font-weight: 900; letter-spacing: -.045em; }
+.pagina_registros .registros_titulo span { color: #c8d9f0; font-size: 14px; font-weight: 700; }
+.pagina_registros .registros_marca { margin-left: auto; color: #8a9bb6; font-weight: 900; font-size: 12px; letter-spacing: .22em; }
+
+.pagina_historico { --reg-cenario: url("../assets/tela_combate_equipe.png"); }
+.pagina_registros .registros_voltar { flex-shrink: 0; }
+.pagina_registros .registros_intro, .pagina_registros .pokedex_tipos {
+    display: flex; align-items: center; gap: 15px; padding: 18px 22px;
+    background: #151e30; border: 1px solid var(--reg-borda); border-radius: 18px;
+    box-shadow: 0 5px 0 #080d18a6;
+}
+.pagina_registros .registros_icone {
+    display: grid; place-items: center; flex: 0 0 46px; height: 46px;
+    border-radius: 12px; background: #203851; color: var(--reg-azul);
+    font-size: 29px; font-weight: 900;
+}
+.pagina_registros .registros_intro h2, .pagina_registros .pokedex_tipos h2 { margin: 0 0 5px; font-size: 19px; }
+.pagina_registros .registros_intro p, .pagina_registros .pokedex_tipos p { margin: 0; color: var(--reg-suave); font-size: 14px; line-height: 1.5; }
+.pagina_registros .registros_rotulo { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin: 25px 0 12px; }
+.pagina_registros .registros_rotulo h2 { display: flex; align-items: center; gap: 9px; margin: 0; font-size: 17px; }
+.pagina_registros .registros_rotulo h2::before { content: ""; width: 9px; height: 9px; border: 2px solid #b7dcff; border-radius: 50%; background: #568dc4; }
+.pagina_registros .registros_rotulo p { margin: 0; color: var(--reg-suave); font-size: 13px; font-weight: 700; }
+.pagina_registros .registros_grade { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.pagina_registros .registro_card { min-width: 0; background: var(--reg-card); border: 1px solid var(--reg-borda); border-radius: 16px; padding: 17px; box-shadow: 0 4px 0 #080d18a6; overflow-wrap: anywhere; }
+.pagina_registros .registro_topo { display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+.pagina_registros .batalha_numero { color: var(--reg-suave); font-size: 13px; font-weight: 700; }
+.pagina_registros .batalha_resultado, .pagina_registros .especie_tipo { font-size: 12px; font-weight: 800; border-radius: 20px; padding: 5px 10px; color: #dbe9fa; background: #0e192b; border: 1px solid #425570; }
+.pagina_registros .batalha_resultado[data-resultado="vitoria"], .pagina_registros .batalha_resultado[data-resultado="captura"] { color: #8ce3b4; background: #163b35; border-color: #326553; }
+.pagina_registros .batalha_resultado[data-resultado="derrota"] { color: #ffadb1; background: #422632; border-color: #70404b; }
+.pagina_registros .batalha_resultado[data-resultado="fuga"], .pagina_registros .batalha_resultado[data-resultado="interrompido"] { color: #f2d499; background: #3b3024; border-color: #705c3e; }
+.pagina_registros .batalha_confronto { display: grid; grid-template-columns: minmax(0,1fr) auto minmax(0,1fr); gap: 10px; align-items: center; margin: 15px 0; }
+.pagina_registros .batalha_confronto strong { color: var(--reg-azul); font-size: 18px; }
+.pagina_registros .batalha_confronto strong:last-child { text-align: right; }
+.pagina_registros .batalha_vs { font-size: 12px; font-weight: 900; color: var(--reg-suave); }
+.pagina_registros .registro_stats { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 8px; margin: 0; }
+.pagina_registros .registro_stats > div { background: #101a2c; border: 1px solid #30415b; padding: 8px 10px; border-radius: 9px; min-width: 0; }
+.pagina_registros .registro_stats dt { color: var(--reg-suave); font-size: 11px; font-weight: 700; }
+.pagina_registros .registro_stats dd { margin: 3px 0 0; color: var(--reg-texto); font-size: 16px; font-weight: 900; }
+.pagina_registros .batalha_hora { margin: 12px 0 0; font-size: 12px; color: var(--reg-suave); }
+.pagina_registros .batalha_hora:empty { display: none; }
+.pagina_registros .pokedex_tipos { margin-top: 14px; justify-content: space-between; flex-wrap: wrap; }
+.pagina_registros .pokedex_tipos a { display: block; width: min(280px, 100%); border: 1px solid #405774; border-radius: 12px; overflow: hidden; }
+.pagina_registros .pokedex_tipos img { display: block; width: 100%; height: auto; }
+.pagina_registros .especie_card { display: grid; grid-template-columns: var(--sprite-tamanho, 144px) minmax(0,1fr); align-items: start; gap: 15px; }
+.pagina_registros .especie_sprite { display: grid; place-items: center; width: var(--sprite-tamanho, 144px); height: var(--sprite-tamanho, 144px); box-sizing: border-box; overflow: hidden; min-width: 0; background: radial-gradient(ellipse at 50% 40%, #304a68, #101a2a 80%); border: 1px solid #405774; border-radius: 12px; }
+.pagina_registros .especie_sprite img { display: block; width: 100%; height: 100%; box-sizing: border-box; object-fit: contain; padding: 8px; }
+.pagina_registros .especie_info { min-width: 0; }
+.pagina_registros .especie_nome { font-size: 18px; margin: 0; color: var(--reg-azul); }
+.pagina_registros .especie_descricao { font-size: 13px; line-height: 1.5; color: #bfcbdd; margin: 9px 0 13px; }
+.pagina_registros .especie_stats { grid-template-columns: repeat(4, minmax(0,1fr)); }
+.pagina_registros .especie_stats > div { padding: 7px 5px; text-align: center; }
+.pagina_registros .especie_tipo { --tipo: #91a6c2; border-left: 5px solid var(--tipo); }
+.pagina_registros .especie_tipo[data-tipo="lgt"] { --tipo: #fff; }
+.pagina_registros .especie_tipo[data-tipo="drk"] { --tipo: #555963; }
+.pagina_registros .especie_tipo[data-tipo="blu"] { --tipo: #429bff; }
+.pagina_registros .especie_tipo[data-tipo="grn"] { --tipo: #48c779; }
+.pagina_registros .especie_tipo[data-tipo="red"] { --tipo: #ed505a; }
+.pagina_registros .especie_tipo[data-tipo="pur"] { --tipo: #a573e8; }
+.pagina_registros .especie_tipo[data-tipo="yel"] { --tipo: #f4d14b; }
+.pagina_registros .registros_vazio { grid-column: 1/-1; padding: 26px; margin: 0; text-align: center; border: 1px dashed #354963; border-radius: 15px; background: #0e1726bf; color: var(--reg-suave); }
+.pagina_registros a:focus-visible { outline: 2px solid #b5dfff; outline-offset: 3px; }
+@media (max-width: 760px) {
+    .pagina_registros .registros_grade { grid-template-columns: 1fr; }
+    .pagina_registros .registros_marca { display: none; }
+    .pagina_registros .registros_titulo { padding: 12px 17px; gap: 3px 12px; }
+}
+@media (max-width: 420px) {
+    .pagina_registros .registros_cabecalho { gap: 9px; }
+    .pagina_registros .registros_titulo span { font-size: 12px; }
+    .pagina_registros .registros_intro, .pagina_registros .pokedex_tipos { padding: 14px; }
+    .pagina_registros .registro_card { padding: 12px; }
+    .pagina_registros .especie_card { --sprite-tamanho: 96px; gap: 10px; }
+    .pagina_registros .especie_stats { grid-template-columns: repeat(2,minmax(0,1fr)); }
+}
+
+@media (min-width: 761px) and (max-width: 1050px) {
+    .pagina_registros .especie_card { --sprite-tamanho: 112px; }
+}

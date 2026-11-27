@@ -63,29 +63,6 @@
 }
 
 
-#botao_entrar_centro {
-    position: absolute;
-
-    top: 30%;
-    left: 40%;
-
-    width: 20%;
-    height: 50%;
-
-    background: transparent;
-    border: 4px solid white;
-    color: white;
-
-    cursor: pointer;
-    z-index: 1000;
-
-    box-sizing: border-box;
-}
-
-#botao_entrar_centro:hover {
-    background: transparent;
-}
-
 button:hover {
     background: rgba(255, 255, 255, 0.2);
 }

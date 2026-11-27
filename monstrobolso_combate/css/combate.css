@@ -1,175 +1,304 @@
-
+/* Maremon — HUD de batalha. A arena e a escala por espécie são independentes dos menus. */
+#tela_jogo.fundo_combate { background-size: 100% 100%; }
 #interface_combate {
+    --fundo-hud: #151e30;
+    --card-hud: #172338;
+    --borda-hud: #344b67;
+    --texto-hud: #f0f5ff;
+    --suave-hud: #b8c8dd;
+    --azul-hud: #8bc9ff;
+    --sombra-hud: 0 4px 0 #080d18aa, 0 8px 20px #0004;
+    --margem-hud: clamp(8px, 2vw, 32px);
+    --altura-painel: clamp(58px, 10.8vh, 94px);
+    --topo-painel: 1.5vh;
+    --espaco-arena: clamp(4px, .8vh, 10px);
+    --altura-menu: 24vh;
+    /* Mesmas dimensões e limites da versão anterior. */
+    --tamanho-jogador: min(30vw, 34vh, 330px);
+    --tamanho-inimigo: min(28vw, 31vh, 300px);
+    --apoio-jogador: 48%;
+    --apoio-inimigo: 53%;
+    position: absolute; inset: 0; overflow: hidden; isolation: isolate;
+    color: var(--texto-hud);
+    font-family: "Trebuchet MS", Arial, sans-serif;
+}
+#interface_combate *, #interface_combate *::before, #interface_combate *::after { box-sizing: border-box; }
+#interface_combate [hidden] { display: none !important; }
+#interface_combate::before {
+    content: ""; position: absolute; inset: 0; pointer-events: none;
+    background: linear-gradient(180deg, transparent 56%, #08122315 74%, #08122355 100%);
+}
+#interface_combate .sprite_pescado {
+    position: absolute; z-index: 2; object-fit: contain; object-position: center bottom;
+    image-rendering: auto; pointer-events: none; transform-origin: center bottom;
+    filter: drop-shadow(0 13px 7px rgba(3,12,36,.5)); will-change: transform;
+}
+#interface_combate #sprite_jogador {
+    --tamanho-sprite: min(calc(var(--tamanho-jogador) * var(--escala-combate, 1)), 40vw, 52vh);
+    width: var(--tamanho-sprite); height: var(--tamanho-sprite);
+    left: calc(21% - var(--tamanho-sprite) / 2);
+    /* Mantém a âncora original; só desloca para baixo se o sprite grande invadir o HP. */
+    top: max(calc(100% - var(--apoio-jogador) - var(--tamanho-sprite) * .94921875),
+             calc(var(--topo-painel) + var(--altura-painel) + var(--espaco-arena) - var(--tamanho-sprite) * var(--margem-superior-sprite, 0)));
+    bottom: auto; right: auto; transform: scaleX(-1);
+}
+#interface_combate #sprite_inimigo {
+    --tamanho-sprite: min(calc(var(--tamanho-inimigo) * var(--escala-combate, 1)), 38vw, 49vh);
+    width: var(--tamanho-sprite); height: var(--tamanho-sprite);
+    left: calc(81% - var(--tamanho-sprite) / 2);
+    bottom: calc(var(--apoio-inimigo) - var(--tamanho-sprite) * .05078125);
+    top: auto; right: auto; transform: none;
+}
+
+/* Cartões compactos de HP: cada painel pertence ao Pescado do seu lado. */
+#interface_combate .painel_pescado {
+    --cor-tipo: #768aa5;
+    position: absolute; z-index: 5; width: min(39vw, 600px); height: var(--altura-painel);
+    display: flex; align-items: center; gap: clamp(7px, 1vw, 16px);
+    padding: clamp(7px, 1.2vh, 13px) clamp(10px, 1.3vw, 21px);
+    padding-left: clamp(15px, 1.8vw, 29px);
+    overflow: hidden; border-radius: 17px; border: 1px solid var(--borda-hud);
+    background: var(--card-hud); box-shadow: var(--sombra-hud);
+}
+#interface_combate #painel_jogador { top: var(--topo-painel); left: var(--margem-hud); }
+#interface_combate #painel_inimigo { top: 53%; right: var(--margem-hud); }
+#interface_combate .painel_pescado[data-tipo="LGT"] { --cor-tipo: #ffffff; }
+#interface_combate .painel_pescado[data-tipo="DRK"] { --cor-tipo: #42454e; }
+#interface_combate .painel_pescado[data-tipo="BLU"] { --cor-tipo: #429bff; }
+#interface_combate .painel_pescado[data-tipo="GRN"] { --cor-tipo: #48c779; }
+#interface_combate .painel_pescado[data-tipo="RED"] { --cor-tipo: #ed505a; }
+#interface_combate .painel_pescado[data-tipo="PUR"] { --cor-tipo: #a573e8; }
+#interface_combate .painel_pescado[data-tipo="YEL"] { --cor-tipo: #f4d14b; }
+#interface_combate .faixa_tipo_pescado {
+    position: absolute; top: 0; bottom: 0; left: 0; width: clamp(6px, .65vw, 10px);
+    background: var(--cor-tipo); border-right: 1px solid #ffffff32;
+}
+#interface_combate .marca_maremon {
+    flex: 0 0 clamp(25px, 3.1vw, 48px); display: grid; place-items: center;
+    aspect-ratio: 1; color: var(--azul-hud); border-radius: 10px; background: #203851;
+}
+#interface_combate .marca_maremon svg {
+    width: 79%; height: 79%; fill: none; stroke: currentColor; stroke-width: 8;
+    stroke-linecap: round; stroke-linejoin: round;
+}
+#interface_combate .painel_conteudo { flex: 1; min-width: 0; display: grid; gap: clamp(4px, .7vh, 8px); }
+#interface_combate .painel_identidade { display: flex; align-items: baseline; gap: 7px; min-width: 0; }
+#interface_combate .painel_pescado h3 {
+    flex: 1; min-width: 0; margin: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+    font-size: clamp(14px, 1.65vw, 26px); line-height: 1.15; font-weight: 800; color: var(--texto-hud);
+}
+#interface_combate .nivel_pescado { white-space: nowrap; font-size: clamp(11px, 1vw, 16px); color: var(--suave-hud); font-weight: 800; }
+#interface_combate .tag_tipo {
+    color: var(--cor-tipo); font-size: 10px; font-weight: 800; white-space: nowrap;
+}
+#interface_combate [data-tipo="DRK"] .tag_tipo { color: #b9bec9; }
+#interface_combate .tag_status {
+    padding: 2px 5px; border-radius: 6px; background: #632d55; color: #ffe0f3;
+    font-size: clamp(9px, .7vw, 11px); font-weight: 800; white-space: nowrap;
+}
+#interface_combate .painel_vida {
+    display: grid; grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center; gap: clamp(4px, .7vw, 10px);
+}
+#interface_combate .rotulo_hp { font-size: clamp(10px, .95vw, 15px); font-weight: 800; color: var(--azul-hud); }
+#interface_combate .barra_hp {
+    position: relative; height: clamp(8px, 1.4vh, 13px); border-radius: 999px; overflow: hidden;
+    background: #080e1b; border: 1px solid #526581; box-shadow: inset 0 1px 3px #0005;
+}
+#interface_combate .barra_hp .vida { display: block; width: 100%; height: 100%; border-radius: inherit; background: #46d6a1; transition: width .3s, background .2s; }
+#interface_combate .painel_vida p { margin: 0; white-space: nowrap; color: var(--suave-hud); font-weight: 800; font-size: clamp(10px, 1vw, 16px); font-variant-numeric: tabular-nums; }
+#interface_combate #aviso_boss {
+    position: absolute; z-index: 6; top: 1.5vh; left: 50%; transform: translateX(-50%);
+    width: max-content; max-width: 18vw; padding: 5px 12px; text-align: center;
+    background: #351f3c; color: #f8d5ec; border: 1px solid #84516f;
+    border-radius: 999px; font-size: clamp(10px, 1vw, 15px); font-weight: 800;
+    box-shadow: 0 3px 0 #080d18aa;
+}
+@media (max-width: 850px) {
+    #interface_combate:has(#aviso_boss:not([hidden])) { --topo-painel: calc(1.5vh + 32px); }
+    #interface_combate #aviso_boss { max-width: 90vw; }
+}
+
+/* Faixa de comandos fixa: o registro à esquerda e um único menu à direita. */
+#interface_combate #menu_combate {
+    position: absolute; z-index: 10; left: var(--margem-hud); right: var(--margem-hud); bottom: 2vh;
+    height: var(--altura-menu); display: grid; grid-template-columns: minmax(0, 1.22fr) minmax(0, 1fr);
+    gap: clamp(8px, 1.2vw, 20px); align-items: stretch;
+}
+#interface_combate #registro_combate, #interface_combate #comandos_combate { min-width: 0; min-height: 0; }
+#interface_combate #caixa_dialogo_combate,
+#interface_combate #menu_principal_combate,
+#interface_combate .combate_painel_aux {
+    height: 100%; min-height: 0; border-radius: 17px; border: 1px solid var(--borda-hud);
+    background: var(--fundo-hud); box-shadow: var(--sombra-hud);
+}
+#interface_combate #caixa_dialogo_combate { padding: clamp(8px, 1.5vh, 16px) clamp(12px, 1.6vw, 24px); display: flex; flex-direction: column; gap: 8px; overflow: hidden; }
+#interface_combate #caixa_dialogo_combate::before {
+    content: "BATALHA"; display: block; flex: none; color: var(--azul-hud);
+    font-size: clamp(10px, .85vw, 13px); font-weight: 900; letter-spacing: .16em;
+}
+#interface_combate #mensagem_combate {
+    flex: 1; min-height: 0; margin: 0; overflow: auto; overflow-wrap: anywhere;
+    font-size: clamp(12px, 1.15vw, 18px); font-weight: 600; line-height: 1.5;
+    scrollbar-width: thin; scrollbar-color: #425e80 transparent;
+}
+#interface_combate #menu_principal_combate {
+    --diametro-captura: min(clamp(40px, 5vw, 76px), 12vh);
+    display: grid; grid-template-columns: minmax(0, 1fr) var(--diametro-captura) minmax(0, 1fr);
+    grid-template-rows: repeat(2, minmax(0, 1fr));
+    grid-template-areas: "lutar capturar bolsa" "pescados capturar fugir";
+    gap: clamp(5px, .75vw, 12px); padding: clamp(6px, 1.1vh, 13px);
+    background: #090f1ce8;
+}
+#interface_combate .comando_lutar { grid-area: lutar; }
+#interface_combate .comando_bolsa { grid-area: bolsa; }
+#interface_combate .comando_pescados { grid-area: pescados; }
+#interface_combate .comando_fugir { grid-area: fugir; }
+#interface_combate .comando_acao {
+    display: flex; align-items: center; justify-content: center; min-width: 0; min-height: 0;
+    gap: clamp(4px, .7vw, 12px); padding: 4px 7px; border: 1px solid #354d6b; border-radius: 12px;
+    background: #172338; color: var(--texto-hud); box-shadow: 0 2px 0 #080d18;
+    font: inherit; font-weight: 800; font-size: clamp(10px, 1.18vw, 19px); cursor: pointer;
+    transition: background .15s, border-color .15s;
+}
+#interface_combate .comando_lutar { background: repeating-linear-gradient(-45deg,#ffffff09 0 9px,transparent 9px 18px),linear-gradient(120deg,#203957,#344d70); border-color: #486689; }
+#interface_combate .comando_acao svg { flex: none; width: clamp(16px, 2vw, 31px); height: clamp(16px, 2vw, 31px); fill: none; stroke: var(--azul-hud); stroke-width: 2.3; stroke-linecap: round; stroke-linejoin: round; }
+#interface_combate #botao_capturar {
+    grid-area: capturar; place-self: center; display: grid; place-items: center;
+    width: var(--diametro-captura); height: var(--diametro-captura); padding: 0;
+    border-radius: 50%; border: 2px solid #8bc9ff; color: white;
+    background: linear-gradient(145deg, #365b88, #121e35 75%); box-shadow: 0 3px 0 #050b15, inset 0 0 0 3px #ffffff0b;
+    cursor: pointer; transition: background .15s, border-color .15s;
+}
+#interface_combate #botao_capturar img { display: block; width: 58%; height: 68%; min-width: 0; min-height: 0; object-fit: contain; filter: brightness(0) invert(1); pointer-events: none; }
+#interface_combate button:hover:not(:disabled) { background-color: #29415e; border-color: #81b8ef; filter: brightness(1.15); }
+#interface_combate button:disabled { cursor: not-allowed; opacity: .48; box-shadow: none; }
+#interface_combate button:focus-visible, #interface_combate select:focus-visible { outline: 2px solid #b5dfff; outline-offset: 2px; }
+
+/* Submenus ocupam exatamente o lugar dos cinco comandos, com rolagem interna. */
+#interface_combate .combate_painel_aux {
+    padding: clamp(7px, 1.1vh, 14px); overflow: auto; overscroll-behavior: contain;
+    scrollbar-width: thin; scrollbar-color: #425e80 #101827;
+}
+#interface_combate .cabecalho_submenu {
+    display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px;
+    color: var(--azul-hud); font-size: clamp(11px, 1vw, 15px);
+}
+#interface_combate .cabecalho_submenu strong { letter-spacing: .03em; }
+#interface_combate .combate_painel_aux button {
+    border: 1px solid #3b5372; border-radius: 10px; background: var(--card-hud); color: var(--texto-hud);
+    padding: 7px 10px; font: inherit; font-weight: 700; cursor: pointer;
+}
+#interface_combate .cabecalho_submenu button { flex: none; white-space: nowrap; }
+#interface_combate .combate_painel_aux p, #interface_combate .combate_painel_aux small,
+#interface_combate .combate_painel_aux label, #interface_combate .combate_painel_aux li { color: var(--suave-hud); font-size: clamp(11px, .95vw, 14px); }
+#interface_combate .combate_painel_aux p { margin: 0 0 8px; }
+#interface_combate #ataques_combate, #interface_combate #opcoes_troca_combate { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; }
+#interface_combate .botao_ataque, #interface_combate #opcoes_troca_combate button { min-width: 0; text-align: left; overflow-wrap: anywhere; font-size: clamp(11px, 1vw, 15px); }
+#interface_combate .botao_ataque span, #interface_combate .botao_ataque small { display: block; }
+#interface_combate .botao_ataque span { color: var(--azul-hud); font-weight: 800; }
+#interface_combate .botao_ataque small { margin-top: 3px; }
+#interface_combate .campos_itens { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+#interface_combate .campos_itens label { display: grid; gap: 4px; min-width: 0; font-weight: 700; }
+#interface_combate .campos_itens select { width: 100%; min-width: 0; padding: 7px; color: var(--texto-hud); background: #090f1c; border: 1px solid #3b5372; border-radius: 8px; font: inherit; }
+#interface_combate .acoes_itens { margin-top: 8px; }
+#interface_combate #botao_usar_combate { width: 100%; font-size: clamp(11px, .95vw, 14px); background: #203851; }
+#interface_combate #painel_tipos ul { margin: 8px 0; padding-left: 20px; }
+
+@media (max-width: 850px) {
+    #interface_combate .painel_pescado { width: min(46vw, 500px); border-radius: 12px; }
+    #interface_combate .marca_maremon { display: none; }
+    #interface_combate #menu_combate { grid-template-columns: minmax(0, .8fr) minmax(0, 1fr); }
+    #interface_combate .comando_acao { gap: 3px; padding-inline: 3px; }
+}
+@media (max-width: 650px) and (orientation: portrait) {
+    #interface_combate { --altura-menu: 32vh; --altura-painel: clamp(56px, 9vh, 80px); }
+    #interface_combate #menu_combate { grid-template-columns: 1fr; grid-template-rows: minmax(0, .38fr) minmax(0, 1fr); gap: 6px; }
+    #interface_combate .painel_pescado { width: min(55vw, 360px); }
+    #interface_combate #painel_inimigo { top: 51%; }
+    #interface_combate #caixa_dialogo_combate { padding: 6px 10px; gap: 3px; }
+    #interface_combate #menu_principal_combate { --diametro-captura: min(58px, 10vh); }
+    #interface_combate .comando_acao { font-size: 13px; }
+    #interface_combate .tag_tipo { display: none; }
+}
+@media (max-height: 500px) and (orientation: landscape) {
+    #interface_combate { --altura-painel: clamp(45px, 13vh, 60px); }
+    #interface_combate .painel_pescado { padding-block: 4px; }
+    #interface_combate .painel_pescado h3 { font-size: clamp(12px, 1.5vw, 17px); }
+    #interface_combate .painel_conteudo { gap: 3px; }
+    #interface_combate #caixa_dialogo_combate { gap: 3px; padding-block: 5px; }
+}
+@media (max-width: 380px) {
+    #interface_combate .painel_pescado { padding-right: 7px; gap: 4px; }
+    #interface_combate .painel_identidade { gap: 4px; }
+    #interface_combate .painel_pescado h3 { font-size: 13px; }
+    #interface_combate .comando_acao { font-size: 11px; }
+}
+
+/* Animação universal: avanço curto + impacto, sem alterar os dados da luta. */
+#sprite_jogador.animando_ataque {
+    animation: maremon_avanco_jogador 380ms cubic-bezier(.2,.5,.3,1) both;
+}
+
+#sprite_inimigo.animando_ataque {
+    animation: maremon_avanco_inimigo 380ms cubic-bezier(.2,.5,.3,1) both;
+}
+
+#sprite_jogador.recebendo_impacto {
+    animation: maremon_impacto_jogador 270ms ease-in-out both;
+}
+
+#sprite_inimigo.recebendo_impacto {
+    animation: maremon_impacto_inimigo 270ms ease-in-out both;
+}
+
+@keyframes maremon_avanco_jogador {
+    0%, 100% { transform: translate(0, 0) scaleX(-1); }
+    38% { transform: translate(50px, -14px) scaleX(-1) rotate(-3deg); }
+    65% { transform: translate(35px, -7px) scaleX(-1); }
+}
+
+@keyframes maremon_avanco_inimigo {
+    0%, 100% { transform: translate(0, 0); }
+    38% { transform: translate(-45px, 12px) rotate(-3deg); }
+    65% { transform: translate(-28px, 8px); }
+}
+
+@keyframes maremon_impacto_jogador {
+    0%, 100% { transform: scaleX(-1); filter: drop-shadow(0 13px 7px rgba(3,12,36,.5)); }
+    33% { transform: translateX(-10px) scaleX(-1); filter: brightness(2.2) drop-shadow(0 0 18px #b6faff); }
+    66% { transform: translateX(6px) scaleX(-1); }
+}
+
+@keyframes maremon_impacto_inimigo {
+    0%, 100% { transform: none; filter: drop-shadow(0 13px 7px rgba(3,12,36,.5)); }
+    33% { transform: translateX(10px); filter: brightness(2.2) drop-shadow(0 0 18px #b6faff); }
+    66% { transform: translateX(-6px); }
+}
+
+#interface_combate .flash_golpe {
     position: absolute;
-    inset: 0;
-    color: white;
-    font-family: Arial, sans-serif;
-}
-
-.painel_pescado {
-    position: absolute;
-    width: 240px;
-    padding: 15px;
-    background: rgba(0, 0, 0, 0.75);
-    border: 2px solid white;
-    border-radius: 10px;
-}
-
-.painel_pescado h3 {
-    margin: 0 0 10px;
-}
-
-#painel_inimigo {
-    top: 8%;
-    left: 8%;
-}
-
-#painel_jogador {
-    right: 8%;
-    bottom: 36%;
-}
-
-.barra_hp {
-    height: 14px;
-    background: #444;
-    border-radius: 8px;
-    overflow: hidden;
-}
-
-.vida {
-    width: 100%;
-    height: 100%;
-    background: #33cc55;
-    transition: width 0.4s;
-}
-
-#menu_combate {
-    position: absolute;
-    bottom: 4%;
-    left: 50%;
-    transform: translateX(-50%);
-    width: min(90%, 500px);
-    padding: 15px;
-    background: rgba(0, 0, 0, 0.85);
-    border: 2px solid white;
-    border-radius: 12px;
-    text-align: center;
-}
-
-#mensagem_combate {
-    min-height: 40px;
-    margin: 0 0 12px;
-}
-
-#ataques_combate {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-}
-
-#ataques_combate button,
-#botao_fugir {
-    padding: 12px;
-    color: white;
-    background: #303030;
-    border: 1px solid white;
-    border-radius: 7px;
-    cursor: pointer;
-}
-
-#ataques_combate button:hover,
-#botao_fugir:hover {
-    background: #505050;
-}
-
-#ataques_combate button:disabled {
-    opacity: 0.5;
-    cursor: default;
-}
-
-#botao_fugir {
-    margin-top: 12px;
-}
-
-@media (max-width: 600px) {
-    .painel_pescado {
-        width: 38%;
-        padding: 8px;
-        font-size: 12px;
-    }
-
-    #painel_jogador {
-        bottom: 43%;
-    }
-
-    #menu_combate {
-        bottom: 2%;
-        padding: 10px;
-    }
-}
-
-#botao_capturar {
-    padding: 12px;
-    margin-top: 10px;
-    background: #247a4b;
-    color: white;
-    border: 2px solid white;
-    border-radius: 8px;
-    cursor: pointer;
-}
-
-#botao_capturar:hover {
-    background: #32a566;
-}
-
-#botao_capturar:disabled {
-    opacity: 0.5;
-    cursor: default;
-}
-
-
-.sprite_pescado {
-    position: absolute;
-    width: clamp(100px, 18vw, 240px);
-    height: auto;
-
-    object-fit: contain;
-    image-rendering: pixelated;
-
-    pointer-events: none;
-    z-index: 2;
-}
-
-#sprite_inimigo {
-    top: 15%;
-    right: 17%;
-}
-
-#sprite_jogador {
-    bottom: 32%;
-    left: 15%;
-}
-
-.painel_pescado {
     z-index: 3;
+    width: clamp(60px, 12vw, 155px);
+    aspect-ratio: 1;
+    border: 5px solid #f6ffff;
+    border-radius: 50%;
+    box-shadow: 0 0 15px #b4eaff, inset 0 0 22px #61b9ff;
+    background: radial-gradient(circle, rgba(255,255,255,.9), rgba(70,176,255,.28) 45%, transparent 72%);
+    pointer-events: none;
+    animation: maremon_flash_golpe 290ms ease-out forwards;
 }
 
-#menu_combate {
-    z-index: 4;
+#interface_combate .flash_golpe_alvo_inimigo { top: 36%; right: 18%; }
+#interface_combate .flash_golpe_alvo_jogador { left: 20%; bottom: 48%; }
+
+@keyframes maremon_flash_golpe {
+    from { transform: scale(.24) rotate(-16deg); opacity: 1; }
+    to { transform: scale(1.35) rotate(14deg); opacity: 0; }
 }
 
-@media (max-width: 600px) {
-    .sprite_pescado {
-        width: 110px;
-    }
 
-    #sprite_inimigo {
-        top: 18%;
-        right: 8%;
-    }
-
-    #sprite_jogador {
-        bottom: 43%;
-        left: 8%;
-    }
+@media (prefers-reduced-motion: reduce) {
+    #interface_combate .sprite_pescado, #interface_combate .flash_golpe { animation: none !important; }
+    #interface_combate .barra_hp .vida { transition: none; }
 }

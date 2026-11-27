@@ -1,0 +1,72 @@
+/* Centro de Cura: cenário interagível e notificação no padrão do inventário. */
+#tela_jogo.aqua_dentro {
+    background-color: #090f1c;
+}
+
+/* Nas proporções extremas, preserva todo o cenário e o alinhamento do ponto. */
+@media (max-aspect-ratio: 3/2), (min-aspect-ratio: 2/1) {
+    #tela_jogo.aqua_dentro { background-size: contain; }
+}
+
+#tela_jogo .centro_cura_voltar {
+    gap: 8px;
+}
+#tela_jogo .centro_cura_voltar span {
+    color: #8bcaff;
+    font-size: 19px;
+    line-height: .8;
+}
+#tela_jogo .centro_cura_voltar:disabled {
+    opacity: .6;
+    cursor: wait;
+}
+#tela_jogo .centro_cura_notificacao {
+    position: absolute;
+    z-index: 30;
+    left: 50%;
+    bottom: clamp(14px, 4vh, 38px);
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    box-sizing: border-box;
+    width: min(550px, calc(100% - 32px));
+    padding: 18px 22px;
+    background: linear-gradient(145deg, #172338, #101827);
+    border: 1px solid #36516e;
+    border-radius: 16px;
+    box-shadow: 0 5px 0 #080d17b3, 0 12px 25px #0006;
+    color: #edf3ff;
+    font: 700 clamp(14px, 1.6vw, 18px)/1.4 "Trebuchet MS", Arial, sans-serif;
+    text-align: center;
+    pointer-events: none;
+}
+#tela_jogo .centro_cura_notificacao:empty { display: none; }
+#tela_jogo .centro_cura_notificacao::before {
+    content: "+";
+    display: grid;
+    flex: 0 0 34px;
+    height: 34px;
+    place-items: center;
+    border-radius: 10px;
+    background: #213c54;
+    color: #8bcaff;
+    font-size: 23px;
+}
+#tela_jogo .centro_cura_notificacao[data-estado="sucesso"]::before {
+    content: "✓";
+    color: #91e4ba;
+    background: #183e36;
+}
+#tela_jogo .centro_cura_notificacao[data-estado="erro"]::before {
+    content: "!";
+    color: #ffb3b3;
+    background: #482b38;
+}
+/* Mantém Voltar no topo esquerdo, inclusive em telas pequenas. */
+@media (max-width: 650px) {
+    #tela_jogo[data-cena="cena_aqua_dentro"] .centro_cura_voltar { top: 8px; left: 8px; }
+    #tela_jogo[data-cena="cena_aqua_dentro"] .hud_jogo { left: auto; max-width: calc(100% - 108px); }
+    #tela_jogo .centro_cura_notificacao { padding: 12px; }
+}

@@ -1,5 +1,5 @@
 .casa_inicial {
-    background-image: url("../assets/casa_inicial.png");
+    background-image: url("../assets/casa.png");
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -13,10 +13,10 @@
 }
 
 .fundo_combate {
-    background-image: url("../assets/fundo_combate.png");
-    background-size: cover;
+    background-image: url("../assets/fundo_combate.png?v=2");
     background-position: center;
     background-repeat: no-repeat;
+    background-size: cover;
 }
 
 .aqua_dentro {
@@ -27,7 +27,7 @@
 }
 
 .aqua_fora {
-    background-image: url("../assets/Aqua_fora.png");
+    background-image: url("../assets/cidade.png");
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
