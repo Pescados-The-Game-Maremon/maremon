@@ -31,7 +31,6 @@ function preencherHP(card, p) {
     hp.value = Math.max(0, Number(p.hp_atual));
     card.querySelector('.hp_texto').textContent = `HP ${p.hp_atual}/${p.hp_max}${vivo(p) ? '' : ' · Sem HP'}`;
     card.classList.toggle('sem_hp', !vivo(p));
-    // Estados exclusivamente visuais da HUD; não modificam a lógica de HP.
     card.classList.toggle('hp_baixo', vivo(p) && hp.value / hp.max <= 0.3);
 }
 function escolherDestino(slot) {
@@ -57,11 +56,11 @@ function renderizarEquipe() {
         preencherImagem(card.querySelector('img'), p);
         card.querySelector('.slot_hp').hidden = !p;
         if (p) preencherHP(card, p);
-        selecionar.addEventListener('click', () => escolherDestino(slot));
+        selecionar.onclick = () => escolherDestino(slot);
         const remover = card.querySelector('.remover_slot');
         remover.hidden = !p;
         remover.disabled = bloqueado;
-        if (p) remover.addEventListener('click', () => moverPescado(p, 0));
+        if (p) remover.onclick = () => moverPescado(p, 0);
         slotsEquipe.appendChild(card);
     }
     instrucaoEquipe.textContent = equipeEmBatalha ? 'Finalize o combate para editar a formação.' : `Posição ${destinoEquipe} selecionada. Escolha um Pescado abaixo ou use os botões 1, 2 e 3 para movê-lo diretamente.`;
@@ -83,12 +82,12 @@ function renderizarEquipe() {
         const escolha = card.querySelector('.atribuir_slot');
         escolha.textContent = slot === destinoEquipe ? 'Nesta posição' : `Colocar na posição ${destinoEquipe}`;
         escolha.disabled = bloqueado || slot === destinoEquipe;
-        escolha.addEventListener('click', () => moverPescado(p, destinoEquipe));
+        escolha.onclick = () => moverPescado(p, destinoEquipe);
         card.querySelectorAll('[data-slot]').forEach(botao => {
             const alvo = Number(botao.dataset.slot);
             botao.disabled = bloqueado || alvo === slot;
             botao.setAttribute('aria-pressed', String(alvo === slot));
-            botao.addEventListener('click', () => moverPescado(p, alvo));
+            botao.onclick = () => moverPescado(p, alvo);
         });
         listaEquipe.appendChild(card);
     }
@@ -117,5 +116,5 @@ async function moverPescado(p, slot) {
         renderizarEquipe();
     }
 }
-filtroEquipe.addEventListener('input', renderizarEquipe);
+filtroEquipe.oninput = renderizarEquipe;
 carregarEquipe().catch(e => mensagemEquipe.textContent = e.message);

@@ -53,7 +53,7 @@ final class TrocarPescadoCombateAction {
             $pdo->beginTransaction();
 
             if (!$forcada) {
-                // A troca voluntária consome o turno; o inimigo responde.
+                                                                           
                 $repo = new CombateRepository($pdo);
                 $ataques = $repo->ataques(
                     (int) $combate["inimigo"]["id"],

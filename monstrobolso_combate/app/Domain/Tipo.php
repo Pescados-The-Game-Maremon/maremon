@@ -6,7 +6,7 @@ abstract class Tipo
 {
     abstract public function codigo(): string;
 
-    /** @return string[] */
+                           
     abstract public function vantajosoContra(): array;
 
     public function multiplicadorContra(Tipo $outro): float

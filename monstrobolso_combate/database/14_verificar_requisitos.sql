@@ -1,5 +1,3 @@
--- Auditoria somente leitura; executar no PostgreSQL com o banco Maremon selecionado.
--- Cada um dos 12 itens deve aparecer como OK.
 WITH esperado(nome, efeito, valor) AS (VALUES
     ('Potion', 'curar_hp', 20), ('Super Potion', 'curar_hp', 50),
     ('Hyper Potion', 'curar_hp', 200), ('Max Potion', 'curar_total', 0),

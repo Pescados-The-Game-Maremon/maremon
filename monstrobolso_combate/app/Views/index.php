@@ -27,7 +27,7 @@
           href="css/hud_mapa.css?v=<?= filemtime(MAREMON_ROOT . '/css/hud_mapa.css') ?>">
     <link rel="stylesheet" href="css/destinos.css?v=<?= filemtime(MAREMON_ROOT . '/css/destinos.css') ?>">
 
-    <!-- Versões automáticas dos fundos: evita imagens antigas no cache. -->
+    
     <style>
         .casa_inicial {
             background-image: url("assets/casa.png?v=<?= filemtime(MAREMON_ROOT . '/assets/casa.png') ?>");
@@ -354,5 +354,6 @@
     <script src="js/loja.js?v=<?= filemtime(MAREMON_ROOT . '/js/loja.js') ?>"></script>
     <script src="js/iscas.js?v=<?= filemtime(MAREMON_ROOT . '/js/iscas.js') ?>"></script>
 
+    <script>iniciarJogo();</script>
 </body>
 </html>

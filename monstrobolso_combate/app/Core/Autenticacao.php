@@ -3,7 +3,7 @@ namespace Maremon\Core;
 use PDO;
 
 final class Autenticacao {
-    /** @return array{0: PDO, 1: int} */
+                                        
     public static function conectarJogador(): array {
         Sessao::iniciar();
         if (empty($_SESSION['pescador_id'])) {
@@ -16,7 +16,7 @@ final class Autenticacao {
     }
 
     private static function exigirJogador(PDO $pdo): int {
-        // Consultar o jogador autenticado.
+                                           
         $stmt = (new \Maremon\Models\ContaRepository($pdo))->buscarAutenticado([
             "id" => $_SESSION["pescador_id"]
         ]);
@@ -41,7 +41,7 @@ final class Autenticacao {
             exit;
         }
 
-        // ID confiável do jogador conectado.
+                                              
         return (int) $jogadorAutenticado["id"];
     }
 }

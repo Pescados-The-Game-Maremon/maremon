@@ -29,7 +29,7 @@ final class OrganizarEquipeAction {
             $s = (new \Maremon\Models\EquipeDadosRepository($pdo))->bloquearIntegrantes(['id'=>$pescadorId]);
             $registros=$s->fetchAll(PDO::FETCH_ASSOC);
             $formacao=FormacaoEquipe::mover($registros,$pescadoId,$slot);
-            // Libera as posições primeiro, evitando conflito com o índice UNIQUE.
+                                                                                     
             $s = (new \Maremon\Models\EquipeDadosRepository($pdo))->limparPosicoes(['id'=>$pescadorId]);
             (new \Maremon\Models\EquipeDadosRepository($pdo))->atribuirPosicoes($pescadorId, $formacao);
             $ativo=FormacaoEquipe::primeiroVivo($registros,$formacao);

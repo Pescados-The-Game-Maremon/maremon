@@ -1,4 +1,3 @@
-// As iscas são desbloqueadas no servidor por vitórias do próprio jogador.
 let tokenIsca = null;
 let carregandoIscas = false;
 
@@ -45,7 +44,7 @@ async function carregarIscas() {
                     ? `✓ ${isca.nome} derrotado · DNA na loja`
                     : `Chefe: ${isca.nome}`;
             botao.append(rotulo, detalhe);
-            botao.addEventListener("click", () => selecionarIsca(isca.ordem));
+            botao.onclick = () => selecionarIsca(isca.ordem);
             lista.appendChild(botao);
         }
         if (mensagem) mensagem.textContent = "A isca selecionada define o chefe raro (5% por encontro).";

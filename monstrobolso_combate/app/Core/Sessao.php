@@ -3,9 +3,9 @@ namespace Maremon\Core;
 
 final class Sessao {
     public static function iniciar(): void {
-        // Configuração centralizada da sessão do Maremon.
-        // O caminho raiz evita que o cookie deixe de ser enviado quando
-        // o projeto é acessado com uma URL/pasta diferente no XAMPP.
+                                                             
+                                                                        
+                                                                      
         if (session_status() === PHP_SESSION_NONE) {
             ini_set("session.use_strict_mode", "1");
             ini_set("session.use_only_cookies", "1");

@@ -3,11 +3,11 @@ namespace Maremon\Core;
 
 
 final class TokenCombate {
-    /**
-     * Confere a autorização de uma ação de combate sem modificar o estado.
-     * A mochila envia csrf_token; os demais endpoints usam csrf_acao
-     * ou csrf_captura. Todos são conferidos contra a sessão no servidor.
-     */
+       
+                                                                               
+                                                                     
+                                                                           
+       
     public static function tokenCombateValido(array $combate, array $entrada, string $campo): bool
     {
         $chaveSessao = $campo === "csrf_captura" ? "csrf_captura" : "csrf_acao";
@@ -22,7 +22,7 @@ final class TokenCombate {
 
     public static function exigirTokenCombate(array $combate, array $entrada, string $campo): void
     {
-        // Uma segunda aba não deve enviar ações para um combate diferente.
+                                                                              
         $idRecebido = filter_var($entrada["combate_id"] ?? null, FILTER_VALIDATE_INT);
         $idEsperado = (int) ($combate["log_id"] ?? 0);
 
@@ -41,8 +41,8 @@ final class TokenCombate {
             return;
         }
 
-        // Um código identificável permite ao JS sincronizar a sessão e
-        // repetir uma única vez a ação que foi REJEITADA antes de ser aplicada.
+                                                                          
+                                                                                   
         http_response_code(403);
         header("Content-Type: application/json; charset=utf-8");
         header("Cache-Control: no-store, private");

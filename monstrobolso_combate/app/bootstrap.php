@@ -1,6 +1,6 @@
 <?php
 define("MAREMON_ROOT", dirname(__DIR__));
-// Autoload PSR-4 enxuto: Maremon\\ -> pasta app/.
+                                                  
 spl_autoload_register(static function (string $classe): void {
     $prefixo = 'Maremon\\';
     if (!str_starts_with($classe, $prefixo)) return;

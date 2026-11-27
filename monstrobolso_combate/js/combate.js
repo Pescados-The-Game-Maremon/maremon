@@ -1,4 +1,3 @@
-// A interface envia ações; o PHP valida os tokens e resolve as regras da batalha.
 const API_COMBATE = "php/";
 
 let combateOcupado = false;
@@ -29,8 +28,6 @@ async function requisitarCombate(arquivo, opcoes = {}, podeSincronizar = true) {
         throw new Error("O servidor retornou uma resposta inválida. Confira o log do Apache.");
     }
 
-    // A ação rejeitada não alterou o banco nem a batalha. Recuperamos os
-    // tokens da mesma sessão autenticada e permitimos só uma nova tentativa.
     if (
         resposta.status === 403 &&
         dados.codigo === "TOKEN_DESATUALIZADO" &&
@@ -120,7 +117,6 @@ function bloquearAtaques(bloquear) {
     }
 }
 
-// A navegação visual usa os painéis existentes sem alterar a sessão PHP.
 function exibirSubmenuCombate(painelAberto = null) {
     const ids = [
         "menu_ataques_combate",
@@ -178,8 +174,6 @@ function fecharTrocaCombate() {
     exibirSubmenuCombate();
 }
 
-// Animação cosmética universal para qualquer ataque ou contra-ataque.
-// O PHP continua sendo a única fonte de verdade para dano e condições.
 async function animarEventosCombate(eventos, nomeJogadorAntes) {
     if (!Array.isArray(eventos) ||
         window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
@@ -210,12 +204,11 @@ async function animarGolpeMaremon(lado, acertou) {
     }
 
     atacante.classList.remove("animando_ataque");
-    void atacante.offsetWidth; // Reinicia a animação em ataques consecutivos.
+    void atacante.offsetWidth;                                                
     atacante.classList.add("animando_ataque");
 
     if (acertou) {
         window.setTimeout(() => {
-            // A cena pode ter mudado durante uma captura ou fuga.
             if (!atacante.isConnected || !defensor.isConnected) {
                 return;
             }
@@ -280,7 +273,6 @@ async function abrirCombate() {
             await sincronizarTokensCombate();
         }
 
-        // A cena só abre depois que os sprites estão prontos.
         await prepararSpritesCombate([
             dados.jogador,
             dados.inimigo,
@@ -305,7 +297,6 @@ async function abrirCombate() {
         );
     } catch (erro) {
         if (!inicioConfirmado) {
-            // O servidor recusou o encontro: permaneça na varanda.
             if (aviso?.isConnected) { aviso.hidden = false; aviso.textContent = erro.message; }
         } else {
             mensagemCombate(erro.message);
@@ -442,7 +433,6 @@ async function carregarAtaques() {
 
         botao.type = "button";
         botao.className = "botao_ataque";
-        // O catálogo já contém a grafia dos ataques, incluindo acentos e preposições.
         nome.textContent = String(ataque.nome ?? "").trim();
         detalhes.textContent = `${ataque.tipo} · PP ${ataque.pp_atual}/${ataque.pp_max}` +
             (ataque.status_aplicado
@@ -451,7 +441,7 @@ async function carregarAtaques() {
 
         botao.append(nome, detalhes);
         botao.disabled = Number(ataque.pp_atual) <= 0;
-        botao.addEventListener("click", () => executarAtaque(ataque.id));
+        botao.onclick = () => executarAtaque(ataque.id);
         lista.appendChild(botao);
     }
 }
@@ -673,7 +663,6 @@ async function abrirItensCombate() {
     try {
         const dados = await requisitarCombate("listar_itens_combate.php");
 
-        // Um GET antigo não deve apagar um token correto da sessão.
         if (typeof dados.csrf_token === "string") {
             tokenAcao = dados.csrf_token;
         }
@@ -787,8 +776,6 @@ function mostrarTipos() {
     exibirSubmenuCombate(painel.hidden ? "painel_tipos" : null);
 }
 
-// Trocas são validadas no servidor; o cliente nunca escolhe integrantes
-// que não estejam registrados na equipe da sessão autenticada.
 function renderizarEquipeCombate() {
     const botaoTroca = document.getElementById("botao_trocar_combate");
 
@@ -797,8 +784,6 @@ function renderizarEquipeCombate() {
             p => !p.ativo && Number(p.hp) > 0
         );
 
-        // Não esconder o diagnóstico quando não há reserva: o botão
-        // continua acessível e informa como corrigir a formação.
         botaoTroca.disabled = !combateIniciado || combateOcupado;
         botaoTroca.title = disponiveis.length
             ? `Trocar para um dos ${disponiveis.length} Pescados disponíveis`
@@ -845,7 +830,7 @@ function abrirTrocaCombate() {
         const botao = elementoHTML("<button></button>");
         botao.type = "button";
         botao.textContent = `${(window.nomeMaremon ? window.nomeMaremon(pescado.nome) : pescado.nome)} · Nv. ${pescado.nivel} · HP ${pescado.hp}/${pescado.hp_max}`;
-        botao.addEventListener("click", () => trocarPescadoCombate(pescado.id));
+        botao.onclick = () => trocarPescadoCombate(pescado.id);
         lista.appendChild(botao);
     }
 
@@ -874,7 +859,6 @@ async function trocarPescadoCombate(pescadoId) {
 
         exibirSubmenuCombate();
 
-        // Na troca, o novo integrante precisa aparecer antes do contra-ataque.
         if (dados.jogador && typeof atualizarSprite === "function") {
             atualizarSprite("jogador", dados.jogador);
         }

@@ -4,8 +4,6 @@ let compraEmAndamento = false;
 let versaoCargaLoja = 0;
 let origemLoja = "cena_aqua_fora";
 async function abrirLoja() {
-    // A Loja Maremon é acessada a partir do Centro Maremon (área externa).
-    // Guarda a origem real e usa o Centro como fallback seguro.
     origemLoja = (cenaAtual === "cena_aqua_fora" || cenaAtual === "cena_aqua_dentro")
         ? cenaAtual
         : "cena_aqua_fora";
@@ -69,7 +67,7 @@ function mostrarProdutos(itens, saldoAtual) {
         if (imagemItem && caminhoImagem) {
                 imagemItem.src = caminhoImagem;
                 imagemItem.alt = window.nomeMaremon ? window.nomeMaremon(item.nome) : item.nome;
-                imagemItem.addEventListener("error", () => { imagemItem.removeAttribute("src"); imagemItem.alt = ""; }, { once: true });
+                imagemItem.onerror = () => { imagemItem.onerror = null; imagemItem.removeAttribute("src"); imagemItem.alt = ""; };
             }
         card.querySelector("p").textContent = item.descricao || "";
         card.querySelector(".preco_loja").textContent = `${formatar(preco)} moedas / un.`;
@@ -86,10 +84,8 @@ function mostrarProdutos(itens, saldoAtual) {
             botao.disabled = compraEmAndamento || !valida || custo > saldoAtual;
             botao.title = valida && custo > saldoAtual ? "Saldo insuficiente" : "";
         }
-        quantidade.addEventListener("input", atualizarTotal);
-        botao.addEventListener("click", () => comprarItem(item.id, quantidade.valueAsNumber));
-        // Recalcula ao finalizar uma compra, inclusive após atualizar o saldo.
-        botao.addEventListener("atualizar-loja", atualizarTotal);
+        quantidade.oninput = atualizarTotal;
+        botao.onclick = () => comprarItem(item.id, quantidade.valueAsNumber);
         atualizarTotal();
         return card;
     });
@@ -125,19 +121,17 @@ async function comprarItem(itemId, quantidade) {
         if (!resposta.ok || !dados.sucesso) {
             throw new Error(dados.erro || "Erro ao comprar item.");
         }
-        // Buscar o saldo atualizado do servidor.
         await carregarLoja();
         mensagemLoja(`Você comprou ${quantidade}x ${dados.item}!`);
     }
     catch (erro) {
         mensagemLoja(erro.message);
-        // Atualiza saldo e botões após qualquer erro.
         await carregarLoja();
         mensagemLoja(erro.message);
     }
     finally {
         compraEmAndamento = false;
         document.querySelectorAll("#produtos_loja .quantidade_loja, .loja_voltar").forEach(controle => controle.disabled = false);
-        document.querySelectorAll("#produtos_loja .comprar_loja").forEach(botao => botao.dispatchEvent(new Event("atualizar-loja")));
+        document.querySelectorAll("#produtos_loja .quantidade_loja").forEach(controle => controle.oninput());
     }
 }

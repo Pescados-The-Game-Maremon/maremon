@@ -16,7 +16,7 @@ final class IniciarCombateAction {
         [$pdo, $pescadorId] = \Maremon\Core\Autenticacao::conectarJogador();
 
         try {
-            // Escolher até três integrantes que o jogador organizou antes da batalha.
+                                                                                        
             $stmtEquipe = (new \Maremon\Models\CombateDadosRepository($pdo))->listarFormacaoInicial(["pescador_id" => $pescadorId]);
             $integrantes = $stmtEquipe->fetchAll(PDO::FETCH_ASSOC);
 
@@ -46,8 +46,8 @@ final class IniciarCombateAction {
 
             $jogador = $equipe[$idInicial];
 
-            // Cada novo encontro realiza um sorteio independente de 5% para o
-            // chefe correspondente à isca escolhida e desbloqueada pelo jogador.
+                                                                              
+                                                                                  
             $iscaAtual = BossService::iscaAtual($pdo, $pescadorId);
             $bossOrdem = null;
             $inimigo = null;
@@ -61,8 +61,8 @@ final class IniciarCombateAction {
                 }
             }
 
-            // Nos 95% de encontros normais, as espécies dos oito chefes
-            // não entram no sorteio. O chefe nunca aparece como selvagem comum.
+                                                                         
+                                                                                 
             if ($inimigo === null) {
                 $inimigo = (new \Maremon\Models\CombateDadosRepository($pdo))->sortearSelvagem()->fetch();
             }
@@ -73,7 +73,7 @@ final class IniciarCombateAction {
 
             $pdo->beginTransaction();
 
-            // Fechar um registro anterior, caso o jogador tenha saído sem encerrar.
+                                                                                     
             $stmt = (new \Maremon\Models\CombateDadosRepository($pdo))->encerrarRegistroAnterior([
                 "pescador_id" => $pescadorId
             ]);
@@ -87,7 +87,7 @@ final class IniciarCombateAction {
             $combateLogId = (int) $stmt->fetchColumn();
             $pdo->commit();
 
-            // Os dois tokens pertencem a este encontro e à sessão do jogador.
+                                                                                
             $_SESSION["combate"] = [
                 "pescador_id" => $pescadorId,
                 "jogador" => $jogador,

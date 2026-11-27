@@ -1,6 +1,6 @@
 const formulario = document.getElementById("form_login");
 const mensagem = document.getElementById("mensagem");
-formulario.addEventListener("submit", async (evento) => {
+formulario.onsubmit = async (evento) => {
     evento.preventDefault();
     const usuario = document.getElementById("usuario").value;
     const senha = document.getElementById("senha").value;
@@ -24,7 +24,6 @@ formulario.addEventListener("submit", async (evento) => {
             throw new Error(dados.erro || "Não foi possível entrar.");
         }
         mensagem.textContent = dados.mensagem;
-        // Entrar no jogo após autenticação
         window.location.href = "escolher_inicial.php";
     }
     catch (erro) {
@@ -33,4 +32,4 @@ formulario.addEventListener("submit", async (evento) => {
     finally {
         botao.disabled = false;
     }
-});
+};

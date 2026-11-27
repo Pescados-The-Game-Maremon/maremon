@@ -56,7 +56,7 @@ final class ExecutarTurnoAction {
             $controller = new CombateController($pdo);
             $resultado = $controller->atacar($pescadorId, $combate, (int) $ataqueId);
 
-            // Gravar o estado na sessão somente depois do COMMIT do controlador.
+                                                                                  
             $_SESSION["combate"] = $combate;
             $this->responderTurno($resultado);
 

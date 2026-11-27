@@ -1,4 +1,3 @@
-/* Loja: mesma identidade visual da mochila, sem afetar outros cenários. */
 #tela_jogo.fundo_loja { background: #090e18; isolation: isolate; }
 #tela_jogo.fundo_loja::before {
     content: ""; position: absolute; inset: -8px; z-index: -1;

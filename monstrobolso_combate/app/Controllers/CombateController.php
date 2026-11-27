@@ -76,7 +76,7 @@ final class CombateController
         EquipeCombate::sincronizar($combate);
         $resultado = EquipeCombate::resultado($combate);
 
-        // Recompensas da versão atual do Maremon.
+                                                   
         $expGanha = $resultado === "vitoria"
         ? (!empty($combate["boss_ordem"]) ? 2500 : 100)
         : 0;
@@ -118,7 +118,7 @@ final class CombateController
             EquipeCombate::sincronizar($combate);
             EquipeCombate::salvar($this->pdo, $pescadorId, $combate);
 
-            // EXP vai apenas para o integrante ativo que venceu.
+                                                                 
             if ($expGanha > 0) {
                 $stmt = (new \Maremon\Models\CombateDadosRepository($this->pdo))->salvarProgressaoTurno([
                     "nivel" => $nivelNovo,

@@ -29,7 +29,7 @@ final class ComprarItemAction {
             ], 400);
         }
 
-        // Validar token de segurança.
+                                       
         $tokenRecebido = $dados["csrf_token"] ?? null;
         $tokenSessao = $_SESSION["csrf_loja"] ?? null;
 
@@ -44,7 +44,7 @@ final class ComprarItemAction {
             ], 403);
         }
 
-        // Validar ID do item e quantidade.
+                                           
         $itemId = filter_var(
             $dados["item_id"] ?? null,
             FILTER_VALIDATE_INT
@@ -70,7 +70,7 @@ final class ComprarItemAction {
             ], 400);
         }
 
-        // Impedir compras enquanto um combate está ativo.
+                                                           
         if ($_SESSION["combate"]["ativo"] ?? false) {
             $this->responderCompra([
                 "sucesso" => false,
@@ -81,7 +81,7 @@ final class ComprarItemAction {
         try {
             $pdo->beginTransaction();
 
-            // Bloquear o saldo durante a compra.
+                                                 
             $stmt = (new \Maremon\Models\LojaRepository($pdo))->bloquearSaldo([
                 "pescador_id" => $pescadorId
             ]);
@@ -96,7 +96,7 @@ final class ComprarItemAction {
 
             $saldo = (int) $saldo;
 
-            // Buscar o preço verdadeiro no PostgreSQL.
+                                                        
             $stmt = (new \Maremon\Models\LojaRepository($pdo))->buscarProduto([
                 "item_id" => $itemId
             ]);
@@ -112,7 +112,7 @@ final class ComprarItemAction {
                 ], 404);
             }
 
-            // A interface não basta: validar desbloqueio também ao comprar por POST.
+                                                                                       
             if ($item["efeito"] === "dna_boss") {
                 $stmt = (new \Maremon\Models\LojaRepository($pdo))->verificarPermissaoDna([
                     "nome" => $item["nome"],
@@ -142,7 +142,7 @@ final class ComprarItemAction {
                 
             }
 
-            // Descontar o dinheiro.
+                                    
             $stmt = (new \Maremon\Models\LojaRepository($pdo))->debitarSaldo([
                 "valor_total" => $valorTotal,
                 "pescador_id" => $pescadorId
@@ -154,14 +154,14 @@ final class ComprarItemAction {
                 );
             }
 
-            // Adicionar o item ao inventário.
+                                               
             $stmt = (new \Maremon\Models\LojaRepository($pdo))->adicionarEstoque([
                 "pescador_id" => $pescadorId,
                 "item_id" => $itemId,
                 "quantidade" => $quantidade
             ]);
 
-            // Registrar o histórico da compra.
+                                                
             $stmt = (new \Maremon\Models\LojaRepository($pdo))->registrarCompra([
                 "pescador_id" => $pescadorId,
                 "item_id" => $itemId,
@@ -170,7 +170,7 @@ final class ComprarItemAction {
                 "total" => $valorTotal
             ]);
 
-            // Confirmar todas as operações.
+                                              
             $pdo->commit();
 
             $this->responderCompra([

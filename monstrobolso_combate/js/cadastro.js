@@ -1,6 +1,6 @@
 const formulario = document.getElementById("form_cadastro");
 const mensagem = document.getElementById("mensagem");
-formulario.addEventListener("submit", async function (evento) {
+formulario.onsubmit = async function (evento) {
     evento.preventDefault();
     const botao = formulario.querySelector('button[type="submit"]');
     const nome = document.getElementById("nome").value;
@@ -33,4 +33,4 @@ formulario.addEventListener("submit", async function (evento) {
     finally {
         botao.disabled = false;
     }
-});
+};

@@ -4,7 +4,7 @@ namespace Maremon\Services;
 
 use PDO;
 
-/** Estado dos integrantes limitado à sessão de uma batalha. */
+                                                                 
 final class EquipeCombate
 {
     public static function sincronizar(array &$combate): void

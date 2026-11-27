@@ -48,7 +48,7 @@ final class FugirCombateAction {
         try {
             $pdo->beginTransaction();
 
-            // Preservar HP e condições de todos os integrantes da batalha.
+                                                                             
             \Maremon\Services\EquipeCombate::salvar($pdo, $pescadorId, $combate);
 
             \Maremon\Models\LogCombateRepository::atualizarLogCombate(

@@ -37,18 +37,15 @@ async function carregarInventario() {
     tokenInventario = dados.csrf_token;
     evolucoes = dados.evolucoes || [];
     emCombate = Boolean(dados.em_combate);
-    // Limpar seleções ao atualizar os dados.
     itemSelecionado = null;
     pescadoSelecionado = null;
     mostrarItens(dados.itens);
     mostrarPescados(dados.pescados);
     atualizarBotaoUsar();
 }
-// Classificação pelo efeito do banco, não pelo nome exibido do item.
 function categoriaItem(item) {
     if (efeitosEvolucao.includes(item.efeito)) return "evolucao";
     if (efeitosCura.includes(item.efeito)) return "cura";
-    // Também acolhe materiais cadastrados nas categorias existentes do jogo.
     const categoria = String(item.categoria || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
     if (categoria === "evolucao") return "evolucao";
     if (categoria === "cura" || categoria === "status") return "cura";
@@ -78,8 +75,8 @@ function selecionarCategoria(id) {
     atualizarBotaoUsar();
 }
 categorias.forEach((categoria, indice) => {
-    categoria.aba.addEventListener("click", () => selecionarCategoria(categoria.id));
-    categoria.aba.addEventListener("keydown", evento => {
+    categoria.aba.onclick = () => selecionarCategoria(categoria.id);
+    categoria.aba.onkeydown = evento => {
         let destino;
         if (evento.key === "ArrowLeft" || evento.key === "ArrowRight") destino = categorias[1 - indice];
         else if (evento.key === "Home") destino = categorias[0];
@@ -90,7 +87,7 @@ categorias.forEach((categoria, indice) => {
             selecionarCategoria(destino.id);
             destino.aba.focus();
         }
-    });
+    };
 });
 function mostrarItens(itens) {
     categorias.forEach(categoria => {
@@ -114,11 +111,11 @@ function mostrarItens(itens) {
             if (imagemItem && caminhoImagem) {
                 imagemItem.src = caminhoImagem;
                 imagemItem.alt = nomeExibicao(item.nome);
-                imagemItem.addEventListener("error", () => { imagemItem.removeAttribute("src"); imagemItem.alt = ""; }, { once: true });
+                imagemItem.onerror = () => { imagemItem.onerror = null; imagemItem.removeAttribute("src"); imagemItem.alt = ""; };
             }
             card.querySelector(".item_quantidade").textContent = `×${item.quantidade}`;
             card.querySelector(".item_descricao").textContent = item.descricao || "Sem descrição cadastrada.";
-            card.addEventListener("click", () => {
+            card.onclick = () => {
                 if (usandoItem) return;
                 desmarcarCards(".item_inventario");
                 card.classList.add("selecionado");
@@ -126,7 +123,7 @@ function mostrarItens(itens) {
                 itemSelecionado = item;
                 mensagem.textContent = "";
                 atualizarBotaoUsar();
-            });
+            };
             categoria.grade.appendChild(card);
         });
     });
@@ -145,20 +142,18 @@ function mostrarPescados(pescados) {
         card.querySelector(".pescado_nome").textContent = `${nomeExibicao(pescado.nome)} · Nv. ${pescado.nivel}`;
         card.querySelector(".pescado_detalhe").textContent =
             `HP ${pescado.hp_atual}/${pescado.hp_max} · Status: ${pescado.status || "normal"} · Evolução: ${pescado.estagio_evolucao ?? 0}`;
-        card.addEventListener("click", () => {
+        card.onclick = () => {
             if (usandoItem || !podeReceberItem(pescado)) return;
             desmarcarCards(".pescado_inventario");
             card.classList.add("selecionado");
             card.setAttribute("aria-pressed", "true");
             pescadoSelecionado = pescado;
             atualizarBotaoUsar();
-        });
+        };
         cardsPescados.set(card, pescado);
         listaPescados.appendChild(card);
     });
 }
-// Reproduz os critérios de ItemService e EvolucaoService para orientar a seleção.
-// O servidor continua validando cada uso antes de consumir o item.
 function rotasValidas(pescado, item = itemSelecionado) {
     if (!pescado || !item) return [];
     return evolucoes.filter(e => Number(e.pescado_origem_id) === Number(pescado.id)
@@ -241,7 +236,7 @@ function atualizarBotaoUsar() {
             || emCombate || !podeReceberItem(pescadoSelecionado);
     }
 }
-escolherEvolucao.addEventListener("change", atualizarBotaoUsar);
+escolherEvolucao.onchange = atualizarBotaoUsar;
 async function usarItemSelecionado() {
     if (usandoItem || botaoUsar.disabled ||
         !itemSelecionado ||
@@ -287,7 +282,7 @@ async function usarItemSelecionado() {
         atualizarBotaoUsar();
     }
 }
-botaoUsar.addEventListener("click", usarItemSelecionado);
+botaoUsar.onclick = usarItemSelecionado;
 carregarInventario().catch(erro => {
     listaItens.setAttribute("aria-busy", "false");
     categorias.forEach(categoria => {

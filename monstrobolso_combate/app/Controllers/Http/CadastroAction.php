@@ -60,13 +60,13 @@ final class CadastroAction {
 
         try {
 
-            // Proteger a senha antes de armazenar
+                                                  
             $senhaHash = password_hash(
                 $senha,
                 PASSWORD_DEFAULT
             );
 
-            // Cadastrar o jogador
+                                  
             $stmt = (new \Maremon\Models\ContaRepository($pdo))->cadastrar([
                 "nome" => $nome,
                 "usuario" => $usuario,
@@ -83,7 +83,7 @@ final class CadastroAction {
 
         } catch (PDOException $e) {
 
-            // 23505 = violação de restrição UNIQUE no PostgreSQL
+                                                                     
             if ($e->getCode() === "23505") {
                 http_response_code(409);
 

@@ -1,6 +1,6 @@
 <?php
 namespace Maremon\Domain;
-// Entidade com mais de 10 atributos, encapsulada e composta com um Tipo concreto.
+                                                                                  
 final class Pescado {
     private int $id;
     private string $nome;

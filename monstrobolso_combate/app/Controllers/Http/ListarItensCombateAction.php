@@ -34,7 +34,7 @@ final class ListarItensCombateAction {
             $stmt = (new \Maremon\Models\InventarioRepository($pdo))->listarAlvosBatalha(["id" => $pescadorId]);
             $pescados = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-            // A mochila do combate só mostra os integrantes escalados.
+                                                                        
             $idsEquipe = array_map("intval", array_keys($combate["equipe"] ?? []));
             $pescados = array_values(array_filter(
                 $pescados,

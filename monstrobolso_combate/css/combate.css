@@ -1,4 +1,3 @@
-/* Maremon — HUD de batalha. A arena e a escala por espécie são independentes dos menus. */
 #tela_jogo.fundo_combate { background-size: 100% 100%; }
 #interface_combate {
     --fundo-hud: #151e30;
@@ -13,7 +12,6 @@
     --topo-painel: 1.5vh;
     --espaco-arena: clamp(4px, .8vh, 10px);
     --altura-menu: 24vh;
-    /* Mesmas dimensões e limites da versão anterior. */
     --tamanho-jogador: min(30vw, 34vh, 330px);
     --tamanho-inimigo: min(28vw, 31vh, 300px);
     --apoio-jogador: 48%;
@@ -37,7 +35,6 @@
     --tamanho-sprite: min(calc(var(--tamanho-jogador) * var(--escala-combate, 1)), 40vw, 52vh);
     width: var(--tamanho-sprite); height: var(--tamanho-sprite);
     left: calc(21% - var(--tamanho-sprite) / 2);
-    /* Mantém a âncora original; só desloca para baixo se o sprite grande invadir o HP. */
     top: max(calc(100% - var(--apoio-jogador) - var(--tamanho-sprite) * .94921875),
              calc(var(--topo-painel) + var(--altura-painel) + var(--espaco-arena) - var(--tamanho-sprite) * var(--margem-superior-sprite, 0)));
     bottom: auto; right: auto; transform: scaleX(-1);
@@ -50,7 +47,6 @@
     top: auto; right: auto; transform: none;
 }
 
-/* Cartões compactos de HP: cada painel pertence ao Pescado do seu lado. */
 #interface_combate .painel_pescado {
     --cor-tipo: #768aa5;
     position: absolute; z-index: 5; width: min(39vw, 600px); height: var(--altura-painel);
@@ -119,7 +115,6 @@
     #interface_combate #aviso_boss { max-width: 90vw; }
 }
 
-/* Faixa de comandos fixa: o registro à esquerda e um único menu à direita. */
 #interface_combate #menu_combate {
     position: absolute; z-index: 10; left: var(--margem-hud); right: var(--margem-hud); bottom: 2vh;
     height: var(--altura-menu); display: grid; grid-template-columns: minmax(0, 1.22fr) minmax(0, 1fr);
@@ -175,7 +170,6 @@
 #interface_combate button:disabled { cursor: not-allowed; opacity: .48; box-shadow: none; }
 #interface_combate button:focus-visible, #interface_combate select:focus-visible { outline: 2px solid #b5dfff; outline-offset: 2px; }
 
-/* Submenus ocupam exatamente o lugar dos cinco comandos, com rolagem interna. */
 #interface_combate .combate_painel_aux {
     padding: clamp(7px, 1.1vh, 14px); overflow: auto; overscroll-behavior: contain;
     scrollbar-width: thin; scrollbar-color: #425e80 #101827;
@@ -235,7 +229,6 @@
     #interface_combate .comando_acao { font-size: 11px; }
 }
 
-/* Animação universal: avanço curto + impacto, sem alterar os dados da luta. */
 #sprite_jogador.animando_ataque {
     animation: maremon_avanco_jogador 380ms cubic-bezier(.2,.5,.3,1) both;
 }

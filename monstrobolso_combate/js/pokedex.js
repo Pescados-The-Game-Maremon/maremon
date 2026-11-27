@@ -17,12 +17,12 @@
             const card = modelo.content.firstElementChild.cloneNode(true);
             const imagem = card.querySelector('img');
             imagem.alt = window.nomeMaremon ? window.nomeMaremon(p.nome) : (p.nome ?? '');
-            imagem.addEventListener('error', () => {
-                imagem.addEventListener('error', () => {
+            imagem.onerror = () => { imagem.onerror = null;
+                imagem.onerror = () => { imagem.onerror = null;
                     imagem.src = 'assets/pescados/sem_sprite.svg';
-                }, { once: true });
+                };
                 imagem.src = caminhoSprite(p);
-            }, { once: true });
+            };
             const original = caminhoSprite(p);
             const normalizado = original.replace(/^assets\/(pescados|bosses)\/(.+\.png)$/i, 'assets/sprites_enciclopedia/$1/$2');
             imagem.src = normalizado;

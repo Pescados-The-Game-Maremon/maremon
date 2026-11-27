@@ -67,15 +67,15 @@ final class LoginAction {
                 exit;
             }
 
-            // Renovar o identificador da sessão após o login
+                                                               
             session_regenerate_id(true);
 
             $_SESSION = [];
-            // Guardar apenas os dados necessários
+                                                   
             $_SESSION["pescador_id"] = (int) $jogador["id"];
             $_SESSION["usuario"] = $jogador["usuario"];
 
-            // Limpar qualquer combate antigo
+                                             
             unset($_SESSION["combate"]);
 
             echo json_encode([

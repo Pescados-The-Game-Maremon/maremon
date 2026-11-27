@@ -21,7 +21,7 @@ function selecionar(botao) {
 }
 
 botoes.forEach(botao => {
-    botao.addEventListener("click", () => selecionar(botao));
+    botao.onclick = () => selecionar(botao);
 });
 
 async function confirmarEscolha() {
@@ -60,11 +60,11 @@ async function confirmarEscolha() {
     }
 }
 
-confirmar.addEventListener("click", confirmarEscolha);
+confirmar.onclick = confirmarEscolha;
 
-document.addEventListener("keydown", evento => {
+document.onkeydown = evento => {
     if (evento.key === "Enter" && pescadoSelecionado && !enviando) {
         evento.preventDefault();
         confirmarEscolha();
     }
-});
+};

@@ -1,7 +1,3 @@
--- MAREMON 13: 51 espécies e 21 evoluções, sem requisito de nível.
--- Execute no banco Maremon após a etapa 12 (chefes e DNAs).
--- Faça backup. Um bloco DO é atômico; sem BEGIN/COMMIT de transação externos.
--- Não renomeia espécies existentes nem substitui atributos/ataques configurados.
 DO $migracao$
 DECLARE
  r RECORD; v_id INTEGER; v_count INTEGER; v_pedra INTEGER; v_item INTEGER;
@@ -28,12 +24,10 @@ BEGIN
  IF (SELECT COUNT(*) FROM public.ataques) < 4 THEN
    RAISE EXCEPTION 'Cadastre pelo menos quatro ataques antes da etapa 13.';
  END IF;
- -- Preservar bônus do sistema antigo nos exemplares já existentes; novos não acumulam bônus duplo.
  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='pescador_pescado' AND column_name='bonus_evolucao_legado') THEN
    ALTER TABLE public.pescador_pescado ADD COLUMN bonus_evolucao_legado INTEGER NOT NULL DEFAULT 0;
    UPDATE public.pescador_pescado SET bonus_evolucao_legado=estagio_evolucao;
  END IF;
- -- A pedra que já existe na loja mantém seu ID, preço e quantidade.
  SELECT id INTO v_pedra FROM public.loja_itens WHERE efeito='evoluir' ORDER BY id LIMIT 1;
  IF v_pedra IS NULL THEN
    INSERT INTO public.loja_itens(nome,descricao,categoria,preco,efeito,valor_efeito)
@@ -102,7 +96,6 @@ BEGIN
    ELSE
      SELECT pescado_id INTO v_id FROM public.maremon_especies WHERE codigo=r.codigo;
      IF v_id IS NULL THEN
-       -- Normaliza acentos, espaços, hífens e underscores para localizar espécies existentes.
        SELECT COUNT(*),MIN(id) INTO v_count,v_id FROM public.pescado
        WHERE regexp_replace(translate(lower(nome),'áàâãäéèêëíìîïóòôõöúùûüç','aaaaaeeeeiiiiooooouuuuc'),'[^a-z0-9]','','g') IN (
          regexp_replace(lower(r.codigo),'[^a-z0-9]','','g'),
@@ -119,7 +112,6 @@ BEGIN
    IF NOT EXISTS (SELECT 1 FROM public.stats WHERE pescado_id=v_id) THEN
      INSERT INTO public.stats(pescado_id,hp,atk,def,spe) VALUES(v_id,r.hp,r.atk,r.def,r.spe);
    END IF;
-   -- Somente espécies sem nenhum ataque recebem quatro golpes provisórios.
    IF NOT EXISTS (SELECT 1 FROM public.pescado_ataques WHERE pescado_id=v_id) THEN
      SELECT tipo INTO v_tipo FROM public.pescado WHERE id=v_id;
      INSERT INTO public.pescado_ataques(pescado_id,ataque_id,nivel_necessario,slot)
@@ -163,10 +155,8 @@ BEGIN
    VALUES(v_origem,v_destino,v_item,1,1)
    ON CONFLICT(pescado_origem_id,pescado_destino_id) DO NOTHING;
  END LOOP;
- -- Atualizar descrição dos DNAs, sem alterar valores ou desbloqueios.
  UPDATE public.loja_itens i SET descricao='DNA de '||b.nome||'. Evolui uma espécie compatível.'
  FROM public.bosses b WHERE i.nome=b.dna_nome AND i.efeito='dna_boss';
- -- A forma evoluída usa os próprios atributos base, sem bônus duplicado.
  CREATE OR REPLACE VIEW public.vw_equipe_maremon AS
  SELECT j.id AS jogador_id,j.usuario,p.id AS pescado_id,p.nome,p.tipo,
  pp.nivel,pp.exp,pp.status,pp.status_turnos,pp.estagio_evolucao,
@@ -180,7 +170,6 @@ BEGIN
 END;
 $migracao$;
 
--- Conferência: 51 espécies mapeadas, 21 rotas nesta lista (ou mais se você já tinha outras rotas).
 SELECT COUNT(*) AS especies_mapeadas FROM public.maremon_especies;
 SELECT p.nome AS origem,d.nome AS destino,i.nome AS item,e.quantidade_item
 FROM public.evolucoes e JOIN public.pescado p ON p.id=e.pescado_origem_id

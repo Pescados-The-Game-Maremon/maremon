@@ -1,9 +1,7 @@
-/* Centro de Cura: cenário interagível e notificação no padrão do inventário. */
 #tela_jogo.aqua_dentro {
     background-color: #090f1c;
 }
 
-/* Nas proporções extremas, preserva todo o cenário e o alinhamento do ponto. */
 @media (max-aspect-ratio: 3/2), (min-aspect-ratio: 2/1) {
     #tela_jogo.aqua_dentro { background-size: contain; }
 }
@@ -64,7 +62,6 @@
     color: #ffb3b3;
     background: #482b38;
 }
-/* Mantém Voltar no topo esquerdo, inclusive em telas pequenas. */
 @media (max-width: 650px) {
     #tela_jogo[data-cena="cena_aqua_dentro"] .centro_cura_voltar { top: 8px; left: 8px; }
     #tela_jogo[data-cena="cena_aqua_dentro"] .hud_jogo { left: auto; max-width: calc(100% - 108px); }

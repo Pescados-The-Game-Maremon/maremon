@@ -93,8 +93,8 @@ final class UsarItemCombateAction {
                 throw new JogoException("Você não possui este Pescado.");
             }
 
-            // HP da sessão tem prioridade sobre a leitura do banco.
-            // Apenas integrantes da equipe atual podem receber itens na batalha.
+                                                                     
+                                                                                 
             EquipeCombate::sincronizar($combate);
 
             if (!isset($combate["equipe"][$pescadoId])) {
@@ -141,7 +141,7 @@ final class UsarItemCombateAction {
                 }
             }
 
-            // Usar um item consome o turno; o inimigo pode responder.
+                                                                      
             $repo = new CombateRepository($pdo);
             $ataques = $repo->ataques(
                 (int) $combate["inimigo"]["id"],
@@ -154,8 +154,8 @@ final class UsarItemCombateAction {
 
             $ataqueInimigo = $ataques[random_int(0, count($ataques) - 1)];
             $motor = new CombateMotor();
-            // Um Pescado nocauteado exige troca; usar Revive no reserva não
-            // pode fazer um oponente atacar o membro já nocauteado.
+                                                                             
+                                                                     
             $forcarTroca = EquipeCombate::exigeTroca($combate);
             $eventos = $forcarTroca ? [] : $motor->contraAtaque(
                 $combate["jogador"],
@@ -166,7 +166,7 @@ final class UsarItemCombateAction {
             EquipeCombate::sincronizar($combate);
             $resultado = EquipeCombate::resultado($combate);
 
-            // Vitória por veneno ou queimadura também concede a recompensa normal.
+                                                                                     
             $expGanha = $resultado === "vitoria"
                 ? (!empty($combate["boss_ordem"]) ? 2500 : 100)
                 : 0;
@@ -219,7 +219,7 @@ final class UsarItemCombateAction {
                 }
             }
 
-            // Salvar os três integrantes com HP e status próprios.
+                                                                     
             EquipeCombate::salvar($pdo, $pescadorId, $combate);
 
             \Maremon\Models\LogCombateRepository::atualizarLogCombate(

@@ -1,5 +1,3 @@
--- MAREMON — MIGRAÇÃO INCREMENTAL. NÃO apaga jogadores, capturas nem lojas.
--- Execute somente após fazer backup. PostgreSQL 12+.
 BEGIN;
 ALTER TABLE public.pescador_pescado ADD COLUMN IF NOT EXISTS status VARCHAR(20) NOT NULL DEFAULT 'normal';
 ALTER TABLE public.pescador_pescado ADD COLUMN IF NOT EXISTS status_turnos INTEGER NOT NULL DEFAULT 0;
@@ -34,13 +32,11 @@ END $$;
 CREATE UNIQUE INDEX IF NOT EXISTS ux_maremon_slots
  ON public.pescador_pescado (pescador_id,equipe_slot) WHERE equipe_slot IS NOT NULL;
 UPDATE public.pescador_pescado SET equipe_slot=1 WHERE selecionado=TRUE AND equipe_slot IS NULL;
--- Efeitos pertencem à definição dos ATAQUES; condições sofridas ficam no exemplar.
 UPDATE public.ataques SET status_aplicado = 'envenenado', chance_status=35, duracao_status=3 WHERE LOWER(nome)=LOWER('Sombra');
 UPDATE public.ataques SET status_aplicado = 'queimado', chance_status=35, duracao_status=3 WHERE LOWER(nome)=LOWER('Faísca Vermelha');
 UPDATE public.ataques SET status_aplicado = 'congelado', chance_status=25, duracao_status=2 WHERE LOWER(nome)=LOWER('Onda Azul');
 UPDATE public.ataques SET status_aplicado = 'dormindo', chance_status=25, duracao_status=2 WHERE LOWER(nome)=LOWER('Clarão');
 UPDATE public.ataques SET status_aplicado = 'paralisado', chance_status=30, duracao_status=3 WHERE LOWER(nome)=LOWER('Raio de Luz');
--- Visões obrigatórias para a disciplina Banco de Dados II.
 CREATE OR REPLACE VIEW public.vw_equipe_maremon AS
  SELECT j.id AS jogador_id,j.usuario,p.id AS pescado_id,p.nome,p.tipo,
  pp.nivel,pp.exp,pp.status,pp.status_turnos,pp.estagio_evolucao,
@@ -63,8 +59,3 @@ CREATE OR REPLACE VIEW public.vw_historico_maremon AS
 CREATE OR REPLACE VIEW public.vw_catalogo_maremon AS
  SELECT id,nome,descricao,categoria,preco,efeito,valor_efeito FROM public.loja_itens;
 COMMIT;
--- Testes:
--- SELECT nome,status_aplicado,chance_status FROM public.ataques ORDER BY id;
--- SELECT * FROM public.vw_equipe_maremon LIMIT 10;
--- SELECT * FROM public.vw_historico_maremon LIMIT 10;
--- SELECT * FROM public.vw_catalogo_maremon LIMIT 10;

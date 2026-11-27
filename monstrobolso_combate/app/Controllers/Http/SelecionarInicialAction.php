@@ -52,8 +52,8 @@ final class SelecionarInicialAction {
         try {
             $pdo->beginTransaction();
 
-            // Bloquear a linha da conta durante a escolha.
-            // Evita duas escolhas simultâneas.
+                                                           
+                                                
             $stmt = (new \Maremon\Models\EquipeDadosRepository($pdo))->bloquearContaInicial([
                 "pescador_id" => $pescadorId
             ]);
@@ -62,7 +62,7 @@ final class SelecionarInicialAction {
                 throw new Exception("Jogador não encontrado.");
             }
 
-            // Conferir se o jogador já possui um Pescado.
+                                                           
             $stmt = (new \Maremon\Models\EquipeDadosRepository($pdo))->contarPescados([
                 "pescador_id" => $pescadorId
             ]);
@@ -77,7 +77,7 @@ final class SelecionarInicialAction {
                 );
             }
 
-            // Procurar a espécie e seus atributos.
+                                                    
             $stmt = (new \Maremon\Models\EquipeDadosRepository($pdo))->buscarEspecieInicial([
                 "nome" => $pescadoEscolhido
             ]);
@@ -100,10 +100,10 @@ final class SelecionarInicialAction {
                 "hp_atual" => (int) $pescado["hp"]
             ]);
 
-            // Confirmar o salvamento no PostgreSQL.
+                                                    
             $pdo->commit();
 
-            // Impedir reutilização do token da escolha.
+                                                          
             unset($_SESSION["csrf_token"]);
 
             $this->responder(

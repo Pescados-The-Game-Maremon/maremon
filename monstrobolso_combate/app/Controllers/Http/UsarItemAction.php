@@ -28,7 +28,7 @@ final class UsarItemAction {
         }
         try {
             $pdo->beginTransaction();
-            // Lock da conta: mesma ordem da compra, combate e equipe.
+                                                                      
             $s = (new \Maremon\Models\InventarioRepository($pdo))->bloquearContaUso(['id'=>$pescadorId]);
             if (!$s->fetch()) throw new JogoException('Jogador não encontrado.');
             $s = (new \Maremon\Models\InventarioRepository($pdo))->bloquearItem(['id'=>$pescadorId,'item'=>$itemId]);

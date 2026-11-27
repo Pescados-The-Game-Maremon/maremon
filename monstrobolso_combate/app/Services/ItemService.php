@@ -2,7 +2,7 @@
 namespace Maremon\Services;
 use Maremon\Exceptions\JogoException;
 final class ItemService {
-    // Aplica efeitos à cópia em memória; o endpoint decide se faz COMMIT.
+                                                                             
     public function aplicar(array $item,array $alvo,bool $emCombate=false): array {
         $efeito=(string)$item['efeito'];
         $hpMax=max(1,(int)$alvo['hp_max']);

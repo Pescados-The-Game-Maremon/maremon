@@ -13,8 +13,8 @@ class DRK extends Tipo
 
     public function vantajosoContra(): array
     {
-        // DRK tem vantagem contra todos os outros tipos coloridos.
-        // LGT vence DRK. DRK contra DRK é neutro (mesmo tipo).
+                                                                   
+                                                                
         return ["RED", "BLU", "YEL", "GRN", "PUR"];
     }
 }

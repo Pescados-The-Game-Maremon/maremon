@@ -23,7 +23,7 @@ function retornarAoJogo() {
 }
 window.retornarAoJogo = retornarAoJogo;
 
-document.addEventListener("DOMContentLoaded", () => {
+function iniciarJogo() {
     let cenaInicial = "cena_casa";
     try {
         const guardada = sessionStorage.getItem("maremon_cena_retorno");
@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", () => {
     } catch (_) {}
     trocarfundo(FUNDOS_POR_CENA[cenaInicial] || "casa_inicial");
     goTo(cenaInicial);
-});
+}
 
 function goTo(cena) {
     const modelo = document.getElementById(cena);
@@ -46,12 +46,10 @@ function goTo(cena) {
         telaJogo.append(navegacao.content.cloneNode(true));
     }
     posicionarPontosMapa(cena);
-    // Recarrega os dados de painéis após recriar a cena: loja e iscas.
     if (cena === "cena_loja" && typeof carregarLoja === "function") carregarLoja();
     if (cena === "cena_varanda" && typeof carregarIscas === "function") carregarIscas();
 }
 
-// Coordenadas na arte original de cada cenário, não na janela do navegador.
 const mapasInteragiveis = {
     cena_casa: {
         imagem: [1536, 1024],
@@ -111,19 +109,17 @@ function posicionarPontosMapa(cena) {
     }
 }
 
-window.addEventListener("resize", () => posicionarPontosMapa(cenaAtual));
+window.onresize = () => posicionarPontosMapa(cenaAtual);
 
-// Um único listener atende a barra clonada em todos os cenários.
 let navegacaoEmAndamento = false;
-telaJogo.addEventListener("click", async (evento) => {
+telaJogo.onclick = async (evento) => {
     const botao = evento.target.closest('[data-destino], [data-sair], a[href$=".php"]');
     if (!botao || navegacaoEmAndamento || cenaAtual === "cena_combate") return;
     if (botao.matches('a[href$=".php"]')) {
         registrarCenaRetorno();
-        return; // deixa o link seguir normalmente após salvar a cena atual
+        return;                                                            
     }
 
-    // Não abandona uma requisição ou um turno ainda em processamento.
     if (combateOcupado || (cenaAtual === "cena_loja" && compraEmAndamento) ||
         (cenaAtual === "cena_aqua_dentro" && curandoEquipe)) {
         alert("Aguarde a ação atual terminar antes de sair.");
@@ -141,7 +137,7 @@ telaJogo.addEventListener("click", async (evento) => {
     } finally {
         navegacaoEmAndamento = false;
     }
-});
+};
 
 async function sairDaConta() {
     try {

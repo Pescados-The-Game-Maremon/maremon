@@ -2,7 +2,7 @@
 namespace Maremon\Services;
 use InvalidArgumentException;
 final class FormacaoEquipe {
-    /** Troca posições ocupadas; vindo da reserva, o ocupante volta à reserva. */
+                                                                                    
     public static function mover(array $registros,int $id,int $destino): array {
         if ($destino<0 || $destino>3) throw new InvalidArgumentException('Posição inválida.');
         $formacao=[]; $origem=0; $possui=false;

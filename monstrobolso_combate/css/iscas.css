@@ -1,4 +1,3 @@
-/* Seleção das oito iscas na varanda: painel responsivo e legível. */
 #painel_iscas {
     position: absolute;
     right: 2.5%;
@@ -73,7 +72,6 @@
 }
 
 
-/* Indicações permanentes e discretas de interação nos objetos do cenário. */
 #tela_jogo .ponto_mapa:not(:disabled) {
     border-color: #d8eaff55;
     background: #b9dfff0b;

@@ -45,7 +45,7 @@ final class CapturarPescadoAction {
 
         \Maremon\Core\TokenCombate::exigirTokenCombate($combate, $entrada, "csrf_captura");
 
-        // O Umi Bozu é um encontro especial, mesmo quando não é um dos chefes das iscas.
+                                                                                            
         $nomeInimigo = strtolower(preg_replace('/[^a-z0-9]/i', '', (string) ($combate["inimigo"]["nome"] ?? "")));
         if (in_array($nomeInimigo, ["umibozu", "umizobu"], true)) {
             $this->responder([
@@ -85,7 +85,7 @@ final class CapturarPescadoAction {
         try {
             $pdo->beginTransaction();
 
-            // Bloquear o jogador durante a operação.
+                                                       
             $stmt = (new \Maremon\Models\CombateDadosRepository($pdo))->bloquearContaCaptura([
                 "id" => $pescadorId
             ]);
@@ -94,7 +94,7 @@ final class CapturarPescadoAction {
                 throw new Exception("Jogador não encontrado.");
             }
 
-            // Confirmar que o Pescado ativo pertence ao jogador.
+                                                                 
             $stmt = (new \Maremon\Models\CombateDadosRepository($pdo))->verificarCapturaExistente([
                 "pescador_id" => $pescadorId,
                 "pescado_id" => (int) $jogador["id"]
@@ -109,7 +109,7 @@ final class CapturarPescadoAction {
                 ], 403);
             }
 
-            // Verificar se já possui a espécie selvagem.
+                                                           
             $stmt = (new \Maremon\Models\CombateDadosRepository($pdo))->verificarCapturaExistente([
                 "pescador_id" => $pescadorId,
                 "pescado_id" => (int) $inimigo["id"]
@@ -127,7 +127,7 @@ final class CapturarPescadoAction {
             $hpAtual = (int) $inimigo["hp"];
             $hpMaximo = max(1, (int) $inimigo["hp_max"]);
 
-            // Chance entre aproximadamente 25% e 75%.
+                                                      
             $chance = 25 + 50 * (
                 1 - $hpAtual / $hpMaximo
             );
@@ -149,7 +149,7 @@ final class CapturarPescadoAction {
                 ]);
             }
 
-            // Salvar o Pescado na coleção.
+                                             
             $stmt = (new \Maremon\Models\CombateDadosRepository($pdo))->registrarCaptura([
                 "pescador_id" => $pescadorId,
                 "pescado_id" => (int) $inimigo["id"],
@@ -165,7 +165,7 @@ final class CapturarPescadoAction {
                 );
             }
 
-            // Confirmar o HP do Pescado que participou.
+                                                        
             $stmt = (new \Maremon\Models\CombateDadosRepository($pdo))->atualizarPescadoAposCaptura([
                 "hp" => (int) $jogador["hp"],
                 "status" => $jogador["status"] ?? "normal",
@@ -191,7 +191,7 @@ final class CapturarPescadoAction {
 
             $pdo->commit();
 
-            // Encerrar o combate após salvar.
+                                               
             $_SESSION["combate"]["ativo"] = false;
             $_SESSION["combate"]["captura_tentada"] = true;
 

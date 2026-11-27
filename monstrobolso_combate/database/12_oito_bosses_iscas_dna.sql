@@ -1,18 +1,9 @@
--- MAREMON | ETAPA 12: OITO CHEFES, ISCAS E DNA
--- Versão para pgAdmin: NÃO utiliza BEGIN nem COMMIT.
--- EXECUTE UMA VEZ COM AUTO-COMMIT. RECOMENDADO: BACKUP ANTES.
--- Pré-requisitos: tabelas public.pescador, pescado, stats, ataques,
--- pescado_ataques, loja_itens e os ataques DRK já cadastrados.
--- Cria estruturas sem apagar progresso; reexecutar não duplica registros.
 
 SET lock_timeout = '5s';
 
--- 1. Isca selecionada por jogador.
 ALTER TABLE public.pescador
     ADD COLUMN IF NOT EXISTS isca_atual SMALLINT NOT NULL DEFAULT 1;
 
--- 2. Adicionar só as espécies de chefes que ainda não existirem.
--- Boto_Rosa e Namazu, já cadastrados, são preservados com seu tipo normal.
 INSERT INTO public.pescado (nome, tipo)
 SELECT novo.nome, novo.tipo
 FROM (VALUES
@@ -29,9 +20,6 @@ WHERE NOT EXISTS (
     SELECT 1 FROM public.pescado p WHERE LOWER(p.nome) = LOWER(novo.nome)
 );
 
--- 3. Atributos base para espécies novas (não altera stats existentes).
--- O HP de chefe NÃO fica multiplicado no banco: é multiplicado por 5
--- apenas durante o encontro. Assim os exemplares normais não são afetados.
 INSERT INTO public.stats (pescado_id, hp, atk, def, spe)
 SELECT p.id, base.hp, base.atk, base.def, base.spe
 FROM (VALUES
@@ -49,7 +37,6 @@ WHERE NOT EXISTS (
     SELECT 1 FROM public.stats s WHERE s.pescado_id = p.id
 );
 
--- 4. Catálogo de chefes por isca, na ordem da campanha.
 CREATE TABLE IF NOT EXISTS public.bosses (
     ordem SMALLINT PRIMARY KEY CHECK (ordem BETWEEN 1 AND 8),
     nome VARCHAR(100) NOT NULL,
@@ -80,7 +67,6 @@ SET nome = EXCLUDED.nome,
     dna_nome = EXCLUDED.dna_nome,
     sprite = EXCLUDED.sprite;
 
--- 5. Progresso por conta; vencer o chefe 1 libera a isca 2, e assim por diante.
 CREATE TABLE IF NOT EXISTS public.boss_vitorias (
     pescador_id INTEGER NOT NULL REFERENCES public.pescador(id) ON DELETE CASCADE,
     boss_ordem SMALLINT NOT NULL REFERENCES public.bosses(ordem),
@@ -88,9 +74,6 @@ CREATE TABLE IF NOT EXISTS public.boss_vitorias (
     PRIMARY KEY (pescador_id, boss_ordem)
 );
 
--- 6. Cada DNA é apenas um item colecionável nesta fase.
--- O efeito 'dna_boss' ficará reservado à futura implementação de evolução.
--- A listagem/compra exige vitória registrada no respectivo chefe.
 INSERT INTO public.loja_itens
     (nome, descricao, categoria, preco, efeito, valor_efeito)
 SELECT b.dna_nome,
@@ -103,8 +86,6 @@ FROM public.bosses b
 WHERE TRUE
 ON CONFLICT (nome) DO NOTHING;
 
--- 7. Preencher slots de golpes que estejam livres nas espécies chefes.
--- Preserva os golpes e slots que você já configurou para qualquer espécie.
 INSERT INTO public.pescado_ataques
     (pescado_id, ataque_id, nivel_necessario, slot)
 SELECT p.id, a.id, 1, golpe.slot
@@ -125,7 +106,6 @@ WHERE NOT EXISTS (
       AND (pa.slot = golpe.slot OR pa.ataque_id = a.id)
 );
 
--- 8. Conferência: oito chefes e seus golpes; DNA presente na loja.
 SELECT
     b.ordem,
     b.nome AS chefe,
@@ -142,6 +122,3 @@ LEFT JOIN public.pescado_ataques pa ON pa.pescado_id = p.id
 GROUP BY b.ordem, b.nome, p.nome, p.tipo, s.hp, b.dna_nome
 ORDER BY b.ordem;
 
--- Se alguma linha mostrar 'golpes' = 0, confira se estes quatro ataques
--- estão em public.ataques: Mordida Abissal, Sombra do Naufrágio,
--- Pulso Obscuro e Maré Negra.

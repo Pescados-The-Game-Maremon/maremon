@@ -1,9 +1,7 @@
-// Somente marcação constante do próprio projeto. Dados de API entram por textContent.
 function elementoHTML(marcacao) {
     return document.createRange().createContextualFragment(marcacao).firstElementChild;
 }
 
-// Padroniza nomes de códigos internos para exibição (sem alterar os dados do banco).
 window.nomeMaremon = function nomeMaremon(nome) {
     const original = String(nome ?? '').trim();
     if (!original) return '';
@@ -86,7 +84,6 @@ window.nomeMaremon = function nomeMaremon(nome) {
 };
 
 
-// Resolve o arquivo de imagem de itens a partir do nome/identificador retornado pela API.
 window.imagemItemMaremon = function imagemItemMaremon(nome) {
     const chave = String(nome ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '')
         .toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');

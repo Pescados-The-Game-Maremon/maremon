@@ -53,8 +53,6 @@ const spritesPescados = {
     "Umi_Bozu": "assets/pescados/umi_bozu.png"
 };
 
-// Escala visual de cada espécie, sem alterar atributos ou HP.
-// 1 = tamanho normal; 0.75 = 25% menor; 1.40 = 40% maior.
 const escalaSpritesCombate = Object.freeze({
     "Trilobita": 0.60,
     "Carnifibita": 1.10,
@@ -113,7 +111,6 @@ function normalizarNomeSprite(nome) {
     return String(nome || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]/g, "");
 }
 
-// Aceita os nomes alternativos já usados no banco e os caminhos dos sprites.
 const escalasPorNome = new Map(Object.entries(escalaSpritesCombate).map(
     ([nome, escala]) => [normalizarNomeSprite(nome), escala]
 ));
@@ -151,7 +148,6 @@ function caminhoSprite(pescado) {
     return spritesPescados[chave] || "assets/pescados/sem_sprite.svg";
 }
 
-// As versões de combate são cópias padronizadas; o original continua disponível.
 function caminhoSpriteCombate(pescado) {
     return caminhoSprite(pescado).replace(/^assets\/(pescados|bosses)\/(.+\.png)$/i, "assets/sprites_combate/$1/$2");
 }
@@ -205,8 +201,6 @@ async function prepararSpritesCombate(pescados = []) {
     );
 }
 
-// Margem transparente superior das artes padronizadas (1024 × 1024).
-// Usada apenas para evitar a HUD sem alterar a escala nem a âncora quando há espaço.
 const margensSuperioresCombate = Object.freeze({
     "bosses/boto_rosa.png": 0.0508,
     "bosses/cipactli_highres.png": 0.0508,
@@ -284,5 +278,4 @@ function atualizarSprite(lado, pescado) {
     elemento.style.display = "block";
 }
 
-// Começar o carregamento ao entrar no jogo.
 prepararSpritesCombate();

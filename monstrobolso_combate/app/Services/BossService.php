@@ -5,7 +5,7 @@ namespace Maremon\Services;
 use PDO;
 use RuntimeException;
 
-/** A progressão é individual por conta; os oito chefes são cadastrados no SQL. */
+                                                                                     
 final class BossService
 {
     public static function iscas(PDO $pdo, int $pescadorId): array
@@ -60,7 +60,7 @@ final class BossService
         $stmt = (new \Maremon\Models\BossRepository($pdo))->selecionarIsca(["ordem" => $ordem, "pescador" => $pescadorId]);
     }
 
-    /** Deve ser chamada dentro da transação da vitória, antes do COMMIT. */
+                                                                               
     public static function registrarVitoria(PDO $pdo, int $pescadorId, array $combate): ?array
     {
         $ordem = (int) ($combate["boss_ordem"] ?? 0);

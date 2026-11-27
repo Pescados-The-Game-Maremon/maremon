@@ -4,7 +4,7 @@ namespace Maremon\Services;
 use PDO;
 use Maremon\Exceptions\JogoException;
 
-/** Transforma um exemplar em outra espécie dentro da transação do inventário. */
+                                                                                     
 final class EvolucaoService
 {
     public static function opcoes(PDO $pdo, int $pescadorId): array
@@ -20,7 +20,7 @@ final class EvolucaoService
         return max(1, min($maxNovo, (int)ceil(min(1, $hp / max(1,$maxAntigo)) * $maxNovo)));
     }
 
-    /** O chamador já bloqueou a conta, o inventário e o exemplar de origem. */
+                                                                                 
     public static function evoluir(PDO $pdo, int $pescadorId, int $pescadoId,
         int $itemId, int $evolucaoId, array $item, array $alvo): array
     {
@@ -40,7 +40,7 @@ final class EvolucaoService
         if ((int)$item['quantidade']<$quantidade) throw new JogoException('Quantidade de itens insuficiente.');
         $s = (new \Maremon\Models\EvolucaoRepository($pdo))->verificarEspecieDestino(['id'=>$pescadorId,'destino'=>$destino]);
         if ($s->fetchColumn()) throw new JogoException('Você já possui a espécie evoluída.');
-        // Sem requisito de nível. Nível, experiência, status e equipe permanecem intactos.
+                                                                                              
         $hpNovoMax=(int)$rota['hp_base']+2*max(0,(int)$alvo['nivel']-5);
         $hpNovo=self::hpProporcional((int)$alvo['hp'],(int)$alvo['hp_max'],$hpNovoMax);
         $s = (new \Maremon\Models\EvolucaoRepository($pdo))->transformarPescado(['destino'=>$destino,'hp'=>$hpNovo,'estagio'=>(int)$rota['estagio_destino'],
