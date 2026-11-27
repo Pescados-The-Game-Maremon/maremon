@@ -52,6 +52,15 @@ if (
 
 exigirTokenCombate($combate, $entrada, "csrf_captura");
 
+// O Umi Bozu é um encontro especial, mesmo quando não é um dos chefes das iscas.
+$nomeInimigo = strtolower(preg_replace('/[^a-z0-9]/i', '', (string) ($combate["inimigo"]["nome"] ?? "")));
+if (in_array($nomeInimigo, ["umibozu", "umizobu"], true)) {
+    responder([
+        "sucesso" => false,
+        "erro" => "Umi Bozu não pode ser capturado."
+    ], 403);
+}
+
 if (!empty($combate["boss_ordem"])) {
     responder([
         "sucesso" => false,

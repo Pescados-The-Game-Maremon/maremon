@@ -1,5 +1,5 @@
 .casa_inicial {
-    background-image: url("../assets/casa_inicial.png");
+    background-image: url("../assets/casa.png");
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -27,7 +27,7 @@
 }
 
 .aqua_fora {
-    background-image: url("../assets/Aqua_fora.png");
+    background-image: url("../assets/cidade.png");
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;

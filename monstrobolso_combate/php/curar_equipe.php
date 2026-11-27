@@ -1,4 +1,3 @@
-
 <?php
 
 header("Content-Type: application/json; charset=utf-8");
@@ -63,7 +62,7 @@ try {
         UPDATE public.pescador_pescado pp
         SET status='normal', status_turnos=0, hp_atual = GREATEST(
             1,
-            s.hp + 2 * GREATEST(pp.nivel - 5, 0) + 10 * pp.estagio_evolucao
+            s.hp + 2 * GREATEST(pp.nivel - 5, 0) + 10 * pp.bonus_evolucao_legado
         )
         FROM public.stats s
         WHERE s.pescado_id = pp.pescado_id

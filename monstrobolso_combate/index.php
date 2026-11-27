@@ -59,9 +59,16 @@ if (
           href="css/equipe_melhorada.css?v=<?= filemtime(__DIR__ . '/css/equipe_melhorada.css') ?>">
     <link rel="stylesheet"
           href="css/iscas.css?v=<?= filemtime(__DIR__ . '/css/iscas.css') ?>">
+    <link rel="stylesheet"
+          href="css/hud_mapa.css?v=<?= filemtime(__DIR__ . '/css/hud_mapa.css') ?>">
+    <link rel="stylesheet" href="css/destinos.css?v=<?= filemtime(__DIR__ . '/css/destinos.css') ?>">
 
     <!-- Versões automáticas dos fundos: evita imagens antigas no cache. -->
     <style>
+        .casa_inicial {
+            background-image: url("assets/casa.png?v=<?= filemtime(__DIR__ . '/assets/casa.png') ?>");
+        }
+
         .fundo_combate {
             background-image: url("assets/fundo_combate.png?v=<?= filemtime(__DIR__ . '/assets/fundo_combate.png') ?>");
         }
@@ -75,45 +82,51 @@ if (
 
     <div id="tela_jogo" class="casa_inicial"></div>
 
-    <section id="cena_casa">
-        <button type="button" onclick="sairDaConta()">
-            Sair da conta
-        </button>
-        <button type="button" onclick="window.location.href='equipe.php'">
-            Minha equipe
-        </button>
-        <button type="button" onclick="window.location.href='inventario.php'">
-            Minha mochila
-        </button>
-        <button type="button" onclick="window.location.href='historico.php'">
-            Histórico
-        </button>
-        <button type="button" id="botao_varanda"
+    <template id="navegacao_jogo">
+        <nav class="hud_jogo" aria-label="Menu do jogador">
+            <button type="button" class="hud_acao maremon-hud" data-destino="inventario.php">Inventário</button>
+            <button type="button" class="hud_acao maremon-hud" data-destino="historico.php">Histórico</button>
+            <button type="button" class="hud_acao maremon-hud" data-destino="equipe.php">Equipe</button>
+            <button type="button" class="hud_acao hud_sair maremon-hud" data-sair>Sair da conta</button>
+        </nav>
+    </template>
+
+    <template id="cena_casa">
+        <a id="ponto_inventario" class="ponto_mapa ponto_objeto" href="inventario.php"
+           aria-label="Abrir inventário" data-rotulo="Inventário"></a>
+        <a id="ponto_historico" class="ponto_mapa ponto_objeto" href="historico.php"
+           aria-label="Abrir histórico" data-rotulo="Histórico"></a>
+        <a id="ponto_equipe" class="ponto_mapa ponto_objeto" href="equipe.php"
+           aria-label="Abrir equipe" data-rotulo="Equipe"></a>
+        <button type="button" class="hud_acao casa_sair" data-sair>Sair da conta</button>
+        <button type="button" id="botao_varanda" class="ponto_mapa" data-rotulo="Varanda"
                 aria-label="Ir para a varanda"
                 onclick="trocarfundo('varanda'); goTo('cena_varanda'); carregarIscas()"></button>
-        <button type="button" id="botao_porta"
+        <button type="button" id="botao_porta" class="ponto_mapa" data-rotulo="Destinos"
                 aria-label="Escolher destino"
                 onclick="goTo('escolher_destino')"></button>
-    </section>
+    </template>
 
-    <section id="cena_varanda">
-        <button type="button" class="botao_voltar"
+    <template id="cena_varanda">
+
+        <button type="button" class="botao_voltar maremon-hud"
                 onclick="trocarfundo('casa_inicial'); goTo('cena_casa')">
             Voltar
         </button>
-        <button type="button" id="botao_boia"
+        <button type="button" id="botao_boia" class="ponto_mapa" data-rotulo="Pescar"
                 aria-label="Procurar Pescado selvagem"
                 onclick="abrirCombate()"></button>
 
+        <div id="aviso_pesca" role="status" aria-live="polite" hidden></div>
         <aside id="painel_iscas" aria-label="Escolha da isca">
             <h2>ISCAS DE CHEFE</h2>
             <p>Escolha uma isca antes de pescar. Chance de chefe: 5%.</p>
             <div id="lista_iscas"></div>
             <p id="mensagem_iscas" role="status" aria-live="polite"></p>
         </aside>
-    </section>
+    </template>
 
-    <section id="cena_combate">
+    <template id="cena_combate">
         <div id="interface_combate">
             <div id="aviso_boss" class="faixa_boss" hidden>BOSS · DRK · HP ×5</div>
             <img id="sprite_inimigo"
@@ -124,7 +137,8 @@ if (
                  class="sprite_pescado"
                  alt="Pescado do jogador">
 
-            <div id="painel_inimigo" class="painel_pescado">
+            <div id="painel_inimigo" class="painel_pescado" data-tipo="">
+                <span class="faixa_tipo_pescado" aria-hidden="true"></span>
                 <span class="marca_maremon" aria-hidden="true">
                     <svg viewBox="0 0 100 100" focusable="false">
                         <path d="M85 46 C81 19 48 9 26 25 C6 40 9 67 28 77 C49 88 67 70 62 54 C57 38 42 36 34 45 C26 54 32 66 43 66 C54 66 55 54 48 51" />
@@ -133,7 +147,8 @@ if (
                 <div class="painel_conteudo">
                     <div class="painel_identidade">
                         <h3 id="nome_inimigo">Inimigo</h3>
-                        <span id="tipo_inimigo" class="tag_tipo"></span>
+                        <span id="tipo_inimigo" class="tag_tipo" aria-label="Tipo"></span>
+                        <span id="status_inimigo" class="tag_status" hidden></span>
                         <span class="nivel_pescado">Nv. <span id="nivel_inimigo">—</span></span>
                     </div>
                     <div class="painel_vida">
@@ -143,11 +158,11 @@ if (
                         </div>
                         <p id="hp_inimigo">—</p>
                     </div>
-                    <span id="status_inimigo" class="tag_status" hidden></span>
                 </div>
             </div>
 
-            <div id="painel_jogador" class="painel_pescado">
+            <div id="painel_jogador" class="painel_pescado" data-tipo="">
+                <span class="faixa_tipo_pescado" aria-hidden="true"></span>
                 <span class="marca_maremon" aria-hidden="true">
                     <svg viewBox="0 0 100 100" focusable="false">
                         <path d="M85 46 C81 19 48 9 26 25 C6 40 9 67 28 77 C49 88 67 70 62 54 C57 38 42 36 34 45 C26 54 32 66 43 66 C54 66 55 54 48 51" />
@@ -156,7 +171,8 @@ if (
                 <div class="painel_conteudo">
                     <div class="painel_identidade">
                         <h3 id="nome_jogador">Maremon</h3>
-                        <span id="tipo_jogador" class="tag_tipo"></span>
+                        <span id="tipo_jogador" class="tag_tipo" aria-label="Tipo"></span>
+                        <span id="status_jogador" class="tag_status" hidden></span>
                         <span class="nivel_pescado">Nv. <span id="nivel_jogador">—</span></span>
                     </div>
                     <div class="painel_vida">
@@ -166,30 +182,16 @@ if (
                         </div>
                         <p id="hp_jogador">—</p>
                     </div>
-                    <span id="status_jogador" class="tag_status" hidden></span>
                 </div>
             </div>
 
             <div id="menu_combate">
-                <div id="caixa_dialogo_combate">
-                    <div class="dialogo_titulo">REGISTRO DE BATALHA <span>◆</span></div>
-                    <p id="mensagem_combate" role="status" aria-live="polite">
-                        Preparando combate...
-                    </p>
+                <div id="registro_combate">
 
-                    <div id="painel_equipe_combate" aria-label="Equipe na batalha"></div>
-
-                    <div class="atalhos_combate">
-                        <button type="button" id="botao_capturar"
-                                onclick="capturarPescado()">
-                            <span aria-hidden="true">◇</span> Capturar
-                        </button>
-                        <button type="button" id="botao_tipos"
-                                aria-controls="painel_tipos"
-                                aria-expanded="false"
-                                onclick="mostrarTipos()">
-                            <span aria-hidden="true">↗</span> Tipos
-                        </button>
+                    <div id="caixa_dialogo_combate">
+                        <p id="mensagem_combate" role="status" aria-live="polite">
+                            Preparando combate...
+                        </p>
                     </div>
                 </div>
 
@@ -237,6 +239,12 @@ if (
                                 <path d="M14 12l-5 6 5 3-4 8M14 12l6 3 6-1M14 12l-2 9 10 4 3 5"/>
                             </svg>
                             <span>FUGIR</span>
+                        </button>
+                        <button type="button" id="botao_capturar"
+                                aria-label="Capturar Pescado"
+                                title="Capturar Pescado"
+                                onclick="capturarPescado()">
+                            <img src="assets/ui/captura.png" alt="" aria-hidden="true">
                         </button>
                     </div>
 
@@ -296,81 +304,87 @@ if (
                 </div>
             </div>
         </div>
-    </section>
+    </template>
 
-    <section id="cena_aqua_fora">
-        <button type="button" class="botao_voltar"
+    <template id="cena_aqua_fora">
+        <button type="button" class="botao_voltar maremon-hud"
                 onclick="trocarfundo('casa_inicial'); goTo('cena_casa')">
             Voltar
         </button>
-        <button type="button" id="botao_entrar_centro"
+        <button type="button" id="botao_entrar_loja" class="ponto_mapa" data-rotulo="Loja Maremon"
+                aria-label="Entrar na Loja Maremon"
+                onclick="abrirLoja()"></button>
+        <button type="button" id="botao_entrar_centro" class="ponto_mapa" data-rotulo="Centro Maremon"
                 aria-label="Entrar no Centro Maremon"
                 onclick="trocarfundo('aqua_dentro'); goTo('cena_aqua_dentro')"></button>
-    </section>
+    </template>
 
-    <section id="cena_aqua_dentro">
-        <div class="centro_cura">
-            <div class="centro_cura_emblema" aria-hidden="true">✦</div>
-            <span class="centro_cura_sobretitulo">MAREMON · CENTRO DE RECUPERAÇÃO</span>
-            <h2>Centro de Cura</h2>
-            <p>Uma pausa no oceano para restaurar seus Pescados. Recupere a equipe inteira e volte à aventura!</p>
-            <div class="centro_cura_acoes">
-                <button type="button" class="centro_cura_confirmar" onclick="curarEquipe()">
-                    ✦ Curar meus Pescados
-                </button>
-                <button type="button" class="centro_cura_voltar"
-                        onclick="trocarfundo('aqua_fora'); goTo('cena_aqua_fora')">
-                    Voltar
-                </button>
-            </div>
-            <p id="mensagem_cura" role="status" aria-live="polite"></p>
-            <span class="centro_cura_rodape">◆ SUA EQUIPE MERECE DESCANSAR ◆</span>
-        </div>
-    </section>
+    <template id="cena_aqua_dentro">
+        <button type="button" id="voltar_centro_cura" class="botao_voltar centro_cura_voltar"
+                onclick="voltarDoCentroCura()">
+            <span aria-hidden="true">‹</span> Voltar
+        </button>
+        <button type="button" id="ponto_enfermeira" class="ponto_mapa ponto_objeto"
+                data-rotulo="Curar meus Pescados" aria-label="Curar todos os meus Pescados"
+                onclick="curarEquipe()"></button>
+        <div id="mensagem_cura" class="centro_cura_notificacao" role="status" aria-live="polite" aria-atomic="true"></div>
+    </template>
 
-    <section id="cena_loja">
+    <template id="cena_loja">
         <div class="loja_container">
             <header class="loja_cabecalho">
-                <h1>Loja Maremon</h1>
+                <button type="button" class="loja_voltar" onclick="voltarDaLoja()">
+                    <span aria-hidden="true">‹</span> Voltar
+                </button>
+                <div class="loja_titulo">
+                    <h1>Loja Maremon</h1>
+                    <span>Artigos de pesca</span>
+                </div>
                 <div class="loja_saldo">
-                    <span>Suas moedas</span>
-                    <strong id="saldo_loja">0</strong>
+                    <span class="loja_moeda" aria-hidden="true">$</span>
+                    <div><span>Suas moedas</span><strong id="saldo_loja">—</strong></div>
                 </div>
             </header>
-
-            <p id="mensagem_loja"></p>
+            <div class="loja_intro">
+                <span class="loja_intro_icone" aria-hidden="true">◆</span>
+                <div><h2>Suprimentos</h2><p>Escolha os itens e a quantidade para sua próxima aventura.</p></div>
+            </div>
+            <p id="mensagem_loja" role="status" aria-live="polite"></p>
+            <div class="loja_rotulo"><h2>Produtos disponíveis</h2><span id="resumo_loja"></span></div>
             <div id="produtos_loja"></div>
-
-            <button type="button" class="loja_voltar" onclick="voltarDaLoja()">
-                Voltar
-            </button>
         </div>
-    </section>
+    </template>
 
-    <section id="escolher_destino">
-        <button type="button" class="botao_voltar"
-                onclick="trocarfundo('casa_inicial'); goTo('cena_casa')">
-            Voltar
-        </button>
+    <template id="modelo_produto_loja">
+        <article class="produto_loja">
+            <div class="produto_loja_info">
+                <span class="loja_placeholder" aria-hidden="true"><img class="loja_imagem_item" alt=""></span>
+                <div class="produto_loja_texto">
+                    <h3></h3><p></p>
+                    <span class="preco_loja"></span>
+                </div>
+            </div>
+            <div class="controles_loja">
+                <label class="loja_quantidade_rotulo">Qtd. <input type="number" min="1" max="99" step="1" value="1" class="quantidade_loja"></label>
+                <span class="loja_total"></span>
+                <button type="button" class="comprar_loja">Comprar</button>
+            </div>
+        </article>
+    </template>
 
-        <div id="locais_viagem">
-            <button type="button" class="local_viagem"
-                    onclick="trocarfundo('aqua_fora'); goTo('cena_aqua_fora')">
-                Centro Maremon
-            </button>
-            <button type="button" class="local_viagem" onclick="abrirLoja()">
-                Loja Maremon
-            </button>
-            <button type="button" class="local_viagem"
-                    onclick="window.location.href='pokedex.php'">
-                Enciclopédia
-            </button>
-            <button type="button" class="local_viagem">????????</button>
+    <template id="escolher_destino">
+        <button type="button" class="botao_voltar destino_voltar" onclick="trocarfundo('casa_inicial'); goTo('cena_casa')">Voltar</button>
+        <div id="locais_viagem" class="destinos_menu" aria-label="Selecionar destino">
+            <button type="button" class="local_viagem destino_opcao"
+                    onclick="trocarfundo('aqua_fora'); goTo('cena_aqua_fora')">Centro Maremon</button>
+            <button type="button" class="local_viagem destino_opcao"
+                    onclick="registrarCenaRetorno(); window.location.assign('pokedex.php')">Enciclopédia</button>
         </div>
-    </section>
+    </template>
 
-    <script src="js/game.js?v=20261122-3"></script>
-    <script src="js/monstros.js?v=20261122-preload1"></script>
+<script src="js/elementos.js?v=<?= filemtime(__DIR__ . '/js/elementos.js') ?>"></script>
+    <script src="js/game.js?v=<?= filemtime(__DIR__ . '/js/game.js') ?>"></script>
+    <script src="js/monstros.js?v=<?= filemtime(__DIR__ . '/js/monstros.js') ?>"></script>
     <script src="js/combate.js?v=<?= filemtime(__DIR__ . '/js/combate.js') ?>"></script>
     <script src="js/cura.js?v=<?= filemtime(__DIR__ . '/js/cura.js') ?>"></script>
     <script src="js/loja.js?v=<?= filemtime(__DIR__ . '/js/loja.js') ?>"></script>

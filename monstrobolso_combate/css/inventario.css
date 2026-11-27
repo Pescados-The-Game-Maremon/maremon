@@ -1,77 +1,157 @@
-/* Mochila — mesma identidade visual dos comandos e painéis do combate. */
-.pagina_inventario #lista_itens,
-.pagina_inventario #lista_pescados {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 12px;
-    margin: 16px 0 28px;
+/* HUD da mochila: abas, cartões retangulares e paleta azul-marinho/preto. */
+body.pagina_inventario {
+    --inv-fundo: #090f1c;
+    --inv-painel: #151f33;
+    --inv-card: #172338;
+    --inv-borda: #2a3b55;
+    --inv-texto: #f0f5ff;
+    --inv-suave: #aebed4;
+    --inv-azul: #8bc9ff;
+    --inv-evolucao: #a6b7ff;
+    padding: 26px clamp(16px, 4vw, 60px) 42px;
+    background: #090e18;
+    color: var(--inv-texto);
 }
-
-.pagina_inventario .item_inventario,
-.pagina_inventario .pescado_inventario {
-    position: relative;
-    width: 100%;
-    min-width: 0;
-    min-height: 74px;
-    padding: 18px 20px;
-    border: 3px solid #f2f6ff;
-    color: #f5f8ff;
-    background: linear-gradient(145deg, #122a73, #0b1730 55%, #091021);
-    box-shadow: 5px 5px 0 #06145b;
-    text-align: left;
-    font: 900 clamp(12px, 1.12vw, 16px) "Trebuchet MS", Arial, sans-serif;
-    line-height: 1.5;
-    overflow-wrap: anywhere;
-    cursor: pointer;
-    transition: background-color .15s ease, translate .15s ease;
-}
-
-.pagina_inventario .item_inventario::before,
-.pagina_inventario .pescado_inventario::before {
-    content: "◆";
-    margin-right: 12px;
-    color: #76a7ff;
-}
-
-.pagina_inventario .item_inventario::after,
-.pagina_inventario .pescado_inventario::after {
+.pagina_inventario::before {
     content: "";
-    position: absolute;
-    right: -18px;
-    top: -22px;
-    width: 64px;
-    height: 37px;
-    background: #1748e5;
-    transform: rotate(-36deg);
+    position: fixed;
+    z-index: 0;
+    inset: -8px;
+    background: linear-gradient(180deg, rgba(5, 10, 24, .48), rgba(3, 8, 17, .74)),
+        url("../assets/casa_inicial_inventario.png") center / cover no-repeat;
+    filter: blur(4px);
     pointer-events: none;
 }
-
-.pagina_inventario .item_inventario:hover,
-.pagina_inventario .pescado_inventario:hover {
-    background: #142f73;
-    translate: 0 -2px;
+.pagina_inventario main.maremon-main { width: min(1160px, 100%); z-index: 1; }
+.pagina_inventario [hidden] { display: none !important; }
+.pagina_inventario button { font-family: inherit; }
+.pagina_inventario .inventario_cabecalho { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; }
+.pagina_inventario .inventario_voltar {
+    display: inline-flex; align-items: center; gap: 8px; padding: 9px 15px;
+    background: #151e2e; border: 1px solid #303e55; border-radius: 24px;
+    color: var(--inv-texto); text-decoration: none; font-weight: 800; font-size: 14px;
+    box-shadow: 0 4px 12px #0004;
 }
-
-.pagina_inventario .item_inventario.selecionado,
-.pagina_inventario .pescado_inventario.selecionado {
-    background: linear-gradient(145deg, #143e9c, #12356d);
-    border-color: #8cffe0;
-    box-shadow: 5px 5px 0 #0a7868;
+.pagina_inventario .inventario_voltar span { font-size: 23px; line-height: .8; color: var(--inv-azul); }
+.pagina_inventario .inventario_voltar:hover { background: #263c5a; }
+.pagina_inventario .inventario_titulo {
+    display: flex; align-items: baseline; flex-wrap: wrap; gap: 8px 17px;
+    padding: 13px 25px; background: linear-gradient(110deg, #182d50, #254c78);
+    border: 1px solid #43648c; border-radius: 13px; box-shadow: 0 4px 0 #0a1323, 0 8px 18px #0005;
 }
-
-.pagina_inventario .item_inventario.selecionado::before,
-.pagina_inventario .pescado_inventario.selecionado::before {
-    content: "✓";
-    color: #9cffe2;
+.pagina_inventario .inventario_titulo h1 { margin: 0; font-size: clamp(24px, 3vw, 34px); font-weight: 900; letter-spacing: -.045em; }
+.pagina_inventario .inventario_titulo span { color: #c8d9f0; font-size: 14px; font-weight: 700; }
+.pagina_inventario .inventario_marca { margin-left: auto; color: #8a9bb6; font-weight: 900; font-size: 12px; letter-spacing: .22em; }
+.pagina_inventario .inventario_abas {
+    display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 5px;
+    width: min(530px, 100%); margin: 0 auto 20px; padding: 5px;
+    border: 1px solid #2d3c54; border-radius: 34px; background: #080e1b; box-shadow: 0 5px 18px #0005;
 }
-
-.pagina_inventario #botao_usar {
-    margin: 4px 0 0;
+.pagina_inventario .inventario_aba {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    min-height: 47px; padding: 9px 12px; border: 1px solid transparent; border-radius: 28px;
+    background: transparent; color: #a7b8d0; font-size: 15px; font-weight: 900;
+    cursor: pointer; transition: background .15s, color .15s;
 }
-
+.pagina_inventario .inventario_aba:hover { background: #19263c; color: white; }
+.pagina_inventario .inventario_aba[aria-selected="true"] {
+    color: #f5f8ff; border-color: #486689;
+    background: repeating-linear-gradient(-45deg, #ffffff0b 0 10px, transparent 10px 20px), linear-gradient(120deg, #243e65, #344d70);
+    box-shadow: 0 2px 5px #0005;
+}
+.pagina_inventario .aba_simbolo { color: var(--inv-azul); font-size: 20px; line-height: 1; }
+.pagina_inventario #aba_evolucao .aba_simbolo { color: var(--inv-evolucao); }
+.pagina_inventario .aba_contagem { background: #0a1426; color: #c5d5ed; min-width: 23px; padding: 3px 5px; border-radius: 20px; font-size: 11px; }
+.pagina_inventario .inventario_intro {
+    display: flex; align-items: center; gap: 15px; padding: 18px 22px;
+    background: #151e30; border: 1px solid var(--inv-borda); border-radius: 18px; box-shadow: 0 5px 0 #080d18a6;
+}
+.pagina_inventario .inventario_intro_icone {
+    display: grid; place-items: center; flex: 0 0 46px; height: 46px; border-radius: 12px;
+    background: #203851; color: var(--inv-azul); font-size: 29px; font-weight: 900;
+}
+.pagina_inventario #painel_itens_evolucao .inventario_intro_icone { color: var(--inv-evolucao); background: #293355; }
+.pagina_inventario .inventario_intro h2 { margin: 0 0 5px; font-size: 19px; font-weight: 900; }
+.pagina_inventario .inventario_intro p { margin: 0; color: var(--inv-suave); font-size: 14px; line-height: 1.5; }
+.pagina_inventario .inventario_rotulo { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin: 23px 0 12px; }
+.pagina_inventario .inventario_rotulo h3, .pagina_inventario .inventario_rotulo h2 { display: flex; align-items: center; gap: 9px; margin: 0; font-size: 17px; font-weight: 900; }
+.pagina_inventario .inventario_rotulo h3::before, .pagina_inventario .inventario_rotulo h2::before { content: ""; width: 9px; height: 9px; border: 2px solid #b7dcff; border-radius: 50%; background: #568dc4; }
+.pagina_inventario .inventario_rotulo > span { color: var(--inv-suave); font-size: 12px; font-weight: 700; }
+.pagina_inventario .inventario_grade, .pagina_inventario #lista_pescados { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.pagina_inventario .item_inventario, .pagina_inventario .pescado_inventario {
+    position: relative; min-width: 0; width: 100%; border: 1px solid var(--inv-borda); border-radius: 16px;
+    background: var(--inv-card); box-shadow: 0 4px 0 #080d18a6; color: var(--inv-texto);
+    text-align: left; cursor: pointer; transition: border-color .15s, background .15s, transform .15s;
+}
+.pagina_inventario .item_inventario { display: flex; align-items: center; gap: 15px; min-height: 108px; padding: 14px; }
+.pagina_inventario .item_inventario:hover, .pagina_inventario .pescado_inventario:hover:not(:disabled) { background: #20314b; border-color: #6285ad; transform: translateY(-2px); }
+.pagina_inventario .item_inventario.selecionado, .pagina_inventario .pescado_inventario.selecionado { border-color: #83bfff; background: #203b59; box-shadow: inset 0 0 0 1px #83bfff, 0 4px 0 #080d18a6; }
+.pagina_inventario .item_placeholder {
+    display: grid; place-items: center; flex: 0 0 66px; width: 66px; height: 66px;
+    background: radial-gradient(circle at 50% 35%, #2d4765, #101a2a 85%); border: 1px solid #405774; border-radius: 10px;
+}
+/* Ícone genérico temporário; pode ser substituído por uma imagem quadrada. */
+.pagina_inventario .item_placeholder::before { content: ""; display: block; width: 24px; height: 24px; border: 2px dashed #89a6c6; border-radius: 5px; transform: rotate(45deg); opacity: .8; }
+.pagina_inventario .item_placeholder img { width: 100%; height: 100%; object-fit: contain; }
+.pagina_inventario .item_placeholder:has(img)::before { display: none; }
+.pagina_inventario .item_texto { display: flex; flex-direction: column; flex: 1; min-width: 0; gap: 7px; }
+.pagina_inventario .item_linha_nome { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+.pagina_inventario .item_nome { color: var(--inv-azul); font-size: 17px; line-height: 1.2; font-weight: 900; overflow-wrap: anywhere; }
+.pagina_inventario #itens_evolucao .item_nome { color: var(--inv-evolucao); }
+.pagina_inventario .item_quantidade { flex: 0 0 auto; border: 1px solid #364964; background: #0f192a; border-radius: 12px; padding: 3px 8px; color: #e0ebfb; font-size: 12px; font-weight: 800; }
+.pagina_inventario .item_descricao { color: #bfcbdd; font-size: 13px; line-height: 1.45; overflow-wrap: anywhere; }
+.pagina_inventario .inventario_vazio { grid-column: 1 / -1; margin: 0; padding: 26px 20px; text-align: center; color: var(--inv-suave); border: 1px dashed #354963; border-radius: 15px; background: #0e1726bf; font-size: 14px; }
+.pagina_inventario .inventario_alvo { margin-top: 29px; padding: 20px; background: #101a2a; border: 1px solid var(--inv-borda); border-radius: 18px; box-shadow: 0 5px 0 #080d18a6; }
+.pagina_inventario .inventario_rotulo_alvo { margin-top: 0; }
+.pagina_inventario .pescado_inventario { display: flex; flex-direction: column; gap: 6px; min-height: 68px; padding: 13px 15px; border-radius: 12px; }
+.pagina_inventario .pescado_nome { font-size: 15px; color: #eef5ff; font-weight: 900; overflow-wrap: anywhere; }
+.pagina_inventario .pescado_detalhe { color: var(--inv-suave); font-size: 12px; line-height: 1.5; overflow-wrap: anywhere; }
+.pagina_inventario #painel_evolucao { margin: 16px 0 0; padding: 15px; border: 1px solid #3a5076; background: #17243a; border-radius: 12px; }
+.pagina_inventario #painel_evolucao h3 { margin: 0 0 12px; font-size: 16px; color: var(--inv-evolucao); }
+.pagina_inventario #painel_evolucao label { font-size: 13px; color: var(--inv-suave); }
+.pagina_inventario #escolher_evolucao { display: block; width: 100%; margin: 8px 0; padding: 10px; border: 1px solid #506a90; border-radius: 8px; background: #0b1424; color: #eef5ff; font: inherit; }
+.pagina_inventario #detalhe_evolucao { margin: 8px 0 0; color: #cbd9ef; font-size: 13px; line-height: 1.5; }
+.pagina_inventario .inventario_rodape_acao { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 19px; padding-top: 16px; border-top: 1px solid var(--inv-borda); }
+.pagina_inventario #resumo_selecao { margin: 0; color: var(--inv-suave); font-size: 13px; overflow-wrap: anywhere; }
+.pagina_inventario #botao_usar { min-width: 190px; flex-shrink: 0; padding: 13px 20px; background: repeating-linear-gradient(-45deg, #ffffff12 0 10px, transparent 10px 20px), linear-gradient(110deg, #245681, #3879ae); border: 1px solid #6ca4d3; border-radius: 24px; transform: none; box-shadow: 0 4px 0 #0b233a; font-weight: 900; text-transform: none; }
+.pagina_inventario #botao_usar:hover:not(:disabled) { background-color: #38699c; filter: brightness(1.17); }
+.pagina_inventario #botao_usar:disabled { opacity: .53; }
+.pagina_inventario .maremon-feedback { min-height: 0; margin: 15px 0 0; background: #0b1526; border: 1px solid #314865; border-radius: 9px; color: #c9e3ff; font-size: 13px; }
+.pagina_inventario .maremon-feedback:empty { display: none; }
+.pagina_inventario .maremon-acoes-pagina { margin-top: 22px; }
+.pagina_inventario .maremon-acoes-pagina a { border: 1px solid #364963; border-radius: 20px; background: #111c2d; box-shadow: 0 3px 0 #070d18; transform: none; text-transform: none; }
+.pagina_inventario .maremon-acoes-pagina a:hover { background: #263d5a; }
+.pagina_inventario button:focus-visible, .pagina_inventario a:focus-visible, .pagina_inventario select:focus-visible { outline: 2px solid #b5dfff; outline-offset: 3px; }
 @media (max-width: 700px) {
-    .pagina_inventario #lista_itens,
-    .pagina_inventario #lista_pescados {
-        grid-template-columns: 1fr;
-    }
+    .pagina_inventario .inventario_grade, .pagina_inventario #lista_pescados { grid-template-columns: 1fr; }
+    .pagina_inventario .inventario_marca { display: none; }
+    .pagina_inventario .inventario_titulo { padding: 12px 17px; gap: 3px 12px; }
+    .pagina_inventario .inventario_alvo { padding: 14px; }
 }
+@media (max-width: 420px) {
+    .pagina_inventario .inventario_cabecalho { gap: 9px; }
+    .pagina_inventario .inventario_titulo span { font-size: 12px; }
+    .pagina_inventario .inventario_aba { font-size: 12px; padding: 8px 5px; gap: 4px; }
+    .pagina_inventario .aba_simbolo { font-size: 15px; }
+    .pagina_inventario .inventario_intro { padding: 14px; }
+    .pagina_inventario .item_placeholder { flex-basis: 54px; width: 54px; height: 54px; }
+    .pagina_inventario .item_inventario { gap: 11px; padding: 12px; }
+    .pagina_inventario .item_nome { font-size: 15px; }
+    .pagina_inventario .inventario_rodape_acao { flex-direction: column; align-items: stretch; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .pagina_inventario .item_inventario:hover, .pagina_inventario .pescado_inventario:hover:not(:disabled) { transform: none; }
+}
+
+/* Pescados que não podem receber o item ficam desativados e em cinza. */
+.pagina_inventario .pescado_inventario.incompativel {
+    filter: grayscale(1); opacity: .48; cursor: not-allowed;
+    background: #20242b; border-color: #4b5058;
+    transform: none; box-shadow: 0 4px 0 #080d18a6;
+}
+.pagina_inventario .pescado_inventario:disabled { cursor: not-allowed; }
+
+.pagina_inventario .item_placeholder { overflow: hidden; }
+.pagina_inventario .item_placeholder:has(.item_imagem[src])::before { display: none; }
+.pagina_inventario .item_imagem { display: none; width: 100%; height: 100%; object-fit: contain; padding: 5px; }
+.pagina_inventario .item_imagem[src] { display: block; }

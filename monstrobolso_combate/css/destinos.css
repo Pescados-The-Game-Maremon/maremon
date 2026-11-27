@@ -1,0 +1,39 @@
+#locais_viagem.destinos_menu {
+    width: min(420px, calc(100vw - 32px));
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: clamp(18px, 4vw, 30px);
+    box-sizing: border-box;
+    border: 1px solid rgba(197, 231, 255, .75);
+    border-radius: 18px;
+    background: linear-gradient(145deg, rgba(7, 31, 63, .94), rgba(14, 74, 115, .92));
+    box-shadow: 0 18px 50px rgba(0, 12, 35, .45), inset 0 1px rgba(255,255,255,.18);
+}
+.destinos_menu .destino_opcao {
+    width: 100%;
+    min-height: 58px;
+    height: auto;
+    padding: 14px 18px;
+    border: 1px solid #b9e1ff;
+    border-radius: 12px;
+    background: linear-gradient(180deg, #236da5, #123e6b);
+    color: #f4fbff;
+    font: 600 17px/1.25 system-ui, sans-serif;
+    letter-spacing: .02em;
+    text-align: center;
+    cursor: pointer;
+    box-shadow: 0 4px 0 rgba(3, 20, 43, .55);
+    transition: transform .15s ease, filter .15s ease, box-shadow .15s ease;
+}
+.destinos_menu .destino_opcao:hover {
+    filter: brightness(1.14);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 0 rgba(3, 20, 43, .48);
+}
+.destinos_menu .destino_opcao:active { transform: translateY(1px); }
+.destino_voltar { border-radius: 10px; }
+@media (max-width: 480px) {
+    #locais_viagem.destinos_menu { gap: 10px; }
+    .destinos_menu .destino_opcao { min-height: 52px; font-size: 16px; }
+}

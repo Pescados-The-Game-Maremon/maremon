@@ -77,7 +77,9 @@ final class CombateController
         $resultado = EquipeCombate::resultado($combate);
 
         // Recompensas da versão atual do Maremon.
-        $expGanha = $resultado === "vitoria" ? 35 : 0;
+        $expGanha = $resultado === "vitoria"
+        ? (!empty($combate["boss_ordem"]) ? 2500 : 100)
+        : 0;
         $moedas = $resultado === "vitoria" ? 25 : 0;
 
         $this->pdo->beginTransaction();

@@ -25,7 +25,7 @@ formulario.addEventListener("submit", async (evento) => {
         }
         mensagem.textContent = dados.mensagem;
         // Entrar no jogo após autenticação
-        window.location.href = "index.php";
+        window.location.href = "escolher_inicial.php";
     }
     catch (erro) {
         mensagem.textContent = erro.message;

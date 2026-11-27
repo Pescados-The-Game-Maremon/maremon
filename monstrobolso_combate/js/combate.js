@@ -1,5 +1,5 @@
 // A interface envia ações; o PHP valida os tokens e resolve as regras da batalha.
-const API_COMBATE = "/Maremon/monstrobolso_combate/php/";
+const API_COMBATE = "php/";
 
 let combateOcupado = false;
 let combateIniciado = false;
@@ -227,7 +227,7 @@ async function animarGolpeMaremon(lado, acertou) {
             const interfaceCombate = document.getElementById("interface_combate");
 
             if (interfaceCombate) {
-                const flash = document.createElement("span");
+                const flash = elementoHTML("<span></span>");
                 flash.className = "flash_golpe " + (
                     lado === "jogador"
                         ? "flash_golpe_alvo_inimigo"
@@ -262,8 +262,14 @@ async function abrirCombate() {
     pescadoAtivoId = null;
 
 
+    const boia = document.getElementById("botao_boia");
+    const aviso = document.getElementById("aviso_pesca");
+    if (boia) boia.disabled = true;
+    if (aviso) { aviso.hidden = false; aviso.textContent = "Procurando Pescado..."; }
+    let inicioConfirmado = false;
     try {
         const dados = await requisitarCombate("iniciar_combate.php");
+        inicioConfirmado = true;
 
         combateId = Number(dados.combate_id);
         tokenCaptura = dados.csrf_captura;
@@ -286,37 +292,52 @@ async function abrirCombate() {
         exibirSubmenuCombate();
 
         atualizarInterfaceCombate(dados);
-        await carregarAtaques();
-
         combateIniciado = true;
+        await carregarAtaques();
         mensagemCombate(
             (dados.boss_ordem
-                ? `⚠ CHEFE ${dados.inimigo.nome} apareceu! Tipo DRK, HP ×5. `
-                : `Um ${dados.inimigo.nome} selvagem apareceu! `) +
+                ? `⚠ CHEFE ${(window.nomeMaremon ? window.nomeMaremon(dados.inimigo.nome) : dados.inimigo.nome)} apareceu! Tipo DRK, HP ×5. `
+                : `Um ${(window.nomeMaremon ? window.nomeMaremon(dados.inimigo.nome) : dados.inimigo.nome)} selvagem apareceu! `) +
             (equipeEmCombate.length < 2
                 ? "A equipe está com apenas um integrante. Para habilitar a troca, " +
                   "organize mais Pescados na tela Minha Equipe e inicie outro combate."
                 : `${equipeEmCombate.length} Pescados prontos para esta batalha.`)
         );
     } catch (erro) {
-        trocarfundo("fundo_combate");
-        goTo("cena_combate");
-        exibirSubmenuCombate();
-        mensagemCombate(erro.message);
+        if (!inicioConfirmado) {
+            // O servidor recusou o encontro: permaneça na varanda.
+            if (aviso?.isConnected) { aviso.hidden = false; aviso.textContent = erro.message; }
+        } else {
+            mensagemCombate(erro.message);
+        }
     } finally {
         combateOcupado = false;
-        atualizarBotaoCaptura();
-        atualizarBotoesAcao();
+        if (boia?.isConnected) boia.disabled = false;
+        if (inicioConfirmado) {
+            atualizarBotaoCaptura();
+            atualizarBotoesAcao();
+        }
     }
 }
 
+function ehUmiBozu(pescado) {
+    const nome = String(pescado?.nome ?? "").toLowerCase().replace(/[^a-z0-9]/g, "");
+    return nome === "umibozu" || nome === "umizobu";
+}
+
 function atualizarInterfaceCombate(dados) {
+    if (dados.inimigo) {
+        const capturar = document.getElementById("botao_capturar");
+        if (capturar) capturar.dataset.umiBozu = ehUmiBozu(dados.inimigo) ? "1" : "0";
+    }
     if (dados.boss_ordem !== undefined) {
         const faixa = document.getElementById("aviso_boss");
         if (faixa) {
             faixa.hidden = !dados.boss_ordem;
             if (dados.boss_ordem) {
-                faixa.textContent = `CHEFE · ${dados.inimigo?.nome || "MAREMON"} · DRK · HP ×5`;
+                faixa.textContent = "BOSS · DRK · HP ×5";
+                const nomeBoss = window.nomeMaremon ? window.nomeMaremon(dados.inimigo?.nome) : dados.inimigo?.nome;
+                faixa.title = `Chefe: ${nomeBoss || "Maremon"} · Tipo DRK · HP ×5`;
             }
         }
         const capturar = document.getElementById("botao_capturar");
@@ -353,13 +374,23 @@ function atualizarPescado(lado, pescado) {
         return;
     }
 
-    nome.textContent = pescado.nome;
+    const painel = document.getElementById("painel_" + lado);
+    const tipo = String(pescado.tipo || painel?.dataset.tipo || "").trim().toUpperCase();
+    if (painel) painel.dataset.tipo = tipo;
+    const rotuloTipo = document.getElementById("tipo_" + lado);
+    if (rotuloTipo) {
+        rotuloTipo.textContent = tipo;
+        rotuloTipo.setAttribute("aria-label", tipo ? `Tipo ${tipo}` : "Tipo não informado");
+    }
+    if (nome) nome.title = window.nomeMaremon ? window.nomeMaremon(pescado.nome) : pescado.nome;
+
+    nome.textContent = window.nomeMaremon ? window.nomeMaremon(pescado.nome) : pescado.nome;
     hp.textContent = `${pescado.hp}/${pescado.hp_max}`;
 
     const nivel = document.getElementById("nivel_" + lado);
 
     if (nivel) {
-        nivel.textContent = pescado.nivel;
+        nivel.textContent = ehUmiBozu(pescado) ? "???" : pescado.nivel;
     }
 
     const percentual = Math.max(
@@ -382,12 +413,6 @@ function atualizarPescado(lado, pescado) {
         status.hidden = estado === "normal";
     }
 
-    const tipo = document.getElementById("tipo_" + lado);
-
-    if (tipo) {
-        tipo.textContent = pescado.tipo || "";
-        tipo.dataset.tipo = pescado.tipo || "";
-    }
 }
 
 async function carregarAtaques() {
@@ -411,13 +436,14 @@ async function carregarAtaques() {
     }
 
     for (const ataque of dados.ataques) {
-        const botao = document.createElement("button");
-        const nome = document.createElement("span");
-        const detalhes = document.createElement("small");
+        const botao = elementoHTML("<button></button>");
+        const nome = elementoHTML("<span></span>");
+        const detalhes = elementoHTML("<small></small>");
 
         botao.type = "button";
         botao.className = "botao_ataque";
-        nome.textContent = ataque.nome;
+        // O catálogo já contém a grafia dos ataques, incluindo acentos e preposições.
+        nome.textContent = String(ataque.nome ?? "").trim();
         detalhes.textContent = `${ataque.tipo} · PP ${ataque.pp_atual}/${ataque.pp_max}` +
             (ataque.status_aplicado
                 ? ` · ${ataque.chance_status}% ${ataque.status_aplicado}`
@@ -563,8 +589,12 @@ function atualizarBotaoCaptura() {
     const botao = document.getElementById("botao_capturar");
 
     if (botao) {
-        botao.disabled = !combateIniciado || combateOcupado || capturaTentada || trocaObrigatoria || botao.dataset.boss === "1";
-        botao.title = botao.dataset.boss === "1" ? "Chefes não podem ser capturados." : "";
+        const umiBozu = botao.dataset.umiBozu === "1";
+        const boss = botao.dataset.boss === "1";
+        botao.disabled = !combateIniciado || combateOcupado || capturaTentada || trocaObrigatoria || boss || umiBozu;
+        botao.title = umiBozu ? "Umi Bozu não pode ser capturado."
+            : boss ? "Chefes não podem ser capturados." : "Capturar Pescado";
+        botao.setAttribute("aria-label", botao.title);
     }
 }
 
@@ -583,7 +613,8 @@ function atualizarBotoesAcao() {
 }
 
 async function capturarPescado() {
-    if (combateOcupado || !combateIniciado || capturaTentada) {
+    const botao = document.getElementById("botao_capturar");
+    if (combateOcupado || !combateIniciado || capturaTentada || trocaObrigatoria || botao?.disabled) {
         return;
     }
 
@@ -653,16 +684,16 @@ async function abrirItensCombate() {
         campoPescado.replaceChildren();
 
         for (const item of dados.itens) {
-            const opcao = document.createElement("option");
+            const opcao = elementoHTML("<option></option>");
             opcao.value = item.id;
-            opcao.textContent = `${item.nome} ×${item.quantidade}`;
+            opcao.textContent = `${window.nomeMaremon ? window.nomeMaremon(item.nome) : item.nome} ×${item.quantidade}`;
             campoItem.appendChild(opcao);
         }
 
         for (const pescado of dados.pescados) {
-            const opcao = document.createElement("option");
+            const opcao = elementoHTML("<option></option>");
             opcao.value = pescado.id;
-            opcao.textContent = `${pescado.nome} · HP ${pescado.hp_atual}/${pescado.hp_max} · ${pescado.status}`;
+            opcao.textContent = `${(window.nomeMaremon ? window.nomeMaremon(pescado.nome) : pescado.nome)} · HP ${pescado.hp_atual}/${pescado.hp_max} · ${pescado.status}`;
             campoPescado.appendChild(opcao);
         }
 
@@ -759,30 +790,6 @@ function mostrarTipos() {
 // Trocas são validadas no servidor; o cliente nunca escolhe integrantes
 // que não estejam registrados na equipe da sessão autenticada.
 function renderizarEquipeCombate() {
-    const painel = document.getElementById("painel_equipe_combate");
-
-    if (!painel) {
-        return;
-    }
-
-    painel.replaceChildren();
-
-    for (const pescado of equipeEmCombate) {
-        const linha = document.createElement("div");
-        linha.className = "integrante_combate";
-
-        if (pescado.ativo) {
-            linha.classList.add("integrante_ativo");
-        }
-
-        if (Number(pescado.hp) <= 0) {
-            linha.classList.add("integrante_derrotado");
-        }
-
-        linha.textContent = `${pescado.nome} · HP ${pescado.hp}/${pescado.hp_max}`;
-        painel.appendChild(linha);
-    }
-
     const botaoTroca = document.getElementById("botao_trocar_combate");
 
     if (botaoTroca) {
@@ -835,9 +842,9 @@ function abrirTrocaCombate() {
     lista.replaceChildren();
 
     for (const pescado of disponiveis) {
-        const botao = document.createElement("button");
+        const botao = elementoHTML("<button></button>");
         botao.type = "button";
-        botao.textContent = `${pescado.nome} · Nv. ${pescado.nivel} · HP ${pescado.hp}/${pescado.hp_max}`;
+        botao.textContent = `${(window.nomeMaremon ? window.nomeMaremon(pescado.nome) : pescado.nome)} · Nv. ${pescado.nivel} · HP ${pescado.hp}/${pescado.hp_max}`;
         botao.addEventListener("click", () => trocarPescadoCombate(pescado.id));
         lista.appendChild(botao);
     }

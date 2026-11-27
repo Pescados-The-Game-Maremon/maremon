@@ -1,0 +1,169 @@
+/* Pontos interagíveis posicionados sobre os objetos do cenário. */
+#tela_jogo .ponto_mapa {
+    position: absolute;
+    z-index: 20;
+    display: block;
+    padding: 0;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    background: transparent;
+    box-shadow: none;
+    color: #f0f5ff;
+    cursor: pointer;
+    box-sizing: border-box;
+    text-decoration: none;
+    transition: background .15s, border-color .15s, box-shadow .15s;
+}
+#tela_jogo .ponto_objeto { z-index: 21; }
+#tela_jogo .ponto_mapa::after {
+    content: attr(data-rotulo);
+    position: absolute;
+    left: 50%;
+    bottom: 100%;
+    transform: translateX(-50%);
+    padding: 6px 10px;
+    border: 1px solid #405774;
+    border-radius: 8px;
+    background: #151e30;
+    color: #f0f5ff;
+    font: 800 12px/1.2 "Trebuchet MS", Arial, sans-serif;
+    white-space: nowrap;
+    box-shadow: 0 3px 8px #0006;
+    opacity: 0;
+    pointer-events: none;
+}
+#tela_jogo #ponto_historico::after { left: 0; transform: none; }
+#tela_jogo .ponto_mapa:hover:not(:disabled),
+#tela_jogo .ponto_mapa:focus-visible {
+    border-color: #fff;
+    background: #b7ddff24;
+    box-shadow: 0 0 14px #e3f3ff96, inset 0 0 12px #b7ddff38;
+    outline: none;
+}
+#tela_jogo .ponto_mapa:hover:not(:disabled)::after,
+#tela_jogo .ponto_mapa:focus-visible::after { opacity: 1; }
+#tela_jogo .ponto_mapa:disabled { cursor: wait; opacity: .5; }
+
+/* A casa preserva os objetos próximos às bordas em telas estreitas ou muito largas. */
+#tela_jogo.casa_inicial, #tela_jogo.aqua_fora { background-color: #090f1c; }
+@media (max-aspect-ratio: 3/2), (min-aspect-ratio: 2/1) {
+    #tela_jogo.casa_inicial, #tela_jogo.aqua_fora { background-size: contain; }
+}
+
+/* Mesma paleta e acabamentos das telas de inventário e equipe. */
+#tela_jogo { --hud-espaco: 70px; }
+.hud_jogo {
+    position: absolute;
+    z-index: 1002;
+    top: 12px;
+    right: 14px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px;
+    border: 1px solid #2d3c54;
+    border-radius: 26px;
+    background: #080e1bf5;
+    box-shadow: 0 5px 18px #0006;
+    font-family: "Trebuchet MS", Arial, sans-serif;
+}
+#tela_jogo .hud_acao, #tela_jogo .botao_voltar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    min-height: 38px;
+    padding: 8px 14px;
+    border: 1px solid #303e55;
+    border-radius: 22px;
+    background: #151e30;
+    color: #f0f5ff;
+    font: 800 13px/1.2 "Trebuchet MS", Arial, sans-serif;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background .15s, border-color .15s;
+}
+#tela_jogo .hud_acao:hover, #tela_jogo .botao_voltar:hover {
+    background: #263c5a;
+    border-color: #83bfff;
+}
+#tela_jogo .hud_acao:focus-visible, #tela_jogo .botao_voltar:focus-visible {
+    outline: 2px solid #83bfff;
+    outline-offset: 2px;
+}
+#tela_jogo .hud_sair, #tela_jogo .casa_sair { color: #aebed4; }
+#tela_jogo .casa_sair { position: absolute; bottom: 14px; right: 14px; z-index: 25; }
+#tela_jogo .botao_voltar { position: absolute; top: 17px; left: 14px; width: auto; height: auto; }
+
+/* Reserva espaço para a barra nos cenários que possuem outros painéis. */
+#tela_jogo[data-cena="cena_varanda"] #painel_iscas {
+    top: var(--hud-espaco);
+    max-height: calc(100% - var(--hud-espaco) - 18px);
+    box-sizing: border-box;
+}
+#tela_jogo[data-cena="cena_loja"] .loja_container {
+    margin: var(--hud-espaco) auto 0;
+    max-height: calc(100% - var(--hud-espaco) - 16px);
+}
+@media (max-width: 650px) {
+    #tela_jogo { --hud-espaco: 112px; }
+    .hud_jogo { top: 8px; right: 8px; left: 8px; flex-wrap: wrap; justify-content: flex-end; }
+    #tela_jogo .hud_acao { min-height: 34px; padding: 6px 10px; font-size: 12px; }
+    #tela_jogo .botao_voltar { top: 61px; left: 8px; min-height: 34px; }
+}
+@media (max-width: 350px) {
+    #tela_jogo { --hud-espaco: 145px; }
+    #tela_jogo .botao_voltar { top: 96px; }
+}
+@media (prefers-reduced-motion: reduce) {
+    #tela_jogo .ponto_mapa, #tela_jogo .hud_acao, #tela_jogo .botao_voltar { transition: none; }
+}
+
+
+/* HUD consistente Maremon: navegação e ações */
+.maremon-hud, .maremon-page .maremon-acoes-pagina a,
+.maremon-page a.equipe_voltar, .maremon-page a.registros_voltar,
+.maremon-page a.inventario_voltar {
+  background: linear-gradient(180deg,#2459ef 0%,#102da9 55%,#071653 100%) !important;
+  color:#f5f8ff !important; border:2px solid #dce9ff !important;
+  border-radius:8px !important; box-shadow:0 4px 0 #020a31, inset 0 1px 0 #fff5 !important;
+  font-family:"Trebuchet MS",Arial,sans-serif !important; font-weight:900 !important;
+  text-decoration:none !important; text-transform:uppercase !important;
+  letter-spacing:.04em; transition:transform .15s,filter .15s,box-shadow .15s !important;
+}
+.maremon-hud:hover, .maremon-page .maremon-acoes-pagina a:hover,
+.maremon-page a.equipe_voltar:hover, .maremon-page a.registros_voltar:hover,
+.maremon-page a.inventario_voltar:hover {
+  filter:brightness(1.18); transform:translateY(-2px); box-shadow:0 6px 0 #020a31 !important;
+}
+.maremon-page a.equipe_voltar, .maremon-page a.registros_voltar,
+.maremon-page a.inventario_voltar { display:inline-flex;align-items:center;gap:7px;padding:10px 18px; }
+
+/* Navegação simplificada, seguindo os botões da tela de Inventário. */
+.maremon-hud, .maremon-page .maremon-acoes-pagina a,
+.maremon-page a.equipe_voltar, .maremon-page a.registros_voltar,
+.maremon-page a.inventario_voltar {
+    background: #151e2e !important;
+    color: #f0f5ff !important;
+    border: 1px solid #303e55 !important;
+    border-radius: 24px !important;
+    box-shadow: 0 4px 12px #0004 !important;
+    font-family: "Trebuchet MS", Arial, sans-serif !important;
+    font-weight: 800 !important;
+    text-decoration: none !important;
+    text-transform: none !important;
+    letter-spacing: normal !important;
+    transition: background .15s, border-color .15s !important;
+    transform: none !important;
+}
+.maremon-hud:hover, .maremon-page .maremon-acoes-pagina a:hover,
+.maremon-page a.equipe_voltar:hover, .maremon-page a.registros_voltar:hover,
+.maremon-page a.inventario_voltar:hover {
+    background: #263c5a !important;
+    border-color: #83bfff !important;
+    filter: none !important;
+    transform: none !important;
+    box-shadow: 0 4px 12px #0004 !important;
+}
+.maremon-page a.equipe_voltar, .maremon-page a.registros_voltar,
+.maremon-page a.inventario_voltar { padding: 9px 15px !important; }

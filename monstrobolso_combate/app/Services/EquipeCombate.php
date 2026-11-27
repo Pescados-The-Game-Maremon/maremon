@@ -48,6 +48,7 @@ final class EquipeCombate
             static fn(array $p): array => [
                 "id" => (int) $p["id"],
                 "nome" => (string) $p["nome"],
+                "sprite" => $p["sprite"] ?? null,
                 "tipo" => (string) $p["tipo"],
                 "nivel" => (int) $p["nivel"],
                 "hp" => (int) $p["hp"],

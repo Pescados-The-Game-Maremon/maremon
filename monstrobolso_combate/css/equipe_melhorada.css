@@ -1,138 +1,121 @@
-/* Team Builder — cartões marítimos e lâminas azuis da HUD de combate. */
-.pagina_equipe #slots_equipe {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 15px;
-    margin: 18px 0 28px;
+/* HUD da equipe — mesma identidade visual da mochila, sem alterar a formação. */
+body.pagina_equipe {
+    --eq-fundo: #090f1c;
+    --eq-painel: #151f33;
+    --eq-card: #172338;
+    --eq-borda: #2a3b55;
+    --eq-texto: #f0f5ff;
+    --eq-suave: #aebed4;
+    --eq-azul: #8bc9ff;
+    padding: 26px clamp(16px, 4vw, 60px) 42px;
+    background: #090e18;
+    color: var(--eq-texto);
 }
-
-.pagina_equipe .slot_equipe {
-    min-height: 102px;
-    padding: 22px 18px;
-    border: 3px solid #f5f7ff;
-    background: linear-gradient(138deg, #133fc9, #071632 76%);
-    box-shadow: 5px 6px 0 #051053;
-    clip-path: polygon(8% 0, 100% 0, 92% 100%, 0 100%);
-    color: #f4f8ff;
-    font-weight: 900;
-    font-size: clamp(13px, 1.2vw, 17px);
-    text-align: center;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+.pagina_equipe::before {
+    content: ""; position: fixed; z-index: 0; inset: -8px;
+    background: linear-gradient(180deg, rgba(5, 10, 24, .48), rgba(3, 8, 17, .74)),
+        url("../assets/tela_combate_equipe.png") center / cover no-repeat;
+    filter: blur(4px); pointer-events: none;
 }
-
-.pagina_equipe #lista_equipe {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 20px;
+.pagina_equipe main.maremon-main { z-index: 1; }
+.pagina_equipe [hidden] { display: none !important; }
+.pagina_equipe button { font-family: inherit; }
+.pagina_equipe .equipe_cabecalho { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; }
+.pagina_equipe .equipe_voltar {
+    display: inline-flex; align-items: center; gap: 8px; padding: 9px 15px;
+    background: #151e2e; border: 1px solid #303e55; border-radius: 24px;
+    color: var(--eq-texto); text-decoration: none; font-weight: 800; font-size: 14px;
+    box-shadow: 0 4px 12px #0004; flex-shrink: 0;
 }
-
-.pagina_equipe .card_equipe {
-    position: relative;
-    display: flex;
-    align-items: center;
-    gap: 18px;
-    min-width: 0;
-    min-height: 210px;
-    padding: 20px;
-    border: 3px solid #eaf1ff;
-    background: linear-gradient(135deg, #173ba3 0, #101d37 30%, #080f21 100%);
-    box-shadow: 6px 7px 0 #07185f;
-    overflow: hidden;
+.pagina_equipe .equipe_voltar span { font-size: 23px; line-height: .8; color: var(--eq-azul); }
+.pagina_equipe .equipe_voltar:hover { background: #263c5a; }
+.pagina_equipe .equipe_titulo {
+    display: flex; align-items: baseline; flex-wrap: wrap; gap: 8px 17px;
+    padding: 13px 25px; background: linear-gradient(110deg, #182d50, #254c78);
+    border: 1px solid #43648c; border-radius: 13px; box-shadow: 0 4px 0 #0a1323, 0 8px 18px #0005;
 }
-
-.pagina_equipe .card_equipe::after {
-    content: "";
-    position: absolute;
-    right: -22px;
-    top: -25px;
-    width: 94px;
-    height: 48px;
-    background: #174ef2;
-    transform: rotate(-38deg);
-    pointer-events: none;
+.pagina_equipe .equipe_titulo h1 { margin: 0; font-size: clamp(24px, 3vw, 34px); font-weight: 900; letter-spacing: -.045em; }
+.pagina_equipe .equipe_titulo span { color: #c8d9f0; font-size: 14px; font-weight: 700; }
+.pagina_equipe .equipe_marca { margin-left: auto; color: #c0cee1; font-weight: 900; font-size: 12px; letter-spacing: .22em; }
+.pagina_equipe .equipe_intro { padding: 18px 22px; background: #151e30; border: 1px solid var(--eq-borda); border-radius: 18px; box-shadow: 0 5px 0 #080d18a6; }
+.pagina_equipe .equipe_intro p { margin: 0; color: var(--eq-suave); font-size: 14px; line-height: 1.5; }
+.pagina_equipe .maremon-section-title { display: flex; align-items: center; flex-wrap: wrap; gap: 9px; margin: 23px 0 12px; font-size: 17px; font-weight: 900; font-style: normal; text-transform: none; }
+.pagina_equipe .maremon-section-title::before { width: 9px; height: 9px; border: 2px solid #b7dcff; border-radius: 50%; background: #568dc4; transform: none; box-shadow: none; flex-shrink: 0; }
+.pagina_equipe #resumo_equipe { font-size: 12px; font-weight: 700; color: var(--eq-suave); margin-left: auto; }
+.pagina_equipe #instrucao_equipe { color: #d5e2f5; font-size: 14px; line-height: 1.5; }
+/* Três posições na formação, com as imagens e ações originais. */
+.pagina_equipe #slots_equipe { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 15px; margin: 18px 0 28px; }
+.pagina_equipe .formacao_slot { min-width: 0; background: var(--eq-card); border: 1px solid var(--eq-borda); border-radius: 16px; overflow: hidden; box-shadow: 0 4px 0 #080d18a6; transition: border-color .15s, box-shadow .15s; }
+.pagina_equipe .formacao_slot.destino { border-color: #8bc9ff; box-shadow: 0 0 0 1px #8bc9ff, 0 4px 0 #080d18a6; }
+.pagina_equipe .selecionar_slot { display: grid; justify-items: center; align-content: start; gap: 6px; width: 100%; min-height: 220px; padding: 15px 10px; background: radial-gradient(ellipse at 50% 45%,#243b59,transparent 72%); border: 0; color: var(--eq-texto); cursor: pointer; font: inherit; }
+.pagina_equipe .selecionar_slot:hover:not(:disabled) { background-color: #20324a; }
+.pagina_equipe .selecionar_slot:focus-visible { outline-offset: -4px; }
+.pagina_equipe .selecionar_slot:disabled { cursor: not-allowed; }
+.pagina_equipe .numero_slot { color: var(--eq-suave); font-size: 11px; letter-spacing: .09em; font-weight: 900; }
+.pagina_equipe .destino .numero_slot { color: var(--eq-azul); }
+.pagina_equipe .selecionar_slot img { width: 100%; height: 116px; object-fit: contain; object-position: center bottom; filter: drop-shadow(0 5px 5px #0008); }
+.pagina_equipe .selecionar_slot img[hidden] { display: block !important; visibility: hidden; }
+.pagina_equipe .slot_vazio .selecionar_slot { background-image: radial-gradient(ellipse at 50% 45%,#202e43,transparent 72%); }
+.pagina_equipe .slot_vazio .nome_slot { color: var(--eq-suave); }
+.pagina_equipe .nome_slot { overflow-wrap: anywhere; font-size: 18px; }
+.pagina_equipe .rotulo_slot { color: var(--eq-azul); font-size: 12px; }
+.pagina_equipe .slot_hp { width: 90%; }
+.pagina_equipe progress { display: block; width: 100%; height: 8px; border: 0; border-radius: 5px; overflow: hidden; accent-color: #62dba2; background: #0b1526; }
+.pagina_equipe progress::-webkit-progress-bar { background: #0b1526; }
+.pagina_equipe progress::-webkit-progress-value { background: #62dba2; border-radius: 5px; }
+.pagina_equipe progress::-moz-progress-bar { background: #62dba2; border-radius: 5px; }
+.pagina_equipe .hp_baixo progress { accent-color: #f4b76c; }
+.pagina_equipe .hp_baixo progress::-webkit-progress-value { background: #f4b76c; }
+.pagina_equipe .hp_baixo progress::-moz-progress-bar { background: #f4b76c; }
+.pagina_equipe .hp_texto { display: block; font-size: 11px; margin: 5px 0; color: var(--eq-suave); }
+.pagina_equipe .formacao_slot.sem_hp img, .pagina_equipe .card_equipe.sem_hp img { filter: grayscale(.85) brightness(.7); }
+.pagina_equipe .sem_hp .hp_texto { color: #ffc3ab; }
+.pagina_equipe .remover_slot { width: 100%; padding: 9px; background: #101a2a; color: #c8d9f0; border: 0; border-top: 1px solid var(--eq-borda); cursor: pointer; font: 700 12px "Trebuchet MS",Arial,sans-serif; }
+.pagina_equipe .remover_slot:hover:not(:disabled) { background: #342838; color: #ffd1d1; }
+.pagina_equipe .remover_slot:disabled { opacity: .5; cursor: not-allowed; }
+.pagina_equipe #aviso_equipe_hp { background: #38282d; border: 1px solid #9a605c; padding: 12px; border-radius: 12px; color: #ffe8d7; }
+.pagina_equipe #filtro_equipe { width: min(100%,430px); background: #101a2a; border: 1px solid #364963; color: var(--eq-texto); padding: 12px 15px; margin-bottom: 16px; border-radius: 12px; font: inherit; }
+.pagina_equipe #filtro_equipe::placeholder { color: #aebed4; }
+/* Lista de Pescados: mantém sprites à esquerda e controles à direita. */
+.pagina_equipe #lista_equipe { display: grid; grid-template-columns: repeat(auto-fit,minmax(min(100%,340px),1fr)); gap: 20px; }
+.pagina_equipe .card_equipe { position: relative; display: flex; align-items: center; gap: 12px; min-width: 0; min-height: 174px; padding: 14px; border: 1px solid var(--eq-borda); border-radius: 16px; background: var(--eq-card); box-shadow: 0 4px 0 #080d18a6; overflow: hidden; }
+.pagina_equipe .card_equipe.ativo { border-color: #4f8b79; background: linear-gradient(120deg,#1a303b,var(--eq-card) 55%); }
+.pagina_equipe .card_equipe img { width: 94px; height: 110px; object-fit: contain; flex: none; image-rendering: auto; background: radial-gradient(ellipse,#304d68, #182a40 65%,transparent 78%); filter: drop-shadow(0 5px 4px #0006); }
+.pagina_equipe .infos_pescado { position: relative; z-index: 1; flex: 1; min-width: 0; }
+.pagina_equipe .card_equipe h3 { margin: 0 0 9px; font-size: 19px; font-weight: 900; color: var(--eq-azul); overflow-wrap: anywhere; }
+.pagina_equipe .card_equipe.ativo h3 { color: #9be4c1; }
+.pagina_equipe .card_equipe p { margin: 5px 0; font-size: 12px; color: var(--eq-suave); line-height: 1.6; overflow-wrap: anywhere; }
+.pagina_equipe .botoes_equipe { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; margin-top: 12px; }
+.pagina_equipe .botoes_equipe button { min-height: 37px; padding: 8px 11px; border: 1px solid #486689; border-radius: 20px; color: var(--eq-texto); background: #20334f; font-size: 12px; font-weight: 900; cursor: pointer; transition: filter .15s, background .15s; }
+.pagina_equipe .botoes_equipe .atribuir_slot { flex: 1 1 150px; background: repeating-linear-gradient(-45deg,#ffffff12 0 10px,transparent 10px 20px),linear-gradient(110deg,#245681,#3879ae); border-color: #6ca4d3; box-shadow: 0 3px 0 #0b233a; }
+.pagina_equipe .botoes_equipe button:hover:not(:disabled) { filter: brightness(1.22); }
+.pagina_equipe .botoes_equipe button:disabled { opacity: .48; cursor: default; box-shadow: none; }
+.pagina_equipe .atalhos_slots { display: flex; gap: 5px; }
+.pagina_equipe .atalhos_slots button { min-width: 30px; padding: 6px; }
+.pagina_equipe .atalhos_slots button[aria-pressed="true"] { opacity: 1; background: #245343; border-color: #8bd6b0; }
+.pagina_equipe .equipe_vazio { grid-column: 1 / -1; margin: 0; padding: 26px 20px; text-align: center; color: var(--eq-suave); border: 1px dashed #354963; border-radius: 15px; background: #0e1726bf; font-size: 14px; }
+.pagina_equipe .maremon-feedback { min-height: 0; margin: 15px 0 0; background: #0b1526; border: 1px solid #314865; border-radius: 9px; color: #c9e3ff; font-size: 13px; }
+.pagina_equipe .maremon-feedback:empty { display: none; }
+.pagina_equipe .maremon-acoes-pagina { margin-top: 22px; }
+.pagina_equipe .maremon-acoes-pagina a { border: 1px solid #364963; border-radius: 20px; background: #111c2d; box-shadow: 0 3px 0 #070d18; transform: none; text-transform: none; }
+.pagina_equipe .maremon-acoes-pagina a:hover { background: #263d5a; translate: none; }
+.pagina_equipe button:focus-visible,.pagina_equipe a:focus-visible,.pagina_equipe input:focus-visible { outline: 2px solid #b5dfff; outline-offset: 3px; }
+.pagina_equipe .selecionar_slot:focus-visible { outline-offset: -4px; }
+@media(max-width:700px) {
+    .pagina_equipe .equipe_marca { display: none; }
+    .pagina_equipe .equipe_titulo { padding: 12px 17px; gap: 3px 12px; }
 }
-
-.pagina_equipe .card_equipe.ativo {
-    border-color: #8cf2bf;
-    box-shadow: 6px 7px 0 #1a855a;
-}
-
-.pagina_equipe .card_equipe img {
-    width: clamp(72px, 9vw, 120px);
-    height: clamp(105px, 12vw, 155px);
-    object-fit: contain;
-    image-rendering: pixelated;
-    flex: none;
-    filter: drop-shadow(0 8px 3px rgba(0,0,0,.5));
-}
-
-.pagina_equipe .infos_pescado {
-    position: relative;
-    z-index: 1;
-    flex: 1;
-    min-width: 0;
-}
-
-.pagina_equipe .card_equipe h3 {
-    margin: 0 0 9px;
-    font-size: clamp(18px, 2vw, 27px);
-    font-style: italic;
-    font-weight: 900;
-    overflow-wrap: anywhere;
-}
-
-.pagina_equipe .card_equipe p {
-    margin: 7px 0;
-    font-size: 12px;
-    color: #b9cde9;
-    line-height: 1.6;
-}
-
-.pagina_equipe .botoes_equipe {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 7px;
-    margin-top: 12px;
-}
-
-.pagina_equipe .botoes_equipe button,
-.pagina_equipe .botoes_equipe select {
-    min-height: 37px;
-    padding: 8px 11px;
-    border: 2px solid #bcd8ff;
-    color: #fff;
-    background: #122965;
-    font: 900 12px "Trebuchet MS", Arial, sans-serif;
-    cursor: pointer;
-}
-
-.pagina_equipe .botoes_equipe button:hover:not(:disabled) {
-    background: #1b52d7;
-}
-
-.pagina_equipe .botoes_equipe button:disabled {
-    opacity: .4;
-    cursor: default;
-}
-
-.pagina_equipe .botoes_equipe select {
-    background: #f2f6ff;
-    color: #112349;
-    flex: 1 1 110px;
-}
-
-.pagina_equipe .botoes_equipe option { color: #101b36; }
-
-@media (max-width: 810px) {
-    .pagina_equipe #lista_equipe { grid-template-columns: 1fr; }
-}
-
-@media (max-width: 550px) {
-    .pagina_equipe #slots_equipe { grid-template-columns: 1fr; gap: 9px; }
-    .pagina_equipe .slot_equipe { min-height: 63px; padding: 11px; }
+@media(max-width:550px) {
+    .pagina_equipe #slots_equipe { gap: 7px; }
+    .pagina_equipe .selecionar_slot { padding: 8px 3px; min-height: 180px; }
+    .pagina_equipe .selecionar_slot img { height: 75px; }
+    .pagina_equipe .nome_slot { font-size: 13px; }
+    .pagina_equipe .numero_slot,.pagina_equipe .rotulo_slot { font-size: 10px; }
     .pagina_equipe .card_equipe { padding: 13px; gap: 11px; }
+}
+@media(max-width:420px) {
+    .pagina_equipe .equipe_cabecalho { gap: 9px; }
+    .pagina_equipe .equipe_titulo span { font-size: 12px; }
+    .pagina_equipe .equipe_intro { padding: 14px; }
     .pagina_equipe .card_equipe img { width: 75px; height: 100px; }
-    .pagina_equipe .botoes_equipe { flex-direction: column; }
 }

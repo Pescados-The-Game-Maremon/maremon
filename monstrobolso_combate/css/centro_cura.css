@@ -1,134 +1,72 @@
-/* Centro de Cura: visual do mesmo universo da HUD do combate. */
+/* Centro de Cura: cenário interagível e notificação no padrão do inventário. */
 #tela_jogo.aqua_dentro {
-    display: grid;
-    place-items: center;
+    background-color: #090f1c;
 }
 
-#tela_jogo .centro_cura {
-    --cor-contorno: #f5f7ff;
-    position: absolute;
-    z-index: 2;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: min(590px, 88vw);
-    max-height: 85vh;
-    overflow-y: auto;
-    padding: clamp(24px, 4vw, 46px);
-    border: 5px solid var(--cor-contorno);
-    background: linear-gradient(155deg, #142e8b 0%, #071328 40%, #090f24 100%);
-    box-shadow: 8px 9px 0 #082bd9, 14px 15px 0 #030b31, 0 25px 65px #021124a8;
-    clip-path: polygon(5% 0, 100% 0, 96% 94%, 9% 100%, 0 92%);
-    color: #ffffff;
-    font-family: "Trebuchet MS", Arial, sans-serif;
-    text-align: center;
-}
-
-#tela_jogo .centro_cura_emblema {
-    display: inline-grid;
-    width: 64px;
-    height: 64px;
-    place-items: center;
-    border: 3px solid white;
-    border-radius: 50%;
-    background: #1855e5;
-    color: #e9fdfc;
-    font-size: 43px;
-    box-shadow: 0 0 0 6px #052172;
-}
-
-#tela_jogo .centro_cura_sobretitulo {
-    display: block;
-    margin-top: 20px;
-    color: #88caff;
-    font-size: 11px;
-    font-weight: 900;
-    letter-spacing: .12em;
-}
-
-#tela_jogo .centro_cura h2 {
-    margin: 8px 0 12px;
-    font-size: clamp(26px, 4vw, 43px);
-    font-style: italic;
-    text-transform: uppercase;
-    text-shadow: 3px 4px 0 #000;
-}
-
-#tela_jogo .centro_cura p {
-    max-width: 430px;
-    margin: 0 auto 22px;
-    line-height: 1.55;
-    color: #d7e7ff;
-    font-size: clamp(13px, 1.5vw, 16px);
-}
-
-#tela_jogo .centro_cura_acoes {
-    display: flex;
-    gap: 12px;
-    align-items: stretch;
-    justify-content: center;
-    flex-wrap: wrap;
-}
-
-#tela_jogo .centro_cura_acoes button {
-    min-height: 49px;
-    border: 3px solid #f5f7ff;
-    padding: 12px 22px;
-    color: white;
-    font: 900 14px "Trebuchet MS", Arial, sans-serif;
-    text-transform: uppercase;
-    transform: skewX(-9deg);
-    cursor: pointer;
-    box-shadow: 3px 4px 0 #020918;
-    transition: filter .15s ease, translate .15s ease;
-}
-
-#tela_jogo .centro_cura_acoes button:hover:not(:disabled) {
-    filter: brightness(1.22);
-    translate: 0 -2px;
-}
-
-#tela_jogo .centro_cura_acoes button:disabled {
-    opacity: .55;
-    cursor: wait;
-}
-
-#tela_jogo .centro_cura_confirmar {
-    background: #144ade;
+/* Nas proporções extremas, preserva todo o cenário e o alinhamento do ponto. */
+@media (max-aspect-ratio: 3/2), (min-aspect-ratio: 2/1) {
+    #tela_jogo.aqua_dentro { background-size: contain; }
 }
 
 #tela_jogo .centro_cura_voltar {
-    background: #132137;
+    gap: 8px;
 }
-
-#tela_jogo #mensagem_cura {
-    min-height: 25px;
-    margin: 20px auto 8px;
-    color: #c3fbdf;
-    font-weight: 900;
+#tela_jogo .centro_cura_voltar span {
+    color: #8bcaff;
+    font-size: 19px;
+    line-height: .8;
 }
-
-#tela_jogo .centro_cura_rodape {
-    display: block;
-    color: #6999e5;
-    font-size: 10px;
-    font-weight: 900;
-    letter-spacing: .1em;
+#tela_jogo .centro_cura_voltar:disabled {
+    opacity: .6;
+    cursor: wait;
 }
-
-#tela_jogo .centro_cura.cura_concluida .centro_cura_emblema {
-    animation: brilhoCura .6s ease-out;
+#tela_jogo .centro_cura_notificacao {
+    position: absolute;
+    z-index: 30;
+    left: 50%;
+    bottom: clamp(14px, 4vh, 38px);
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    box-sizing: border-box;
+    width: min(550px, calc(100% - 32px));
+    padding: 18px 22px;
+    background: linear-gradient(145deg, #172338, #101827);
+    border: 1px solid #36516e;
+    border-radius: 16px;
+    box-shadow: 0 5px 0 #080d17b3, 0 12px 25px #0006;
+    color: #edf3ff;
+    font: 700 clamp(14px, 1.6vw, 18px)/1.4 "Trebuchet MS", Arial, sans-serif;
+    text-align: center;
+    pointer-events: none;
 }
-
-@keyframes brilhoCura {
-    50% { box-shadow: 0 0 0 12px #65eac87c, 0 0 22px #75fff3; }
+#tela_jogo .centro_cura_notificacao:empty { display: none; }
+#tela_jogo .centro_cura_notificacao::before {
+    content: "+";
+    display: grid;
+    flex: 0 0 34px;
+    height: 34px;
+    place-items: center;
+    border-radius: 10px;
+    background: #213c54;
+    color: #8bcaff;
+    font-size: 23px;
 }
-
-@media (max-width: 600px) {
-    #tela_jogo .centro_cura { width: 94%; padding: 24px 16px; }
-    #tela_jogo .centro_cura_acoes { flex-direction: column; }
+#tela_jogo .centro_cura_notificacao[data-estado="sucesso"]::before {
+    content: "✓";
+    color: #91e4ba;
+    background: #183e36;
 }
-
-@media (prefers-reduced-motion: reduce) {
-    #tela_jogo .centro_cura * { animation: none !important; }
+#tela_jogo .centro_cura_notificacao[data-estado="erro"]::before {
+    content: "!";
+    color: #ffb3b3;
+    background: #482b38;
+}
+/* Mantém Voltar no topo esquerdo, inclusive em telas pequenas. */
+@media (max-width: 650px) {
+    #tela_jogo[data-cena="cena_aqua_dentro"] .centro_cura_voltar { top: 8px; left: 8px; }
+    #tela_jogo[data-cena="cena_aqua_dentro"] .hud_jogo { left: auto; max-width: calc(100% - 108px); }
+    #tela_jogo .centro_cura_notificacao { padding: 12px; }
 }

@@ -8,6 +8,7 @@ require_once __DIR__ . "/proteger.php";
 require_once __DIR__ . "/../app/bootstrap.php";
 
 use Maremon\Services\BossService;
+use Maremon\Services\FormacaoEquipe;
 
 try {
     // Escolher até três integrantes que o jogador organizou antes da batalha.
@@ -16,6 +17,7 @@ try {
             pp.pescador_id,
             p.id,
             p.nome,
+            (SELECT m.sprite FROM public.maremon_especies m WHERE m.pescado_id=p.id) AS sprite,
             p.tipo,
             pp.nivel,
             pp.status,
@@ -25,16 +27,16 @@ try {
             COALESCE(
                 pp.hp_atual,
                 s.hp + 2 * GREATEST(pp.nivel - 5, 0)
-                    + 10 * pp.estagio_evolucao
+                    + 10 * pp.bonus_evolucao_legado
             ) AS hp,
             s.hp + 2 * GREATEST(pp.nivel - 5, 0)
-                + 10 * pp.estagio_evolucao AS hp_max,
+                + 10 * pp.bonus_evolucao_legado AS hp_max,
             s.atk + GREATEST(pp.nivel - 5, 0)
-                + 3 * pp.estagio_evolucao AS atk,
+                + 3 * pp.bonus_evolucao_legado AS atk,
             s.def + GREATEST(pp.nivel - 5, 0)
-                + 3 * pp.estagio_evolucao AS def,
+                + 3 * pp.bonus_evolucao_legado AS def,
             s.spe + GREATEST(pp.nivel - 5, 0)
-                + 3 * pp.estagio_evolucao AS spe
+                + 3 * pp.bonus_evolucao_legado AS spe
         FROM public.pescador_pescado pp
         JOIN public.pescado p ON p.id = pp.pescado_id
         JOIN public.stats s ON s.pescado_id = p.id
@@ -53,7 +55,8 @@ try {
     }
 
     $equipe = [];
-    $jogador = null;
+    $formacao = [];
+    $registrosHp = [];
 
     foreach ($integrantes as $integrante) {
         $integrante["hp"] = max(0, min(
@@ -62,14 +65,16 @@ try {
         ));
         $equipe[(int) $integrante["id"]] = $integrante;
 
-        if ($jogador === null && $integrante["hp"] > 0) {
-            $jogador = $integrante;
-        }
+        $formacao[(int)$integrante["equipe_slot"]] = (int)$integrante["id"];
+        $registrosHp[] = ["pescado_id" => (int)$integrante["id"], "hp" => $integrante["hp"]];
     }
 
-    if ($jogador === null) {
-        throw new RuntimeException("Todos os Pescados da equipe estão sem HP.");
+    $idInicial = FormacaoEquipe::primeiroVivo($registrosHp, $formacao);
+    if ($idInicial === null) {
+        throw new RuntimeException("Todos os Pescados da equipe estão sem HP. Vá ao Centro de Cura ou escolha um integrante vivo antes de pescar.");
     }
+
+    $jogador = $equipe[$idInicial];
 
     // Cada novo encontro realiza um sorteio independente de 5% para o
     // chefe correspondente à isca escolhida e desbloqueada pelo jogador.
@@ -121,6 +126,7 @@ try {
         SELECT
             p.id,
             p.nome,
+            (SELECT m.sprite FROM public.maremon_especies m WHERE m.pescado_id=p.id) AS sprite,
             p.tipo,
             5 AS nivel,
             'normal' AS status,
@@ -136,6 +142,9 @@ try {
         WHERE s.hp > 0
           AND NOT EXISTS (
               SELECT 1 FROM public.bosses b WHERE b.pescado_id = p.id
+          )
+          AND NOT EXISTS (
+              SELECT 1 FROM public.evolucoes e WHERE e.pescado_destino_id = p.id
           )
           AND EXISTS (
               SELECT 1

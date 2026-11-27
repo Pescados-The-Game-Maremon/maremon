@@ -6,7 +6,7 @@ use Maremon\Domain\Pescado;
 final class EquipeController {
     public function __construct(private PDO $pdo) {}
     public function listar(int $pescadorId): array {
-        $s=$this->pdo->prepare('SELECT pescado_id AS id,nome,tipo,nivel,exp,status,status_turnos,
+        $s=$this->pdo->prepare('SELECT pescado_id AS id,nome,tipo,(SELECT m.sprite FROM public.maremon_especies m WHERE m.pescado_id=vw_equipe_maremon.pescado_id) AS sprite,nivel,exp,status,status_turnos,
           estagio_evolucao,COALESCE(hp_atual,hp_max) AS hp_atual,hp_max,atk,def,spe,
           selecionado,equipe_slot
           FROM public.vw_equipe_maremon WHERE jogador_id=:id
