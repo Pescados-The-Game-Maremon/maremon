@@ -128,6 +128,7 @@ if (
 
     <template id="cena_combate">
         <div id="interface_combate">
+            <div id="aviso_boss" class="faixa_boss" hidden>BOSS · DRK · HP ×5</div>
             <img id="sprite_inimigo"
                  class="sprite_pescado"
                  alt="Pescado inimigo">
@@ -188,7 +189,6 @@ if (
                 <div id="registro_combate">
 
                     <div id="caixa_dialogo_combate">
-                        <div id="aviso_boss" class="faixa_boss" hidden>BOSS · DRK · HP ×5</div>
                         <p id="mensagem_combate" role="status" aria-live="polite">
                             Preparando combate...
                         </p>
@@ -320,23 +320,14 @@ if (
     </template>
 
     <template id="cena_aqua_dentro">
-        <div class="centro_cura">
-            <div class="centro_cura_emblema" aria-hidden="true">✦</div>
-            <span class="centro_cura_sobretitulo">MAREMON · CENTRO DE RECUPERAÇÃO</span>
-            <h2>Centro de Cura</h2>
-            <p>Uma pausa no oceano para restaurar seus Pescados. Recupere a equipe inteira e volte à aventura!</p>
-            <div class="centro_cura_acoes">
-                <button type="button" class="centro_cura_confirmar" onclick="curarEquipe()">
-                    ✦ Curar meus Pescados
-                </button>
-                <button type="button" class="centro_cura_voltar"
-                        onclick="trocarfundo('aqua_fora'); goTo('cena_aqua_fora')">
-                    Voltar
-                </button>
-            </div>
-            <p id="mensagem_cura" role="status" aria-live="polite"></p>
-            <span class="centro_cura_rodape">◆ SUA EQUIPE MERECE DESCANSAR ◆</span>
-        </div>
+        <button type="button" id="voltar_centro_cura" class="botao_voltar centro_cura_voltar"
+                onclick="voltarDoCentroCura()">
+            <span aria-hidden="true">‹</span> Voltar
+        </button>
+        <button type="button" id="ponto_enfermeira" class="ponto_mapa ponto_objeto"
+                data-rotulo="Curar meus Pescados" aria-label="Curar todos os meus Pescados"
+                onclick="curarEquipe()"></button>
+        <div id="mensagem_cura" class="centro_cura_notificacao" role="status" aria-live="polite" aria-atomic="true"></div>
     </template>
 
     <template id="cena_loja">

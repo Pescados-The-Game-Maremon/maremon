@@ -108,8 +108,15 @@
 #interface_combate .barra_hp .vida { display: block; width: 100%; height: 100%; border-radius: inherit; background: #46d6a1; transition: width .3s, background .2s; }
 #interface_combate .painel_vida p { margin: 0; white-space: nowrap; color: var(--suave-hud); font-weight: 800; font-size: clamp(10px, 1vw, 16px); font-variant-numeric: tabular-nums; }
 #interface_combate #aviso_boss {
-    flex: none; align-self: flex-start; max-width: 100%; padding: 3px 9px; background: #351f3c; color: #f8d5ec;
-    border: 1px solid #84516f; border-radius: 12px; font-size: clamp(10px, 1vw, 15px); font-weight: 800;
+    position: absolute; z-index: 6; top: 1.5vh; left: 50%; transform: translateX(-50%);
+    width: max-content; max-width: 18vw; padding: 5px 12px; text-align: center;
+    background: #351f3c; color: #f8d5ec; border: 1px solid #84516f;
+    border-radius: 999px; font-size: clamp(10px, 1vw, 15px); font-weight: 800;
+    box-shadow: 0 3px 0 #080d18aa;
+}
+@media (max-width: 850px) {
+    #interface_combate:has(#aviso_boss:not([hidden])) { --topo-painel: calc(1.5vh + 32px); }
+    #interface_combate #aviso_boss { max-width: 90vw; }
 }
 
 /* Faixa de comandos fixa: o registro à esquerda e um único menu à direita. */
@@ -210,7 +217,6 @@
     #interface_combate .painel_pescado { width: min(55vw, 360px); }
     #interface_combate #painel_inimigo { top: 51%; }
     #interface_combate #caixa_dialogo_combate { padding: 6px 10px; gap: 3px; }
-    #interface_combate #caixa_dialogo_combate:has(#aviso_boss:not([hidden]))::before { display: none; }
     #interface_combate #menu_principal_combate { --diametro-captura: min(58px, 10vh); }
     #interface_combate .comando_acao { font-size: 13px; }
     #interface_combate .tag_tipo { display: none; }
